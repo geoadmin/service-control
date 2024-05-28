@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "~=5.0"
+django-ninja = "~=1.1"
+
+[dev-packages]
+yapf = "*"
+pylint = "*"
+pylint-django = "*"
+ipdb = "*"
+
+[requires]
+python_version = "3.10"
