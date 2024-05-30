@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+import os
+import environ
+
+env = environ.Env()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6-72r#zx=sv6v@-4k@uf1gv32me@%yr*oqa*fu8&5l&a!ws)5#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', False)
 
 ALLOWED_HOSTS = []
 
@@ -72,8 +77,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env.str('DB_NAME', 'service_control'),
+        'USER': env.str('DB_USER', 'service_control'),
+        'PASSWORD': env.str('DB_PW', 'service_control'),
+        'HOST': env.str('DB_HOST', 'service_control'),
+        'PORT': env.str('DB_PORT', 5432),
+        'TEST': {
+            'NAME': env.str('DB_NAME_TEST', 'test_service_control'),
+        }
     }
 }
 
