@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 django = "~=5.0"
 django-ninja = "~=1.1"
+psycopg2-binary = "~=2.9.5"
 
 [dev-packages]
 yapf = "*"
