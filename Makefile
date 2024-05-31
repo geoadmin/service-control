@@ -34,6 +34,7 @@ setup: $(SETTINGS_TIMESTAMP) ## Setup the project by installing packages and act
 	# Create virtual env with all packages for development
 	pipenv install --dev
 	pipenv shell
+	cp .env.default .env
 
 
 .PHONY: format
