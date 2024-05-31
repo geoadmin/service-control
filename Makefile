@@ -34,6 +34,7 @@ setup: $(SETTINGS_TIMESTAMP) setup-s3-and-db setup-logs ## Setup the project by 
 	# Create virtual env with all packages for development
 	pipenv install --dev
 	pipenv shell
+	cp .env.default .env
 
 
 .PHONY: format
