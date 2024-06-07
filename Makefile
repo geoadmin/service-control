@@ -13,7 +13,7 @@ ifneq ("$(wildcard .env)","")
 include .env
 export
 else
-include .env.default
+include .env
 export
 endif
 
@@ -27,6 +27,12 @@ PIPENV_RUN := pipenv run
 PYTHON := $(PIPENV_RUN) python3
 YAPF := $(PIPENV_RUN) yapf
 ISORT := $(PIPENV_RUN) isort
+
+
+.PHONY: ci
+ci: $(SETTINGS_TIMESTAMP)
+	# Create virtual env with all packages for development using the Pipfile.lock
+	pipenv sync --dev
 
 
 .PHONY: setup
