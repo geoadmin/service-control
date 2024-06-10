@@ -70,7 +70,7 @@ start-local-db: ## Run the local db as docker container
 .PHONY: test
 test:
 	# Collect static first to avoid warning in the test
-	$(PYTHON) $(DJANGO_MANAGER) collectstatic --noinput
+	# $(PYTHON) $(DJANGO_MANAGER) collectstatic --noinput
 	$(PYTHON) $(DJANGO_MANAGER) test --verbosity=2 --parallel 20 $(CI_TEST_OPT) $(TEST_DIR) $(APP_SRC_DIR)
 
 .PHONY: help
