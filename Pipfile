@@ -17,6 +17,8 @@ ipdb = "*"
 isort = "*"
 django-extensions = "~=3.2"
 django_debug_toolbar= "~=4.2"
+faker = "*"
+factory-boy = "*"
 
 [requires]
 python_version = "3.10"
