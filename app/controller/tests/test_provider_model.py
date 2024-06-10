@@ -1,7 +1,7 @@
-from faker import Faker
-from django.test import TestCase
-
 from controller.models import Provider
+from faker import Faker
+
+from django.test import TestCase
 
 fake = Faker()
 
