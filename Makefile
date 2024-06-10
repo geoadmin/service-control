@@ -17,7 +17,6 @@ include .env
 export
 endif
 
-
 # Django specific
 APP_SRC_DIR := app
 DJANGO_MANAGER := $(CURRENT_DIR)/$(APP_SRC_DIR)/manage.py
@@ -27,21 +26,22 @@ PIPENV_RUN := pipenv run
 PYTHON := $(PIPENV_RUN) python3
 YAPF := $(PIPENV_RUN) yapf
 ISORT := $(PIPENV_RUN) isort
+PYLINT := $(PIPENV_RUN) pylint
 
+# Find all python files that are not inside a hidden directory (directory starting with .)
+PYTHON_FILES := $(shell find $(APP_SRC_DIR) -type f -name "*.py" -print)
 
 .PHONY: ci
-ci: $(SETTINGS_TIMESTAMP)
+ci:
 	# Create virtual env with all packages for development using the Pipfile.lock
 	pipenv sync --dev
 
-
 .PHONY: setup
-setup: $(SETTINGS_TIMESTAMP) ## Setup the project by installing packages and activating venv
+setup: $(SETTINGS_TIMESTAMP)
 	# Create virtual env with all packages for development
 	pipenv install --dev
 	pipenv shell
 	cp .env.default .env
-
 
 .PHONY: format
 format: ## Call yapf to make sure your code is easier to read and respects some conventions.
@@ -51,7 +51,7 @@ format: ## Call yapf to make sure your code is easier to read and respects some 
 .PHONY: lint
 lint: ## Run the code linting
 	@echo "Run pylint..."
-	LOGGING_CFG=0 DJANGO_SETTINGS_MODULE=config.settings $(PYLINT) $(PYTHON_FILES)
+	$(PYLINT) $(PYTHON_FILES)
 
 .PHONY: django-checks
 django-checks: ## Run the django checks
@@ -61,6 +61,34 @@ django-checks: ## Run the django checks
 django-check-migrations: ## Check the migrations
 	@echo "Check for missing migration files"
 	$(PYTHON) $(DJANGO_MANAGER) makemigrations --no-input --check
+
+
+.PHONY: ci-check-format
+ci-check-format: format
+	@if [[ -n `git status --porcelain --untracked-files=no` ]]; then \
+	 	>&2 echo "ERROR: the following files are not formatted correctly"; \
+	 	>&2 echo "'git status --porcelain' reported changes in those files after a 'make format' :"; \
+		>&2 git status --porcelain --untracked-files=no; \
+		exit 1; \
+	fi
+
+
+# make sure that the code conforms to the style guide. Note that
+# - the DJANGO_SETTINGS module must be made available to pylint
+#   to support e.g. string model referencec (see
+#   https://github.com/PyCQA/pylint-django#usage)
+# - export of migrations for prometheus stats must be disabled,
+#   otherwise it's attempted to connect to the db during linting
+#   (which is not available)
+.PHONY: lint
+lint:
+	@echo "Run pylint..."
+	LOGGING_CFG=0 $(PYLINT) $(PYTHON_FILES)
+
+.PHONY: django-checks
+django-checks:
+	$(PYTHON) $(DJANGO_MANAGER) check --fail-level WARNING
+
 
 .PHONY: start-local-db
 start-local-db: ## Run the local db as docker container
