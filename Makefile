@@ -66,6 +66,13 @@ django-check-migrations: ## Check the migrations
 start-local-db: ## Run the local db as docker container
 	docker compose up -d
 
+# Running tests locally
+.PHONY: test
+test:
+	# Collect static first to avoid warning in the test
+	$(PYTHON) $(DJANGO_MANAGER) collectstatic --noinput
+	$(PYTHON) $(DJANGO_MANAGER) test --verbosity=2 --parallel 20 $(CI_TEST_OPT) $(TEST_DIR) $(APP_SRC_DIR)
+
 .PHONY: help
 help: ## Display this help
 # automatically generate the help page based on the documentation after each make target
