@@ -19,6 +19,7 @@ django-extensions = "~=3.2"
 django_debug_toolbar= "~=4.2"
 faker = "*"
 factory-boy = "*"
+dill = "*"
 
 [requires]
 python_version = "3.12"
