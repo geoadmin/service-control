@@ -9,13 +9,13 @@ CURRENT_DIR := $(shell pwd)
 # Imports the environment variables
 ## TODO if we call the file .env, then it'll be read by pipenv too
 ## which is good for running migrate
-ifneq ("$(wildcard .env)","")
-include .env
-export
-else
-include .env
-export
-endif
+# ifneq ("$(wildcard .env)","")
+# include .env
+# export
+# else
+# include .env
+# export
+# endif
 
 # Django specific
 APP_SRC_DIR := app
