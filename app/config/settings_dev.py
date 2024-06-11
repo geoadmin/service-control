@@ -4,7 +4,9 @@ from .settings_base import *  # pylint: disable=wildcard-import, unused-wildcard
 
 env = environ.Env()
 
-DEBUG = env.bool('DEBUG', True)
+# Override debug if given by the env
+if env.bool('DEBUG', None):
+    DEBUG = env.bool('DEBUG')
 
 if DEBUG:
     INSTALLED_APPS += ['django_extensions', 'debug_toolbar']
