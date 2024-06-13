@@ -1,5 +1,5 @@
-from controller.models import Provider
 from faker import Faker
+from provider.models import Provider
 
 from django.test import TestCase
 
