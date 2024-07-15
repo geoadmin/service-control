@@ -20,6 +20,7 @@ django_debug_toolbar= "~=4.2"
 faker = "*"
 factory-boy = "*"
 dill = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.12"
