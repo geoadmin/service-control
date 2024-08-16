@@ -72,6 +72,10 @@ ci-check-format: format
 		exit 1; \
 	fi
 
+.PHONY: serve
+serve:
+	$(PYTHON) $(DJANGO_MANAGER) runserver
+
 
 # make sure that the code conforms to the style guide. Note that
 # - the DJANGO_SETTINGS module must be made available to pylint
