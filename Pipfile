@@ -23,6 +23,7 @@ factory-boy = "*"
 dill = "*"
 pytest = "*"
 pytest-django = "*"
+debugpy = "*"
 
 [requires]
 python_version = "3.12"
