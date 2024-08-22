@@ -14,9 +14,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from ninja import NinjaAPI
+
 from django.contrib import admin
 from django.urls import path
 
+api = NinjaAPI()
+
+
+@api.get('/checker')
+def checker(request):
+    return {"success": True, "message": " OK"}
+
+
 urlpatterns = [
+    path('', api.urls),
     path('admin/', admin.site.urls),
 ]
