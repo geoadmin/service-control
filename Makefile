@@ -145,4 +145,5 @@ test: ## Run tests locally
 .PHONY: help
 help: ## Display this help
 # automatically generate the help page based on the documentation after each make target
-	@grep -E '^[.a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST)  | sort -k 1,1  | awk 'BEGIN {FS = ":" }; { print $$2":"$$3 }' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+# from https://gist.github.com/prwhite/8168133
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m\033[0m\n"} /^[$$()% a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
