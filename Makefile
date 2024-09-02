@@ -35,6 +35,7 @@ PYTHON := $(PIPENV_RUN) python3
 YAPF := $(PIPENV_RUN) yapf
 ISORT := $(PIPENV_RUN) isort
 PYLINT := $(PIPENV_RUN) pylint
+MYPY := $(PIPENV_RUN) mypy
 
 # Find all python files that are not inside a hidden directory (directory starting with .)
 PYTHON_FILES := $(shell find $(APP_SRC_DIR) -type f -name "*.py" -print)
@@ -131,6 +132,9 @@ lint: ## Run the linter on the code base
 	@echo "Run pylint..."
 	LOGGING_CFG=0 $(PYLINT) $(PYTHON_FILES)
 
+.PHONY: type-check
+type-check: ## Run the type-checker mypy
+	$(MYPY) app/
 
 .PHONY: start-local-db
 start-local-db: ## Run the local db as docker container
