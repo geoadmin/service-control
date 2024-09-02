@@ -26,6 +26,7 @@ factory-boy = "*"
 dill = "*"
 pytest = "*"
 pytest-django = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.12"
