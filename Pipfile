@@ -26,6 +26,9 @@ factory-boy = "*"
 dill = "*"
 pytest = "*"
 pytest-django = "*"
+mypy = "*"
+types-gevent = "*"
+django-stubs = "~=5.0.4"
 
 [requires]
 python_version = "3.12"

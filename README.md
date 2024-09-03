@@ -18,6 +18,9 @@
     - [Debug from vs code](#debug-from-vs-code)
     - [Attach debugger to the tests](#attach-debugger-to-the-tests)
     - [Run tests from within vs code](#run-tests-from-within-vs-code)
+- [Type Checking](#type-checking)
+  - [Mypy](#mypy)
+  - [Library types](#library-types)
 
 ## Summary of the project
 
@@ -108,3 +111,25 @@ settings locally to your workspace:
 
 They can either be in `.vscode/settings.json` or in your workspace settings. Now the tests can be
 run and debugged with the testing tab of vscode (beaker icon).
+
+## Type Checking
+
+### Mypy
+
+Type checking can be done by either calling `mypy` or the make target: 
+
+```sh
+make type-check
+```
+
+This will check all files in the repository.
+
+### Library types
+
+For type-checking, the external library [mypy](https://mypy.readthedocs.io) is being used. See the [type hints cheat sheet](https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html) for help on getting the types right.
+
+Some 3rd party libraries need to have explicit type stubs installed for the type checker
+to work. Some of them can be found in [typeshed](https://github.com/python/typeshed). Sometimes dedicated
+packages exist, as is the case with [django-stubs](https://pypi.org/project/django-stubs/).
+
+If there aren't any type hints available, they can also be auto-generated with [stubgen](https://mypy.readthedocs.io/en/stable/stubgen.html)

@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY', default=None)
+SECRET_KEY = env.str('SECRET_KEY', default=None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -81,7 +81,7 @@ DATABASES = {
         'USER': env.str('DB_USER', 'service_control'),
         'PASSWORD': env.str('DB_PW', 'service_control'),
         'HOST': env.str('DB_HOST', 'service_control'),
-        'PORT': env.str('DB_PORT', 5432),
+        'PORT': env.str('DB_PORT', "5432"),
         'TEST': {
             'NAME': env.str('DB_NAME_TEST', 'test_service_control'),
         }
