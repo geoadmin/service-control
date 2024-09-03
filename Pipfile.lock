@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "94e8bb70c3276628c8372e240af2786f0aa9ba3e1d5d4cd55bb02b7e94d2d9c7"
+            "sha256": "d6d3780b43a431aed02d8a9a2d4d7771956d5988237763afdbabbe2a94f5fe48"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -441,11 +441,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:0274581a0037b638b9fc1c6883cc71c0210865aaa76073f7882376b641b84e8f",
-                "sha256:a85e96b8be2b906f3e3e789adec6a9323abf79758ecfa3065bd740d81158b11e"
+                "sha256:bea195a800f510ba3a2bc65645c88b7e016fe36709fefc58a880c4ae8a0138d7",
+                "sha256:cee604bd76cc092355a4e43ec17aee5369095974f41f088676724dc6bc2c9ef8"
             ],
             "markers": "python_version >= '3.8'",
-            "version": "==74.0.0"
+            "version": "==74.1.0"
         },
         "sqlparse": {
             "hashes": [
@@ -579,6 +579,23 @@
             "index": "pypi",
             "markers": "python_version >= '3.6'",
             "version": "==3.2.3"
+        },
+        "django-stubs": {
+            "hashes": [
+                "sha256:78e3764488fdfd2695f12502136548ec22f8d4b1780541a835042b8238d11514",
+                "sha256:c2502f5ecbae50c68f9a86d52b5b2447d8648fd205036dad0ccb41e19a445927"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8'",
+            "version": "==5.0.4"
+        },
+        "django-stubs-ext": {
+            "hashes": [
+                "sha256:85da065224204774208be29c7d02b4482d5a69218a728465c2fbe41725fdc819",
+                "sha256:910cbaff3d1e8e806a5c27d5ddd4088535aae8371ea921b7fd680fdfa5f14e30"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==5.0.4"
         },
         "executing": {
             "hashes": [
@@ -821,12 +838,12 @@
         },
         "pytest-django": {
             "hashes": [
-                "sha256:5d054fe011c56f3b10f978f41a8efb2e5adfc7e680ef36fb571ada1f24779d90",
-                "sha256:ca1ddd1e0e4c227cf9e3e40a6afc6d106b3e70868fd2ac5798a22501271cd0c7"
+                "sha256:1d83692cb39188682dbb419ff0393867e9904094a549a7d38a3154d5731b2b99",
+                "sha256:8bf7bc358c9ae6f6fc51b6cebb190fe20212196e6807121f11bd6a3b03428314"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.8'",
-            "version": "==4.8.0"
+            "version": "==4.9.0"
         },
         "python-dateutil": {
             "hashes": [
@@ -882,6 +899,39 @@
             ],
             "markers": "python_version >= '3.8'",
             "version": "==5.14.3"
+        },
+        "types-gevent": {
+            "hashes": [
+                "sha256:0cab6b787fb3d5e05d7e1d1337658006a28a47b1c3e2f7dc776056d0aebc1424",
+                "sha256:f1ac35c63e5e79b4a0fa1f001ce18f19f9c5d36f1f42030aa61bf66d4b6ed6fb"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.8'",
+            "version": "==24.2.0.20240806"
+        },
+        "types-greenlet": {
+            "hashes": [
+                "sha256:73f5419dcf82505ca0a350a4954a0f44f98b1fa448b1de48b5a165421912f517",
+                "sha256:7b9c808db8a33cd395d68be816d35ee3f8d23eda4163dae5f79f35fd202d4161"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==3.0.0.20240604"
+        },
+        "types-psutil": {
+            "hashes": [
+                "sha256:20af311bfb0386a018a27ae47dc952119d7c0e849ff72b6aa24fc0433afb92a6",
+                "sha256:437affa76670363db9ffecfa4f153cc6900bf8a7072b3420f3bc07a593f92226"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==6.0.0.20240901"
+        },
+        "types-pyyaml": {
+            "hashes": [
+                "sha256:b8f76ddbd7f65440a8bda5526a9607e4c7a322dc2f8e1a8c405644f9a6f4b9af",
+                "sha256:deda34c5c655265fc517b546c902aa6eed2ef8d3e921e4765fe606fe2afe8d35"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==6.0.12.20240808"
         },
         "typing-extensions": {
             "hashes": [
