@@ -55,8 +55,8 @@ ci:
 .PHONY: setup
 setup: $(SETTINGS_TIMESTAMP) ## Create virtualenv with all packages for development
 	pipenv install --dev
-	pipenv shell
 	cp .env.default .env
+	pipenv shell
 
 .PHONY: format
 format: ## Call yapf to make sure your code is easier to read and respects some conventions.
