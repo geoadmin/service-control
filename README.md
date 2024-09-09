@@ -78,11 +78,17 @@ in it:
     }
   ]
 }
-
 ```
 
-Now you can start the server with `make serve-debug`. The bootup will wait with the execution until 
-the debugger is attached, which can most easily done by hitting f5.
+Alternatively, create the file via menu "Run" > "Add Configuration" by choosing
+
+- Debugger: Python Debugger
+- Debug Configration: Remote Attach
+- Hostname: `localhost`
+- Port number: `5678`
+
+Now you can start the server with `make serve-debug`.
+The bootup will wait with the execution until the debugger is attached, which can most easily done by hitting F5.
 
 #### Attach debugger to the tests
 
