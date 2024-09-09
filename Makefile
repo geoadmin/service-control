@@ -28,6 +28,7 @@ AUTHOR = $(USER)
 # Django specific
 APP_SRC_DIR := app
 DJANGO_MANAGER := $(CURRENT_DIR)/$(APP_SRC_DIR)/manage.py
+DJANGO_MANAGER_DEBUG := -m debugpy --listen localhost:5678 --wait-for-client $(CURRENT_DIR)/$(APP_SRC_DIR)/manage.py
 
 # Commands
 PIPENV_RUN := pipenv run
@@ -87,6 +88,9 @@ ci-check-format: format ## Check the format (CI)
 serve: ## Serve the application locally
 	$(PYTHON) $(DJANGO_MANAGER) runserver
 
+.PHONY: serve-debug
+serve-debug: ## Serve the application locally for debugging
+	$(PYTHON) $(DJANGO_MANAGER_DEBUG) runserver
 
 .PHONY: dockerlogin
 dockerlogin: ## Login to the AWS Docker Registry (ECR)
