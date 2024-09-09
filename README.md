@@ -38,22 +38,16 @@ Prerequisites on host for development and build:
 
 ### Setup
 
-Copy the `.env.dist` file to `.env` on your local machine:
+To create and activate a virtual Python environment with all dependencies installed:
 
 ```bash
-cp .env.dist .env
+make setup
 ```
 
-Initialize the local python environment with pipenv:
+To start the local postgres container:
 
 ```bash
-pipenv sync -d
-```
-
-and start the local postgres container
-
-```bash
-docker compose up
+make start-local-db
 ```
 
 ## Local Development
