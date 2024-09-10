@@ -44,16 +44,16 @@ To create and activate a virtual Python environment with all dependencies instal
 make setup
 ```
 
+To start the local postgres container, run this:
+
+```bash
+make start-local-db
+```
+
 You may want to do an initial sync of your database by applying the most recent Django migrations with
 
 ```bash
 app/manage.py migrate
-```
-
-Finally, to start the local postgres container, run this:
-
-```bash
-make start-local-db
 ```
 
 ## Local Development
