@@ -103,8 +103,9 @@ then wait until the debugger is attached.
 
 #### Run tests from within vs code
 
-The unit tests can also be invoked inside vs code directly. To do this you need to have following
-settings locally to your workspace:
+The unit tests can also be invoked inside vs code directly (beaker icon).
+To do this you need to have the following settings either in
+`.vscode/settings.json` or in your workspace settings:
 
 ```json
   "python.testing.pytestArgs": [
@@ -115,8 +116,13 @@ settings locally to your workspace:
   "python.testing.debugPort": 5678
 ```
 
-They can either be in `.vscode/settings.json` or in your workspace settings. Now the tests can be
-run and debugged with the testing tab of vscode (beaker icon).
+You can also create this file interactively via menu "Python: Configure Tests"
+in the Command Palette (Ctrl+Shift+P).
+
+For the automatic test discovery to work, make sure that vs code has the Python
+interpreter of your venv selected (`.venv/bin/python`).
+You can change the Python interpreter via menu "Python: Select Interpreter"
+in the Command Palette.
 
 ## Type Checking
 
