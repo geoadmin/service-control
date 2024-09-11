@@ -8,8 +8,15 @@ class Provider(models.Model):
         verbose_name = _("provider")
         verbose_name_plural = _("providers")
 
-    def __str__(self):
-        return f"{self.name}"
+    def __str__(self) -> str:
+        return str(self.name_en)
 
-    name = models.CharField(_("Provider Name"), max_length=50)
-    prefix = models.CharField(_("Provider prefix"), max_length=50)
+    name_de = models.CharField(_("Name (German)"), blank=True)
+    name_fr = models.CharField(_("Name (French)"), blank=True)
+    name_it = models.CharField(_("Name (Italian)"), blank=True)
+    name_en = models.CharField(_("Name (English)"), blank=True)
+
+    acronym_de = models.CharField(_("Acronym (German)"), blank=True)
+    acronym_fr = models.CharField(_("Acronym (French)"), blank=True)
+    acronym_it = models.CharField(_("Acronym (Italian)"), blank=True)
+    acronym_en = models.CharField(_("Acronym (English)"), blank=True)
