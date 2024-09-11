@@ -13,10 +13,12 @@ class Provider(models.Model):
 
     name_de = models.CharField(_("Name (German)"), blank=True)
     name_fr = models.CharField(_("Name (French)"), blank=True)
-    name_it = models.CharField(_("Name (Italian)"), blank=True)
     name_en = models.CharField(_("Name (English)"), blank=True)
+    name_it = models.CharField(_("Name (Italian)"), blank=True)
+    name_rm = models.CharField(_("Name (Romansh)"), blank=True)
 
     acronym_de = models.CharField(_("Acronym (German)"), blank=True)
     acronym_fr = models.CharField(_("Acronym (French)"), blank=True)
-    acronym_it = models.CharField(_("Acronym (Italian)"), blank=True)
     acronym_en = models.CharField(_("Acronym (English)"), blank=True)
+    acronym_it = models.CharField(_("Acronym (Italian)"), blank=True)
+    acronym_rm = models.CharField(_("Acronym (Romansh)"), blank=True)
