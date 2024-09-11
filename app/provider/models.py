@@ -11,14 +11,18 @@ class Provider(models.Model):
     def __str__(self) -> str:
         return str(self.name_en)
 
-    name_de = models.CharField(_("Name (German)"), blank=True)
-    name_fr = models.CharField(_("Name (French)"), blank=True)
-    name_en = models.CharField(_("Name (English)"), blank=True)
+    '''
+    Note: The "blank=False" for a model field doesn't prevent DB changes.
+          It only has an effect on form validation.
+    '''
+    name_de = models.CharField(_("Name (German)"))
+    name_fr = models.CharField(_("Name (French)"))
+    name_en = models.CharField(_("Name (English)"))
     name_it = models.CharField(_("Name (Italian)"), blank=True)
     name_rm = models.CharField(_("Name (Romansh)"), blank=True)
 
-    acronym_de = models.CharField(_("Acronym (German)"), blank=True)
-    acronym_fr = models.CharField(_("Acronym (French)"), blank=True)
-    acronym_en = models.CharField(_("Acronym (English)"), blank=True)
+    acronym_de = models.CharField(_("Acronym (German)"))
+    acronym_fr = models.CharField(_("Acronym (French)"))
+    acronym_en = models.CharField(_("Acronym (English)"))
     acronym_it = models.CharField(_("Acronym (Italian)"), blank=True)
     acronym_rm = models.CharField(_("Acronym (Romansh)"), blank=True)

@@ -1,11 +1,12 @@
 from provider.models import Provider
 
+from django.forms import ModelForm
 from django.test import TestCase
 
 
 class ProviderTestCase(TestCase):
 
-    def test_simple_model_creation(self):
+    def test_model_creation_as_expected_when_all_fields_defined(self):
         name_de = "Bundesamt für Umwelt"
         name_fr = "Office fédéral de l'environnement"
         name_en = "Federal Office for the Environment"
@@ -45,3 +46,41 @@ class ProviderTestCase(TestCase):
         self.assertEqual(provider.acronym_en, acronym_en)
         self.assertEqual(provider.acronym_it, acronym_it)
         self.assertEqual(provider.acronym_rm, acronym_rm)
+
+
+    def test_form_valid_for_blank_optional_field(self):
+        class ProviderForm(ModelForm):
+            class Meta:
+                model = Provider
+                fields = "__all__"
+
+        data = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "FOEN",
+        }
+        form = ProviderForm(data)
+
+        self.assertTrue(form.is_valid())
+
+
+    def test_form_invalid_for_blank_mandatory_field(self):
+        class ProviderForm(ModelForm):
+            class Meta:
+                model = Provider
+                fields = "__all__"
+
+        data = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "",  # empty but mandatory field
+        }
+        form = ProviderForm(data)
+
+        self.assertFalse(form.is_valid())
