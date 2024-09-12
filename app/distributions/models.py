@@ -25,3 +25,20 @@ class Attribution(models.Model):
     description_rm = models.CharField(_("Description (Romansh)"), blank=True)
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
+
+
+class Dataset(models.Model):
+
+    class Meta:
+        verbose_name = _("dataset")
+        verbose_name_plural = _("datasets")
+
+    def __str__(self) -> str:
+        return str(self.slug)
+
+    slug = models.SlugField(_("Slug"))
+    created = models.DateTimeField(_("Created"), auto_now_add=True)
+    updated = models.DateTimeField(_("Updated"), auto_now=True)
+
+    provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
+    attribution = models.ForeignKey(Attribution, on_delete=models.CASCADE)
