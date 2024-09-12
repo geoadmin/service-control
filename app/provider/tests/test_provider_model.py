@@ -47,9 +47,10 @@ class ProviderTestCase(TestCase):
         self.assertEqual(provider.acronym_it, acronym_it)
         self.assertEqual(provider.acronym_rm, acronym_rm)
 
-
     def test_form_valid_for_blank_optional_field(self):
+
         class ProviderForm(ModelForm):
+
             class Meta:
                 model = Provider
                 fields = "__all__"
@@ -66,9 +67,10 @@ class ProviderTestCase(TestCase):
 
         self.assertTrue(form.is_valid())
 
-
     def test_form_invalid_for_blank_mandatory_field(self):
+
         class ProviderForm(ModelForm):
+
             class Meta:
                 model = Provider
                 fields = "__all__"

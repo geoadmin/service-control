@@ -1,10 +1,12 @@
-from distributions.models import Attribution, Dataset
+import datetime
+from unittest import mock
+
+from distributions.models import Attribution
+from distributions.models import Dataset
 from provider.models import Provider
 
 from django.test import TestCase
 
-from unittest import mock
-import datetime
 
 class DatasetTestCase(TestCase):
 
@@ -35,7 +37,6 @@ class DatasetTestCase(TestCase):
         self.assertEqual(dataset.created, time_created)
         self.assertEqual(dataset.updated, time_created)
 
-
     def test_field_created_matches_creation_time(self):
         provider = Provider.objects.create()
         attribution = Attribution.objects.create(provider=provider)
@@ -47,7 +48,6 @@ class DatasetTestCase(TestCase):
                 attribution=attribution,
             )
             self.assertEqual(dataset.created, time_created)
-
 
     def test_field_updated_matches_update_time(self):
         provider = Provider.objects.create()

@@ -54,9 +54,10 @@ class AttributionTestCase(TestCase):
 
         self.assertEqual(attribution.provider.acronym_de, "ENSI")
 
-
     def test_form_valid_for_blank_optional_field(self):
+
         class AttributionForm(ModelForm):
+
             class Meta:
                 model = Attribution
                 fields = "__all__"
@@ -76,12 +77,14 @@ class AttributionTestCase(TestCase):
 
         self.assertTrue(form.is_valid())
 
-
     def test_form_invalid_for_blank_mandatory_field(self):
+
         class AttributionForm(ModelForm):
+
             class Meta:
                 model = Attribution
                 fields = "__all__"
+
         provider = Provider.objects.create()
 
         data = {
@@ -90,8 +93,8 @@ class AttributionTestCase(TestCase):
             "name_en": "FOEN",
             "description_de": "Bundesamt für Umwelt",
             "description_fr": "Office fédéral de l'environnement",
-            "description_en": "",   # empty but mandatory field
-            "provider" : provider.id,
+            "description_en": "",  # empty but mandatory field
+            "provider": provider.id,
         }
         form = AttributionForm(data)
 
