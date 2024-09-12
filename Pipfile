@@ -4,14 +4,31 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "~=5.0"
+django = "~=5.0.7"
 django-ninja = "~=1.1"
+psycopg2-binary = "~=2.9.5"
+django-environ = "~=0.11"
+gunicorn = "~=23.0"
+pyyaml = "~=6.0.2"
+gevent = "~=24.2"
+logging-utilities = "~=4.4.1"
 
 [dev-packages]
 yapf = "*"
 pylint = "*"
 pylint-django = "*"
 ipdb = "*"
+isort = "*"
+django-extensions = "~=3.2"
+django_debug_toolbar= "~=4.2"
+faker = "*"
+factory-boy = "*"
+dill = "*"
+pytest = "*"
+pytest-django = "*"
+mypy = "*"
+types-gevent = "*"
+django-stubs = "~=5.0.4"
 
 [requires]
-python_version = "3.10"
+python_version = "3.12"
