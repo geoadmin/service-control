@@ -10,7 +10,7 @@ from django.test import TestCase
 
 class DatasetTestCase(TestCase):
 
-    def test_simple_model_creation(self):
+    def test_object_created_in_db_with_all_fields_defined(self):
         slug = "ch.bafu.neophyten-haargurke"
         provider = Provider.objects.create(acronym_de="BAFU")
         attribution = Attribution.objects.create(
