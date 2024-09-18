@@ -12,14 +12,14 @@ class Attribution(models.Model):
     name_de = models.CharField(_(_context, "Name (German)"))
     name_fr = models.CharField(_(_context, "Name (French)"))
     name_en = models.CharField(_(_context, "Name (English)"))
-    name_it = models.CharField(_(_context, "Name (Italian)"), blank=True)
-    name_rm = models.CharField(_(_context, "Name (Romansh)"), blank=True)
+    name_it = models.CharField(_(_context, "Name (Italian)"), null=True, blank=True)
+    name_rm = models.CharField(_(_context, "Name (Romansh)"), null=True, blank=True)
 
     description_de = models.CharField(_(_context, "Description (German)"))
     description_fr = models.CharField(_(_context, "Description (French)"))
     description_en = models.CharField(_(_context, "Description (English)"))
-    description_it = models.CharField(_(_context, "Description (Italian)"), blank=True)
-    description_rm = models.CharField(_(_context, "Description (Romansh)"), blank=True)
+    description_it = models.CharField(_(_context, "Description (Italian)"), null=True, blank=True)
+    description_rm = models.CharField(_(_context, "Description (Romansh)"), null=True, blank=True)
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
 
