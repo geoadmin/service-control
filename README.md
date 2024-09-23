@@ -16,7 +16,6 @@
 - [Local Development](#local-development-1)
   - [vs code Integration](#vs-code-integration)
     - [Debug from vs code](#debug-from-vs-code)
-    - [Attach debugger to the tests](#attach-debugger-to-the-tests)
     - [Run tests from within vs code](#run-tests-from-within-vs-code)
 - [Type Checking](#type-checking)
   - [Mypy](#mypy)
@@ -96,10 +95,6 @@ Alternatively, create the file via menu "Run" > "Add Configuration" by choosing
 Now you can start the server with `make serve-debug`.
 The bootup will wait with the execution until the debugger is attached, which can most easily done by hitting F5.
 
-#### Attach debugger to the tests
-
-The same process described above can be used to debug tests. Simply run `make test-debug`, they will
-then wait until the debugger is attached.
 
 #### Run tests from within vs code
 
