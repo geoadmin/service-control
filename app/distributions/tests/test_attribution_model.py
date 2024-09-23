@@ -9,96 +9,72 @@ from django.test import TestCase
 class AttributionTestCase(TestCase):
 
     def test_object_created_in_db_with_all_fields_defined(self):
-        name_de = "BAFU"
-        name_fr = "OFEV"
-        name_en = "FOEN"
-        name_it = "UFAM"
-        name_rm = "UFAM"
-        description_de = "Bundesamt für Umwelt"
-        description_fr = "Office fédéral de l'environnement"
-        description_en = "Federal Office for the Environment"
-        description_it = "Ufficio federale dell'ambiente"
-        description_rm = "Uffizi federal per l'ambient"
-
-        provider = Provider.objects.create(acronym_de="ENSI")
-
-        Attribution.objects.create(
-            name_de=name_de,
-            name_fr=name_fr,
-            name_en=name_en,
-            name_it=name_it,
-            name_rm=name_rm,
-            description_de=description_de,
-            description_fr=description_fr,
-            description_en=description_en,
-            description_it=description_it,
-            description_rm=description_rm,
-            provider=provider
-        )
+        attribution = {
+            "name_de": "BAFU",
+            "name_fr": "OFEV",
+            "name_en": "FOEN",
+            "name_it": "UFAM",
+            "name_rm": "UFAM",
+            "description_de": "Bundesamt für Umwelt",
+            "description_fr": "Office fédéral de l'environnement",
+            "description_en": "Federal Office for the Environment",
+            "description_it": "Ufficio federale dell'ambiente",
+            "description_rm": "Uffizi federal per l'ambient",
+            "provider": Provider.objects.create(acronym_de="ENSI")
+        }
+        Attribution.objects.create(**attribution)
 
         attributions = Attribution.objects.all()
 
         self.assertEqual(len(attributions), 1)
 
-        attribution = Attribution.objects.last()
-        self.assertEqual(attribution.name_de, name_de)
-        self.assertEqual(attribution.name_fr, name_fr)
-        self.assertEqual(attribution.name_en, name_en)
-        self.assertEqual(attribution.name_it, name_it)
-        self.assertEqual(attribution.name_rm, name_rm)
+        actual = Attribution.objects.last()
+        self.assertEqual(actual.name_de, attribution["name_de"])
+        self.assertEqual(actual.name_fr, attribution["name_fr"])
+        self.assertEqual(actual.name_en, attribution["name_en"])
+        self.assertEqual(actual.name_it, attribution["name_it"])
+        self.assertEqual(actual.name_rm, attribution["name_rm"])
 
-        self.assertEqual(attribution.description_de, description_de)
-        self.assertEqual(attribution.description_fr, description_fr)
-        self.assertEqual(attribution.description_en, description_en)
-        self.assertEqual(attribution.description_it, description_it)
-        self.assertEqual(attribution.description_rm, description_rm)
+        self.assertEqual(actual.description_de, attribution["description_de"])
+        self.assertEqual(actual.description_fr, attribution["description_fr"])
+        self.assertEqual(actual.description_en, attribution["description_en"])
+        self.assertEqual(actual.description_it, attribution["description_it"])
+        self.assertEqual(actual.description_rm, attribution["description_rm"])
 
-        self.assertEqual(attribution.provider.acronym_de, "ENSI")
+        self.assertEqual(actual.provider.acronym_de, "ENSI")
 
     def test_object_created_in_db_with_optional_fields_null(self):
-        name_de = "BAFU"
-        name_fr = "OFEV"
-        name_en = "FOEN"
-        name_it = None
-        name_rm = None
-        description_de = "Bundesamt für Umwelt"
-        description_fr = "Office fédéral de l'environnement"
-        description_en = "Federal Office for the Environment"
-        description_it = None
-        description_rm = None
-
-        provider = Provider.objects.create(acronym_de="ENSI")
-
-        Attribution.objects.create(
-            name_de=name_de,
-            name_fr=name_fr,
-            name_en=name_en,
-            name_it=name_it,
-            name_rm=name_rm,
-            description_de=description_de,
-            description_fr=description_fr,
-            description_en=description_en,
-            description_it=description_it,
-            description_rm=description_rm,
-            provider=provider
-        )
+        attribution = {
+            "name_de": "BAFU",
+            "name_fr": "OFEV",
+            "name_en": "FOEN",
+            "name_it": None,
+            "name_rm": None,
+            "description_de": "Bundesamt für Umwelt",
+            "description_fr": "Office fédéral de l'environnement",
+            "description_en": "Federal Office for the Environment",
+            "description_it": None,
+            "description_rm": None,
+            "provider": Provider.objects.create(acronym_de="ENSI")
+        }
+        Attribution.objects.create(**attribution)
 
         attributions = Attribution.objects.all()
 
         self.assertEqual(len(attributions), 1)
 
-        attribution = Attribution.objects.last()
-        self.assertEqual(attribution.name_de, name_de)
-        self.assertEqual(attribution.name_fr, name_fr)
-        self.assertEqual(attribution.name_en, name_en)
-        self.assertEqual(attribution.name_it, name_it)
-        self.assertEqual(attribution.name_rm, name_rm)
+        actual = Attribution.objects.last()
+        self.assertEqual(actual.name_de, attribution["name_de"])
+        self.assertEqual(actual.name_fr, attribution["name_fr"])
+        self.assertEqual(actual.name_en, attribution["name_en"])
+        self.assertEqual(actual.name_it, attribution["name_it"])
+        self.assertEqual(actual.name_rm, attribution["name_rm"])
 
-        self.assertEqual(attribution.description_de, description_de)
-        self.assertEqual(attribution.description_fr, description_fr)
-        self.assertEqual(attribution.description_en, description_en)
-        self.assertEqual(attribution.description_it, description_it)
-        self.assertEqual(attribution.description_rm, description_rm)
+        self.assertEqual(actual.description_de, attribution["description_de"])
+        self.assertEqual(actual.description_fr, attribution["description_fr"])
+        self.assertEqual(actual.description_en, attribution["description_en"])
+        self.assertEqual(actual.description_it, attribution["description_it"])
+        self.assertEqual(actual.description_rm, attribution["description_rm"])
 
     def test_raises_exception_when_creating_db_object_with_mandatory_field_null(self):
         provider = Provider.objects.create()
