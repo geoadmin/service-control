@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',  #'django.contrib.staticfiles',
-    'provider'
+    'django.contrib.staticfiles',
+    'django.contrib.messages',
+    'provider',
+    'distributions'
 ]
 
 MIDDLEWARE = [
@@ -121,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'var' / 'www' / 'service_control' / 'static_files'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

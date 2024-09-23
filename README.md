@@ -38,22 +38,22 @@ Prerequisites on host for development and build:
 
 ### Setup
 
-Copy the `.env.dist` file to `.env` on your local machine:
+To create and activate a virtual Python environment with all dependencies installed:
 
 ```bash
-cp .env.dist .env
+make setup
 ```
 
-Initialize the local python environment with pipenv:
+To start the local postgres container, run this:
 
 ```bash
-pipenv sync -d
+make start-local-db
 ```
 
-and start the local postgres container
+You may want to do an initial sync of your database by applying the most recent Django migrations with
 
 ```bash
-docker compose up
+app/manage.py migrate
 ```
 
 ## Local Development
@@ -84,11 +84,17 @@ in it:
     }
   ]
 }
-
 ```
 
-Now you can start the server with `make serve-debug`. The bootup will wait with the execution until 
-the debugger is attached, which can most easily done by hitting f5.
+Alternatively, create the file via menu "Run" > "Add Configuration" by choosing
+
+- Debugger: Python Debugger
+- Debug Configration: Remote Attach
+- Hostname: `localhost`
+- Port number: `5678`
+
+Now you can start the server with `make serve-debug`.
+The bootup will wait with the execution until the debugger is attached, which can most easily done by hitting F5.
 
 #### Attach debugger to the tests
 
@@ -97,8 +103,9 @@ then wait until the debugger is attached.
 
 #### Run tests from within vs code
 
-The unit tests can also be invoked inside vs code directly. To do this you need to have following
-settings locally to your workspace:
+The unit tests can also be invoked inside vs code directly (beaker icon).
+To do this you need to have the following settings either in
+`.vscode/settings.json` or in your workspace settings:
 
 ```json
   "python.testing.pytestArgs": [
@@ -109,8 +116,13 @@ settings locally to your workspace:
   "python.testing.debugPort": 5678
 ```
 
-They can either be in `.vscode/settings.json` or in your workspace settings. Now the tests can be
-run and debugged with the testing tab of vscode (beaker icon).
+You can also create this file interactively via menu "Python: Configure Tests"
+in the Command Palette (Ctrl+Shift+P).
+
+For the automatic test discovery to work, make sure that vs code has the Python
+interpreter of your venv selected (`.venv/bin/python`).
+You can change the Python interpreter via menu "Python: Select Interpreter"
+in the Command Palette.
 
 ## Type Checking
 

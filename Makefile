@@ -28,6 +28,7 @@ AUTHOR = $(USER)
 # Django specific
 APP_SRC_DIR := app
 DJANGO_MANAGER := $(CURRENT_DIR)/$(APP_SRC_DIR)/manage.py
+DJANGO_MANAGER_DEBUG := -m debugpy --listen localhost:5678 --wait-for-client $(CURRENT_DIR)/$(APP_SRC_DIR)/manage.py
 
 # Commands
 PIPENV_RUN := pipenv run
@@ -55,8 +56,8 @@ ci:
 .PHONY: setup
 setup: $(SETTINGS_TIMESTAMP) ## Create virtualenv with all packages for development
 	pipenv install --dev
-	pipenv shell
 	cp .env.default .env
+	pipenv shell
 
 .PHONY: format
 format: ## Call yapf to make sure your code is easier to read and respects some conventions.
@@ -87,6 +88,9 @@ ci-check-format: format ## Check the format (CI)
 serve: ## Serve the application locally
 	$(PYTHON) $(DJANGO_MANAGER) runserver
 
+.PHONY: serve-debug
+serve-debug: ## Serve the application locally for debugging
+	$(PYTHON) $(DJANGO_MANAGER_DEBUG) runserver
 
 .PHONY: dockerlogin
 dockerlogin: ## Login to the AWS Docker Registry (ECR)
@@ -145,6 +149,12 @@ test: ## Run tests locally
 	# Collect static first to avoid warning in the test
 	# $(PYTHON) $(DJANGO_MANAGER) collectstatic --noinput
 	$(PYTHON) $(DJANGO_MANAGER) test --verbosity=2 --parallel 20 $(CI_TEST_OPT) $(TEST_DIR) $(APP_SRC_DIR)
+
+.PHONY: test-debug
+test-debug: ## Run tests locally as soon as debugger is attached
+	# Collect static first to avoid warning in the test
+	$(PYTHON) $(DJANGO_MANAGER) collectstatic --noinput
+	$(PYTHON) $(DJANGO_MANAGER_DEBUG) test --verbosity=2 $(CI_TEST_OPT) $(TEST_DIR) $(APP_SRC_DIR)
 
 .PHONY: help
 help: ## Display this help

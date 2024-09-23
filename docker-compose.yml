@@ -13,5 +13,5 @@ services:
         bind:
           create_host_path: true
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "${DB_PORT}:5432"
 
