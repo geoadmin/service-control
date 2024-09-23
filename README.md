@@ -113,7 +113,6 @@ To do this you need to have the following settings either in
   ],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "python.testing.debugPort": 5678
 ```
 
 You can also create this file interactively via menu "Python: Configure Tests"

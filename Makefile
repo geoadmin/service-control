@@ -33,6 +33,7 @@ DJANGO_MANAGER_DEBUG := -m debugpy --listen localhost:5678 --wait-for-client $(C
 # Commands
 PIPENV_RUN := pipenv run
 PYTHON := $(PIPENV_RUN) python3
+TEST := $(PIPENV_RUN) pytest
 YAPF := $(PIPENV_RUN) yapf
 ISORT := $(PIPENV_RUN) isort
 PYLINT := $(PIPENV_RUN) pylint
@@ -146,10 +147,7 @@ start-local-db: ## Run the local db as docker container
 
 .PHONY: test
 test: ## Run tests locally
-	# Collect static first to avoid warning in the test
-	# $(PYTHON) $(DJANGO_MANAGER) collectstatic --noinput
-	$(PYTHON) $(DJANGO_MANAGER) test --verbosity=2 --parallel 20 $(CI_TEST_OPT) $(TEST_DIR) $(APP_SRC_DIR)
-
+	$(TEST)
 .PHONY: test-debug
 test-debug: ## Run tests locally as soon as debugger is attached
 	# Collect static first to avoid warning in the test
