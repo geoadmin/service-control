@@ -55,6 +55,20 @@ You may want to do an initial sync of your database by applying the most recent 
 app/manage.py migrate
 ```
 
+You may also want to import a BOD database dump and migrate its data.
+
+```bash
+make setup-bod-db
+make import-bod-db file=dump.sql
+app/manage.py bod_migrate
+```
+
+To generate more BOD database models, run:
+
+```bash
+app/manage.py inspectdb --database=bod
+```
+
 ## Local Development
 
 ### vs code Integration
