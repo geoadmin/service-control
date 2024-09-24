@@ -2,10 +2,14 @@ from ninja.testing import TestClient
 from provider.api import router
 from provider.models import Provider
 
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 
-class ApiTestCase(TestCase):
+class ApiTestCase(TransactionTestCase):
+
+    # Needed because we test the primary key. Otherwise the object ID a random
+    # number when running multiple tests in parallel.
+    reset_sequences = True
 
     def test_get_provider_returns_existing_provider_with_default_language(self):
 
