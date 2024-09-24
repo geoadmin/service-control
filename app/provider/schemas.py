@@ -11,5 +11,7 @@ class TranslationsSchema(Schema):
 
 class ProviderSchema(Schema):
     id: str
+    name: str
     name_translations: TranslationsSchema
+    acronym: str
     acronym_translations: TranslationsSchema
