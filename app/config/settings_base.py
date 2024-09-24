@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'provider',
     'distributions',
     'access',
-    'cognito'
+    'cognito',
+    'bod'
 ]
 
 MIDDLEWARE = [
@@ -89,8 +90,24 @@ DATABASES = {
         'TEST': {
             'NAME': env.str('DB_NAME_TEST', 'test_service_control'),
         }
+    },
+    'bod': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env.str('BOD_NAME', 'service_control'),
+        'USER': env.str('BOD_USER', 'service_control'),
+        'PASSWORD': env.str('BOD_PW', 'service_control'),
+        'HOST': env.str('BOD_HOST', 'service_control'),
+        'PORT': env.str('BOD_PORT', "5432"),
+        'OPTIONS': {
+            'options': '-c search_path=public'
+        },
+        'TEST': {
+            'NAME': 'test_bod',
+        }
     }
 }
+
+DATABASE_ROUTERS = ['utils.database_router.CustomRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -135,3 +152,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 COGNITO_ENDPOINT_URL = env.str('COGNITO_ENDPOINT_URL', 'http://localhost:9229')
 COGNITO_POOL_ID = env.str('COGNITO_POOL_ID', 'local')
 COGNITO_MANAGED_FLAG_NAME = env.str('COGNITO_MANAGED_FLAG_NAME', 'dev:custom:managed_by_service')
+
+# Testing
+TESTING = False
