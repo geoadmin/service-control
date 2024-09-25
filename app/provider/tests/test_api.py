@@ -98,3 +98,37 @@ class ApiTestCase(TransactionTestCase):
 
         assert response.status_code == 404
         assert response.data == {"detail": "Not Found"}
+
+
+    def test_get_provider_skips_translations_that_are_not_available(self):
+
+        provider = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "FOEN",
+        }
+        Provider.objects.create(**provider)
+
+        client = TestClient(router)
+        response = client.get("/providers/1")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "id": "1",
+            "name": "Federal Office for the Environment",
+            "name_translations": {
+                "de": "Bundesamt für Umwelt",
+                "fr": "Office fédéral de l'environnement",
+                "en": "Federal Office for the Environment",
+            },
+            "acronym": "FOEN",
+            "acronym_translations": {
+                "de": "BAFU",
+                "fr": "OFEV",
+                "en": "FOEN",
+            }
+        }
+

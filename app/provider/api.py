@@ -11,7 +11,7 @@ from .schemas import TranslationsSchema
 router = Router()
 
 
-@router.get("/providers/{provider_id}", response={200: ProviderSchema})
+@router.get("/providers/{provider_id}", response={200: ProviderSchema}, exclude_none=True)
 def provider(request, provider_id: str, lang: LanguageCode = LanguageCode.ENGLISH):
 
     provider_object = get_object_or_404(Provider, id=provider_id)
