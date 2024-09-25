@@ -5,8 +5,8 @@ class TranslationsSchema(Schema):
     de: str
     fr: str
     en: str
-    it: str
-    rm: str
+    it: str | None
+    rm: str | None
 
 
 class ProviderSchema(Schema):
