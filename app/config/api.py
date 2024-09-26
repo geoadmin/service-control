@@ -1,4 +1,5 @@
 from ninja import NinjaAPI
+from provider.api import router as provider_router
 
 api = NinjaAPI()
 
@@ -8,4 +9,4 @@ def checker(request):
     return {"success": True, "message": " OK"}
 
 
-api.add_router("/providers", "provider.api.router")
+api.add_router("/providers", provider_router)
