@@ -8,4 +8,4 @@ def checker(request):
     return {"success": True, "message": " OK"}
 
 
-api.add_router("/provider", "provider.api.router")
+api.add_router("/providers", "provider.api.router")
