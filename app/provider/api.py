@@ -1,6 +1,6 @@
 from ninja import Router
-from utils.header import extract_lang
 from utils.language import LanguageCode
+from utils.language import get_language
 from utils.language import get_translation
 
 from django.http import HttpRequest
@@ -59,17 +59,12 @@ def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None =
         - Subtags in the header are ignored. So "en-US" is interpreted as "en".
         - Wildcards ("*") are ignored.
     """
-    if not lang:
-        if "Accept-Language" in request.headers:
-            lang_header = request.headers["Accept-Language"]
-            lang = extract_lang(lang_header)
-        else:
-            lang = LanguageCode.ENGLISH
+    lang_to_use = get_language(lang, request.headers)
 
     provider_object = get_object_or_404(Provider, id=provider_id)
     schema = ProviderSchema(
         id=str(provider_object.id),
-        name=get_translation(provider_object, "name", lang),
+        name=get_translation(provider_object, "name", lang_to_use),
         name_translations=TranslationsSchema(
             de=provider_object.name_de,
             fr=provider_object.name_fr,
@@ -77,7 +72,7 @@ def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None =
             it=provider_object.name_it,
             rm=provider_object.name_rm,
         ),
-        acronym=get_translation(provider_object, "acronym", lang),
+        acronym=get_translation(provider_object, "acronym", lang_to_use),
         acronym_translations=TranslationsSchema(
             de=provider_object.acronym_de,
             fr=provider_object.acronym_fr,
