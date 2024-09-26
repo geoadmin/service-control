@@ -14,7 +14,7 @@ router = Router()
 
 
 @router.get("/{provider_id}", response={200: ProviderSchema}, exclude_none=True)
-def provider(request: HttpRequest, provider_id: str, lang: LanguageCode | None = None):
+def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None = None):
     """
     Get the provider with the given ID, return translatable fields in the given language.
 
