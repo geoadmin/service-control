@@ -1,6 +1,6 @@
 from typing import Final
 
-from .translation import LanguageCode
+from .language import LanguageCode
 
 # to prevent possible denial of service or memory exhaustion attacks
 ACCEPT_LANGUAGE_HEADER_MAX_LENGTH: Final = 500

@@ -1,7 +1,7 @@
 from ninja import Router
 from utils.header import extract_lang
-from utils.translation import LanguageCode
-from utils.translation import get_translation
+from utils.language import LanguageCode
+from utils.language import get_translation
 
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
