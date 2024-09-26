@@ -54,8 +54,8 @@ def provider(request: HttpRequest, provider_id: str, lang: LanguageCode | None =
 
     To consider for the header "Accept-Language":
 
-        - For multiple languages, the valid language with the largest q-factor
-          is taken (Example: "de;q=0.7, rm;q=0.8" --> "rm")
+        - For multiple languages, the first valid language is taken, so q-factors
+          are ignored (Example: "de;q=0.7, rm;q=0.8" --> "de")
         - Subtags in the header are ignored. So "en-US" is interpreted as "en".
         - Wildcards ("*") are ignored.
     """

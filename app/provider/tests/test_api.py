@@ -259,7 +259,9 @@ class ApiTestCase(TransactionTestCase):
             }
         }
 
-    def test_get_provider_returns_provider_with_language_having_largest_q_factor(self):
+    def test_get_provider_returns_provider_with_first_known_language_from_header_ignoring_qfactor(
+        self
+    ):
 
         provider = {
             "name_de": "Bundesamt für Umwelt",
@@ -272,7 +274,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1", headers={"Accept-Language": "fr;q=1.0, de;q=0.8"})
+        response = client.get("/providers/1", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"})
 
         assert response.status_code == 200
         assert response.data == {

@@ -33,5 +33,5 @@ def test_extract_lang_returns_default_if_empty():
     assert extract_lang("") == "en"
 
 
-def test_extract_lang_returns_valid_language_with_largest_q_factor():
-    assert extract_lang("ru;q=0.9, de;q=0.7, rm;q=0.8") == "rm"
+def test_extract_lang_returns_first_valid_language_ignoring_q_factor():
+    assert extract_lang("ru;q=0.9, de;q=0.7, rm;q=0.8") == "de"
