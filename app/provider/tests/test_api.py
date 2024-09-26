@@ -28,7 +28,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1")
+        response = client.get("/1")
 
         assert response.status_code == 200
         assert response.data == {
@@ -68,7 +68,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1?lang=de")
+        response = client.get("/1?lang=de")
 
         assert response.status_code == 200
         assert response.data == {
@@ -94,7 +94,7 @@ class ApiTestCase(TransactionTestCase):
     def test_get_provider_returns_404_for_nonexisting_provider(self):
 
         client = TestClient(router)
-        response = client.get("/providers/1")
+        response = client.get("/1")
 
         assert response.status_code == 404
         assert response.data == {"detail": "Not Found"}
@@ -112,7 +112,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1")
+        response = client.get("/1")
 
         assert response.status_code == 200
         assert response.data == {
@@ -144,7 +144,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1", headers={"Accept-Language": "de"})
+        response = client.get("/1", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
@@ -176,7 +176,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1?lang=fr", headers={"Accept-Language": "de"})
+        response = client.get("/1?lang=fr", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
@@ -208,7 +208,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1", headers={"Accept-Language": ""})
+        response = client.get("/1", headers={"Accept-Language": ""})
 
         assert response.status_code == 200
         assert response.data == {
@@ -240,7 +240,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1", headers={"Accept-Language": "cn, *, de-DE, en"})
+        response = client.get("/1", headers={"Accept-Language": "cn, *, de-DE, en"})
 
         assert response.status_code == 200
         assert response.data == {
@@ -274,7 +274,7 @@ class ApiTestCase(TransactionTestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/providers/1", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"})
+        response = client.get("/1", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"})
 
         assert response.status_code == 200
         assert response.data == {

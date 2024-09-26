@@ -13,7 +13,7 @@ from .schemas import TranslationsSchema
 router = Router()
 
 
-@router.get("/providers/{provider_id}", response={200: ProviderSchema}, exclude_none=True)
+@router.get("/{provider_id}", response={200: ProviderSchema}, exclude_none=True)
 def provider(request: HttpRequest, provider_id: str, lang: LanguageCode | None = None):
     """
     Get the provider with the given ID, return translatable fields in the given language.
