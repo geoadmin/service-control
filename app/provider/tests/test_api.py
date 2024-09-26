@@ -2,14 +2,10 @@ from ninja.testing import TestClient
 from provider.api import router
 from provider.models import Provider
 
-from django.test import TransactionTestCase
+from django.test import TestCase
 
 
-class ApiTestCase(TransactionTestCase):
-
-    # Needed because we test the primary key. Otherwise the object ID a random
-    # number when running multiple tests in parallel.
-    reset_sequences = True
+class ApiTestCase(TestCase):
 
     def test_get_provider_returns_existing_provider_with_default_language(self):
 
@@ -26,13 +22,14 @@ class ApiTestCase(TransactionTestCase):
             "acronym_rm": "UFAM",
         }
         Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/1")
+        response = client.get(f"/{provider_id}")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": "1",
+            "id": f"{provider_id}",
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -66,13 +63,14 @@ class ApiTestCase(TransactionTestCase):
             "acronym_rm": "UFAM",
         }
         Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/1?lang=de")
+        response = client.get(f"/{provider_id}?lang=de")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": "1",
+            "id": f"{provider_id}",
             "name": "Bundesamt für Umwelt",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -110,13 +108,14 @@ class ApiTestCase(TransactionTestCase):
             "acronym_en": "FOEN",
         }
         Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/1")
+        response = client.get(f"/{provider_id}")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": "1",
+            "id": f"{provider_id}",
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -142,13 +141,14 @@ class ApiTestCase(TransactionTestCase):
             "acronym_en": "FOEN",
         }
         Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/1", headers={"Accept-Language": "de"})
+        response = client.get(f"/{provider_id}", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
-            "id": "1",
+            "id": f"{provider_id}",
             "name": "Bundesamt für Umwelt",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -174,13 +174,14 @@ class ApiTestCase(TransactionTestCase):
             "acronym_en": "FOEN",
         }
         Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/1?lang=fr", headers={"Accept-Language": "de"})
+        response = client.get(f"/{provider_id}?lang=fr", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
-            "id": "1",
+            "id": f"{provider_id}",
             "name": "Office fédéral de l'environnement",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -206,13 +207,14 @@ class ApiTestCase(TransactionTestCase):
             "acronym_en": "FOEN",
         }
         Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/1", headers={"Accept-Language": ""})
+        response = client.get(f"/{provider_id}", headers={"Accept-Language": ""})
 
         assert response.status_code == 200
         assert response.data == {
-            "id": "1",
+            "id": f"{provider_id}",
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -238,13 +240,14 @@ class ApiTestCase(TransactionTestCase):
             "acronym_en": "FOEN",
         }
         Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/1", headers={"Accept-Language": "cn, *, de-DE, en"})
+        response = client.get(f"/{provider_id}", headers={"Accept-Language": "cn, *, de-DE, en"})
 
         assert response.status_code == 200
         assert response.data == {
-            "id": "1",
+            "id": f"{provider_id}",
             "name": "Bundesamt für Umwelt",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -272,13 +275,14 @@ class ApiTestCase(TransactionTestCase):
             "acronym_en": "FOEN",
         }
         Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/1", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"})
+        response = client.get(f"/{provider_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"})
 
         assert response.status_code == 200
         assert response.data == {
-            "id": "1",
+            "id": f"{provider_id}",
             "name": "Office fédéral de l'environnement",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
