@@ -296,3 +296,192 @@ class ApiTestCase(TestCase):
                 "en": "FOEN",
             }
         }
+
+    def test_get_providers_returns_single_provider_with_given_language(self):
+
+        provider = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "name_it": "Ufficio federale dell'ambiente",
+            "name_rm": "Uffizi federal per l'ambient",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "FOEN",
+            "acronym_it": "UFAM",
+            "acronym_rm": "UFAM",
+        }
+        Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
+
+        client = TestClient(router)
+        response = client.get("/?lang=fr")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [{
+                "id": f"{provider_id}",
+                "name": "Office fédéral de l'environnement",
+                "name_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                    "it": "Ufficio federale dell'ambiente",
+                    "rm": "Uffizi federal per l'ambient",
+                },
+                "acronym": "OFEV",
+                "acronym_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                    "it": "UFAM",
+                    "rm": "UFAM",
+                }
+            }]
+        }
+
+    def test_get_providers_skips_translations_that_are_not_available(self):
+
+        provider = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "FOEN",
+        }
+        Provider.objects.create(**provider)
+        provider_id = Provider.objects.last().id
+
+        client = TestClient(router)
+        response = client.get("/")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [{
+                "id": f"{provider_id}",
+                "name": "Federal Office for the Environment",
+                "name_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                },
+                "acronym": "FOEN",
+                "acronym_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                }
+            }]
+        }
+
+    def test_get_providers_returns_provider_with_language_from_header(self):
+
+        provider = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "FOEN",
+        }
+        provider_id = Provider.objects.create(**provider).id
+
+        client = TestClient(router)
+        response = client.get("/", headers={"Accept-Language": "de"})
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [{
+                "id": f"{provider_id}",
+                "name": "Bundesamt für Umwelt",
+                "name_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                },
+                "acronym": "BAFU",
+                "acronym_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                }
+            }]
+        }
+
+    def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(self):
+
+        provider = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "name_it": "Ufficio federale dell'ambiente",
+            "name_rm": "Uffizi federal per l'ambient",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "FOEN",
+            "acronym_it": "UFAM",
+            "acronym_rm": "UFAM",
+        }
+        provider_id_1 = Provider.objects.create(**provider).id
+
+        provider = {
+            "name_de": "Bundesamt für Verkehr",
+            "name_fr": "Office fédéral des transports",
+            "name_en": "Federal Office of Transport",
+            "name_it": "Ufficio federale dei trasporti",
+            "name_rm": "Uffizi federal da traffic",
+            "acronym_de": "BAV",
+            "acronym_fr": "OFT",
+            "acronym_en": "FOT",
+            "acronym_it": "UFT",
+            "acronym_rm": "UFT",
+        }
+        provider_id_2 = Provider.objects.create(**provider).id
+
+        client = TestClient(router)
+        response = client.get("/?lang=fr")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [
+                {
+                    "id": f"{provider_id_1}",
+                    "name": "Office fédéral de l'environnement",
+                    "name_translations": {
+                        "de": "Bundesamt für Umwelt",
+                        "fr": "Office fédéral de l'environnement",
+                        "en": "Federal Office for the Environment",
+                        "it": "Ufficio federale dell'ambiente",
+                        "rm": "Uffizi federal per l'ambient",
+                    },
+                    "acronym": "OFEV",
+                    "acronym_translations": {
+                        "de": "BAFU",
+                        "fr": "OFEV",
+                        "en": "FOEN",
+                        "it": "UFAM",
+                        "rm": "UFAM",
+                    }
+                },
+                {
+                    "id": f"{provider_id_2}",
+                    "name": "Office fédéral des transports",
+                    "name_translations": {
+                        "de": "Bundesamt für Verkehr",
+                        "fr": "Office fédéral des transports",
+                        "en": "Federal Office of Transport",
+                        "it": "Ufficio federale dei trasporti",
+                        "rm": "Uffizi federal da traffic",
+                    },
+                    "acronym": "OFT",
+                    "acronym_translations": {
+                        "de": "BAV",
+                        "fr": "OFT",
+                        "en": "FOT",
+                        "it": "UFT",
+                        "rm": "UFT",
+                    }
+                },
+            ]
+        }

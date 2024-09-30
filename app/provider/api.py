@@ -7,8 +7,8 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
 from .models import Provider
+from .schemas import ProviderListSchema
 from .schemas import ProviderSchema
-from .schemas import TranslationsSchema
 
 router = Router()
 
@@ -64,3 +64,18 @@ def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None =
     model = get_object_or_404(Provider, id=provider_id)
     schema = ProviderModelMapper.to_schema(model, lang_to_use)
     return schema
+
+
+@router.get("/", response={200: ProviderListSchema}, exclude_none=True)
+def providers(request: HttpRequest, lang: LanguageCode | None = None):
+    """
+    Get all providers, return translatable fields in the given language.
+
+    For more details on how individual providers are returned, see the
+    corresponding endpoint for a specific provider.
+    """
+    lang_to_use = get_language(lang, request.headers)
+
+    models = Provider.objects.order_by("id").all()
+    schemas = [ProviderModelMapper.to_schema(model, lang_to_use) for model in models]
+    return ProviderListSchema(items=schemas)

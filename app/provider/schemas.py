@@ -15,3 +15,7 @@ class ProviderSchema(Schema):
     name_translations: TranslationsSchema
     acronym: str
     acronym_translations: TranslationsSchema
+
+
+class ProviderListSchema(Schema):
+    items: list[ProviderSchema]
