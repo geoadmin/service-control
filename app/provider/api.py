@@ -1,7 +1,7 @@
 from ninja import Router
 from utils.language import LanguageCode
 from utils.language import get_language
-from utils.language import get_translation
+from utils.schemify import ProviderModelMapper
 
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
@@ -61,24 +61,6 @@ def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None =
     """
     lang_to_use = get_language(lang, request.headers)
 
-    provider_object = get_object_or_404(Provider, id=provider_id)
-    schema = ProviderSchema(
-        id=str(provider_object.id),
-        name=get_translation(provider_object, "name", lang_to_use),
-        name_translations=TranslationsSchema(
-            de=provider_object.name_de,
-            fr=provider_object.name_fr,
-            en=provider_object.name_en,
-            it=provider_object.name_it,
-            rm=provider_object.name_rm,
-        ),
-        acronym=get_translation(provider_object, "acronym", lang_to_use),
-        acronym_translations=TranslationsSchema(
-            de=provider_object.acronym_de,
-            fr=provider_object.acronym_fr,
-            en=provider_object.acronym_en,
-            it=provider_object.acronym_it,
-            rm=provider_object.acronym_rm,
-        )
-    )
+    model = get_object_or_404(Provider, id=provider_id)
+    schema = ProviderModelMapper.to_schema(model, lang_to_use)
     return schema
