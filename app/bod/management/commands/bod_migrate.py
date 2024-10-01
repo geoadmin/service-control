@@ -28,7 +28,7 @@ class Command(BaseCommand):
         with transaction.atomic():
             if options["clear"]:
                 deleted, _ = Provider.objects.all().delete()
-                self.stdout.write(self.style.SUCCESS(f"{deleted} providers deleted"))
+                self.stdout.write(self.style.SUCCESS(f"{deleted} provider(s) deleted"))
 
             added = 0
             for org in ContactOrganisation.objects.all():
@@ -48,7 +48,7 @@ class Command(BaseCommand):
                 if options["verbose"]:
                     self.stdout.write(f"Added provider '{org.name_en}'")
                 added += 1
-            self.stdout.write(self.style.SUCCESS(f"{added} providers added"))
+            self.stdout.write(self.style.SUCCESS(f"{added} provider(s) added"))
 
             if options["dry_run"]:
                 self.stdout.write(self.style.WARNING("dry run, aborting transaction"))

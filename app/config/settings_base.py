@@ -99,6 +99,9 @@ DATABASES = {
         'OPTIONS': {
             'options': '-c search_path=public'
         },
+        'TEST': {
+            'NAME': 'test_bod',
+        }
     }
 }
 
@@ -142,3 +145,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Test runner
+TEST_RUNNER = 'config.test_runner.CustomTestRunner'
