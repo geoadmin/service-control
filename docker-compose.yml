@@ -30,21 +30,3 @@ services:
           create_host_path: true
     ports:
       - "${DB_BOD_PORT}:5432"
-
-  # db:
-  #   image: postgis/postgis:16-3.4
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #     POSTGRES_DB: dj_control
-
-  #     PGDATA: /var/lib/postgresql/data/pgdata
-  #     # POSTGRES_MULTIPLE_EXTENSIONS: postgis,postgis_topology
-  #     # EXTRA_CONF: log_min_messages = ${DB_LOG_LEVEL:-FATAL}
-  #   user: ${UID}
-  #   ports:
-  #     - 5432:5432
-  #   volumes:
-  #     - type: bind
-  #       source: ${PWD}/pg-data
-  #       target: /var/lib/postgresql/data
