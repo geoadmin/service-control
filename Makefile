@@ -149,7 +149,7 @@ start-local-db: ## Run the local db as docker container
 
 .PHONY: test
 test: ## Run tests locally
-	$(PYTHON) $(DJANGO_MANAGER) test $(APP_SRC_DIR)
+	$(TEST)
 
 .PHONY: setup-bod
 setup-bod: ## Set up the bod locally
