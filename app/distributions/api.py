@@ -16,7 +16,7 @@ from .schemas import DatasetSchema
 router = Router()
 
 
-def to_response(model: Attribution, lang: LanguageCode) -> AttributionSchema:
+def attribution_to_response(model: Attribution, lang: LanguageCode) -> AttributionSchema:
     """
     Transforms the given model using the given language into a response object.
     """
@@ -92,7 +92,7 @@ def attribution(request: HttpRequest, attribution_id: int, lang: LanguageCode | 
     """
     model = get_object_or_404(Attribution, id=attribution_id)
     lang_to_use = get_language(lang, request.headers)
-    response = to_response(model, lang_to_use)
+    response = attribution_to_response(model, lang_to_use)
     return response
 
 
@@ -107,7 +107,7 @@ def attributions(request: HttpRequest, lang: LanguageCode | None = None):
     models = Attribution.objects.order_by("id").all()
     lang_to_use = get_language(lang, request.headers)
 
-    schemas = [to_response(model, lang_to_use) for model in models]
+    schemas = [attribution_to_response(model, lang_to_use) for model in models]
     return AttributionListSchema(items=schemas)
 
 

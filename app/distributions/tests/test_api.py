@@ -1,9 +1,9 @@
 import datetime
 from unittest import mock
 
+from distributions.api import attribution_to_response
 from distributions.api import dataset_to_response
 from distributions.api import router
-from distributions.api import to_response
 from distributions.models import Attribution
 from distributions.models import Dataset
 from distributions.schemas import AttributionSchema
@@ -17,7 +17,7 @@ from django.test import TestCase
 
 class ApiTestCase(TestCase):
 
-    def test_to_response_returns_response_with_language_as_defined(self):
+    def test_attribution_to_response_returns_response_with_language_as_defined(self):
         provider = Provider.objects.create()
         model_fields = {
             "name_de": "BAFU",
@@ -35,7 +35,7 @@ class ApiTestCase(TestCase):
         Attribution.objects.create(**model_fields)
         model = Attribution.objects.last()
 
-        actual = to_response(model, lang="de")
+        actual = attribution_to_response(model, lang="de")
 
         expected = AttributionSchema(
             id=str(model.id),
@@ -60,7 +60,7 @@ class ApiTestCase(TestCase):
 
         assert actual == expected
 
-    def test_to_response_returns_response_with_default_language_if_undefined(self):
+    def test_attribution_to_response_returns_response_with_default_language_if_undefined(self):
         provider = Provider.objects.create()
         model_fields = {
             "name_de": "BAFU",
@@ -74,7 +74,7 @@ class ApiTestCase(TestCase):
         Attribution.objects.create(**model_fields)
         model = Attribution.objects.last()
 
-        actual = to_response(model, lang="it")
+        actual = attribution_to_response(model, lang="it")
 
         expected = AttributionSchema(
             id=str(model.id),
