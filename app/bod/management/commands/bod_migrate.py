@@ -65,7 +65,7 @@ class Command(BaseCommand):
                                 f"Changed provider {provider.id} ({legacy_id}) "
                                 f"{provider_attribute} from '{old}' to '{new}'"
                             )
-                if changed:
+                if changed and not created:
                     updated += 1
                 provider.save()
 

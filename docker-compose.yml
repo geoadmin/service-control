@@ -2,10 +2,9 @@ services:
   db:
     image: postgres:16
     environment:
-      - POSTGRES_USER=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PW}
-      - POSTGRES_DB=${DB_USER}
-      - POSTGRES_DATABASE=${DB_NAME}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - source: ${PWD}/.volumes/postgresql
         target: /var/lib/postgresql
@@ -18,10 +17,9 @@ services:
   bod:
     image: postgis/postgis:13-3.4
     environment:
-      - POSTGRES_USER=${DB_BOD_NAME}
+      - POSTGRES_USER=${DB_BOD_USER}
       - POSTGRES_PASSWORD=${DB_BOD_PW}
-      - POSTGRES_DB=${DB_BOD_USER}
-      - POSTGRES_DATABASE=${DB_BOD_NAME}
+      - POSTGRES_DB=${DB_BOD_NAME}
     volumes:
       - source: ${PWD}/.volumes/postgis
         target: /var/lib/postgresql
