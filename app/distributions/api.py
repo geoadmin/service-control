@@ -41,7 +41,7 @@ def to_response(model: Attribution, lang: LanguageCode) -> AttributionSchema:
     return response
 
 
-@router.get("/{attribution_id}", response={200: AttributionSchema}, exclude_none=True)
+@router.get("attributions/{attribution_id}", response={200: AttributionSchema}, exclude_none=True)
 def attribution(request: HttpRequest, attribution_id: int, lang: LanguageCode | None = None):
     """
     Get the attribution with the given ID, return translatable fields in the given language.
@@ -94,7 +94,7 @@ def attribution(request: HttpRequest, attribution_id: int, lang: LanguageCode | 
     return response
 
 
-@router.get("/", response={200: AttributionListSchema}, exclude_none=True)
+@router.get("attributions", response={200: AttributionListSchema}, exclude_none=True)
 def attributions(request: HttpRequest, lang: LanguageCode | None = None):
     """
     Get all attributions, return translatable fields in the given language.

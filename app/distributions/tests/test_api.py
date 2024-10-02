@@ -113,7 +113,7 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{attribution_id}")
+        response = client.get(f"/attributions/{attribution_id}")
 
         assert response.status_code == 200
         assert response.data == {
@@ -157,7 +157,7 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{attribution_id}?lang=de")
+        response = client.get(f"attributions/{attribution_id}?lang=de")
 
         assert response.status_code == 200
         assert response.data == {
@@ -184,7 +184,7 @@ class ApiTestCase(TestCase):
     def test_get_attribution_returns_404_for_nonexisting_attribution(self):
 
         client = TestClient(router)
-        response = client.get("/1")
+        response = client.get("attributions/1")
 
         assert response.status_code == 404
         assert response.data == {"detail": "Not Found"}
@@ -205,7 +205,7 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{attribution_id}")
+        response = client.get(f"attributions/{attribution_id}")
 
         assert response.status_code == 200
         assert response.data == {
@@ -241,7 +241,7 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{attribution_id}", headers={"Accept-Language": "de"})
+        response = client.get(f"attributions/{attribution_id}", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
@@ -279,7 +279,9 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{attribution_id}?lang=fr", headers={"Accept-Language": "de"})
+        response = client.get(
+            f"attributions/{attribution_id}?lang=fr", headers={"Accept-Language": "de"}
+        )
 
         assert response.status_code == 200
         assert response.data == {
@@ -315,7 +317,7 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{attribution_id}", headers={"Accept-Language": ""})
+        response = client.get(f"attributions/{attribution_id}", headers={"Accept-Language": ""})
 
         assert response.status_code == 200
         assert response.data == {
@@ -351,7 +353,9 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{attribution_id}", headers={"Accept-Language": "cn, *, de-DE, en"})
+        response = client.get(
+            f"attributions/{attribution_id}", headers={"Accept-Language": "cn, *, de-DE, en"}
+        )
 
         assert response.status_code == 200
         assert response.data == {
@@ -389,7 +393,7 @@ class ApiTestCase(TestCase):
 
         client = TestClient(router)
         response = client.get(
-            f"/{attribution_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
+            f"attributions/{attribution_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
         )
 
         assert response.status_code == 200
@@ -430,7 +434,7 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/?lang=fr")
+        response = client.get("attributions?lang=fr")
 
         assert response.status_code == 200
         assert response.data == {
@@ -472,7 +476,7 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
-        response = client.get("/")
+        response = client.get("attributions")
 
         assert response.status_code == 200
         assert response.data == {
@@ -509,7 +513,7 @@ class ApiTestCase(TestCase):
         attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
-        response = client.get("/", headers={"Accept-Language": "de"})
+        response = client.get("attributions", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
@@ -566,7 +570,7 @@ class ApiTestCase(TestCase):
         attribution_id_2 = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
-        response = client.get("/?lang=fr")
+        response = client.get("attributions?lang=fr")
 
         assert response.status_code == 200
         assert response.data == {
