@@ -664,17 +664,101 @@ class ApiTestCase(TestCase):
         time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
         with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
             dataset = Dataset.objects.create(**model_fields)
-        dataset_id = dataset.id
 
         client = TestClient(router)
-        response = client.get(f"datasets/{dataset_id}")
+        response = client.get(f"datasets/{dataset.id}")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{dataset_id}",
+            "id": f"{dataset.id}",
             "slug": "ch.bafu.neophyten-haargurke",
             "created": dataset.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "updated": dataset.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "provider_id": str(provider.id),
             "attribution_id": str(provider.id),
+        }
+
+    def test_get_datasets_returns_single_dataset_as_expected(self):
+
+        provider = Provider.objects.create(acronym_de="BAFU")
+        attribution = Attribution.objects.create(
+            name_de="Kantone",
+            provider=provider,
+        )
+        model_fields = {
+            "slug": "ch.bafu.neophyten-haargurke",
+            "provider": provider,
+            "attribution": attribution,
+        }
+        time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
+        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
+            dataset = Dataset.objects.create(**model_fields)
+
+        client = TestClient(router)
+        response = client.get("datasets")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [{
+                "id": f"{dataset.id}",
+                "slug": "ch.bafu.neophyten-haargurke",
+                "created": dataset.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "updated": dataset.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "provider_id": str(provider.id),
+                "attribution_id": str(provider.id),
+            }]
+        }
+
+    def test_get_datasets_returns_all_datasets_ordered_by_id(self):
+        provider1 = Provider.objects.create(acronym_de="Provider1")
+        attribution1 = Attribution.objects.create(
+            name_de="Attribution1",
+            provider=provider1,
+        )
+        model_fields1 = {
+            "slug": "slug1",
+            "provider": provider1,
+            "attribution": attribution1,
+        }
+        time_created1 = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
+        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created1)):
+            dataset1 = Dataset.objects.create(**model_fields1)
+
+        provider2 = Provider.objects.create(acronym_de="Provider2")
+        attribution2 = Attribution.objects.create(
+            name_de="Attribution2",
+            provider=provider2,
+        )
+        model_fields2 = {
+            "slug": "slug2",
+            "provider": provider2,
+            "attribution": attribution2,
+        }
+        time_created2 = datetime.datetime(2024, 9, 12, 16, 28, 0, tzinfo=datetime.UTC)
+        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created1)):
+            dataset2 = Dataset.objects.create(**model_fields2)
+
+        client = TestClient(router)
+        response = client.get("datasets")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [
+                {
+                    "id": f"{dataset1.id}",
+                    "slug": "slug1",
+                    "created": dataset1.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "updated": dataset1.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "provider_id": str(provider1.id),
+                    "attribution_id": str(provider1.id),
+                },
+                {
+                    "id": f"{dataset2.id}",
+                    "slug": "slug2",
+                    "created": dataset2.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "updated": dataset2.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "provider_id": str(provider2.id),
+                    "attribution_id": str(provider2.id),
+                },
+            ]
         }

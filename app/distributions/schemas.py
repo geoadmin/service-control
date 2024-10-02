@@ -24,3 +24,7 @@ class DatasetSchema(Schema):
     updated: datetime
     provider_id: str
     attribution_id: str
+
+
+class DatasetListSchema(Schema):
+    items: list[DatasetSchema]

@@ -11,6 +11,7 @@ from .models import Attribution
 from .models import Dataset
 from .schemas import AttributionListSchema
 from .schemas import AttributionSchema
+from .schemas import DatasetListSchema
 from .schemas import DatasetSchema
 
 router = Router()
@@ -107,8 +108,8 @@ def attributions(request: HttpRequest, lang: LanguageCode | None = None):
     models = Attribution.objects.order_by("id").all()
     lang_to_use = get_language(lang, request.headers)
 
-    schemas = [attribution_to_response(model, lang_to_use) for model in models]
-    return AttributionListSchema(items=schemas)
+    responses = [attribution_to_response(model, lang_to_use) for model in models]
+    return AttributionListSchema(items=responses)
 
 
 def dataset_to_response(model: Dataset) -> DatasetSchema:
@@ -133,3 +134,16 @@ def dataset(request: HttpRequest, dataset_id: int):
     model = get_object_or_404(Dataset, id=dataset_id)
     response = dataset_to_response(model)
     return response
+
+
+@router.get("datasets", response={200: DatasetListSchema}, exclude_none=True)
+def datasets(request: HttpRequest):
+    """
+    Get all datasets.
+
+    For more details on how individual datasets are returned, see the
+    corresponding endpoint for a specific attribution.
+    """
+    models = Dataset.objects.order_by("id").all()
+    responses = [dataset_to_response(model) for model in models]
+    return DatasetListSchema(items=responses)
