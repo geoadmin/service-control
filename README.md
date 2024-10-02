@@ -55,6 +55,19 @@ You may want to do an initial sync of your database by applying the most recent 
 app/manage.py migrate
 ```
 
+## Local Cognito
+
+For local testing the connection to Amazon Cognito user identity and access management,
+[cognito-local](https://github.com/jagregory/cognito-local) is used. `cognito-local` stores all of
+its data as simple JSON files in its volume (`.volumes/cognito/db/`).
+
+You can also use the AWS CLI together with `cognito-loca` by specifying the local endpoint,
+for example:
+
+```bash
+aws --endpoint http://localhost:9229 cognito-idp list-user-pools --max-results 100
+```
+
 ## Local Development
 
 ### vs code Integration

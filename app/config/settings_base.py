@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'provider',
     'distributions',
     'access',
+    'cognito'
 ]
 
 MIDDLEWARE = [
@@ -129,3 +130,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Cognito
+COGNITO_ENDPOINT_URL = env.str('COGNITO_ENDPOINT_URL', 'http://localhost:9229')
+COGNITO_POOL_ID = env.str('COGNITO_POOL_ID', 'local')

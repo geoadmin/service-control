@@ -7,3 +7,6 @@ var/
 
 # IDE config files
 .vscode
+
+# Local database
+.volumes
