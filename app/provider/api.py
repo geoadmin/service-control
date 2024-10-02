@@ -1,7 +1,7 @@
 from ninja import Router
 from utils.language import LanguageCode
 from utils.language import get_language
-from utils.schemify import ProviderModelMapper
+from utils.language import get_translation
 
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
@@ -9,8 +9,35 @@ from django.shortcuts import get_object_or_404
 from .models import Provider
 from .schemas import ProviderListSchema
 from .schemas import ProviderSchema
+from .schemas import TranslationsSchema
 
 router = Router()
+
+
+def to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
+    """
+    Transforms the given model using the given language into a response object.
+    """
+    response = ProviderSchema(
+        id=str(model.id),
+        name=get_translation(model, "name", lang),
+        name_translations=TranslationsSchema(
+            de=model.name_de,
+            fr=model.name_fr,
+            en=model.name_en,
+            it=model.name_it,
+            rm=model.name_rm,
+        ),
+        acronym=get_translation(model, "acronym", lang),
+        acronym_translations=TranslationsSchema(
+            de=model.acronym_de,
+            fr=model.acronym_fr,
+            en=model.acronym_en,
+            it=model.acronym_it,
+            rm=model.acronym_rm,
+        )
+    )
+    return response
 
 
 @router.get("/{provider_id}", response={200: ProviderSchema}, exclude_none=True)
@@ -59,11 +86,10 @@ def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None =
         - Subtags in the header are ignored. So "en-US" is interpreted as "en".
         - Wildcards ("*") are ignored.
     """
-    lang_to_use = get_language(lang, request.headers)
-
     model = get_object_or_404(Provider, id=provider_id)
-    schema = ProviderModelMapper.to_schema(model, lang_to_use)
-    return schema
+    lang_to_use = get_language(lang, request.headers)
+    response = to_response(model, lang_to_use)
+    return response
 
 
 @router.get("/", response={200: ProviderListSchema}, exclude_none=True)
@@ -74,8 +100,8 @@ def providers(request: HttpRequest, lang: LanguageCode | None = None):
     For more details on how individual providers are returned, see the
     corresponding endpoint for a specific provider.
     """
+    models = Provider.objects.order_by("id").all()
     lang_to_use = get_language(lang, request.headers)
 
-    models = Provider.objects.order_by("id").all()
-    schemas = [ProviderModelMapper.to_schema(model, lang_to_use) for model in models]
+    schemas = [to_response(model, lang_to_use) for model in models]
     return ProviderListSchema(items=schemas)

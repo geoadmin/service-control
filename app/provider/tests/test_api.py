@@ -1,11 +1,90 @@
 from ninja.testing import TestClient
 from provider.api import router
+from provider.api import to_response
 from provider.models import Provider
+from provider.schemas import ProviderSchema
+from schemas import TranslationsSchema
 
 from django.test import TestCase
 
 
 class ApiTestCase(TestCase):
+
+    def test_to_response_returns_response_with_language_as_defined(self):
+        model_fields = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "name_it": "Ufficio federale dell'ambiente",
+            "name_rm": "Uffizi federal per l'ambient",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "FOEN",
+            "acronym_it": "UFAM",
+            "acronym_rm": "UFAM",
+        }
+        Provider.objects.create(**model_fields)
+        model = Provider.objects.last()
+
+        actual = to_response(model, lang="de")
+
+        expected = ProviderSchema(
+            id=str(model.id),
+            name="Bundesamt für Umwelt",
+            name_translations=TranslationsSchema(
+                de="Bundesamt für Umwelt",
+                fr="Office fédéral de l'environnement",
+                en="Federal Office for the Environment",
+                it="Ufficio federale dell'ambiente",
+                rm="Uffizi federal per l'ambient",
+            ),
+            acronym="BAFU",
+            acronym_translations=TranslationsSchema(
+                de="BAFU",
+                fr="OFEV",
+                en="FOEN",
+                it="UFAM",
+                rm="UFAM",
+            )
+        )
+
+        assert actual == expected
+
+    def test_to_response_returns_response_with_default_language_if_undefined(self):
+        model_fields = {
+            "name_de": "Bundesamt für Umwelt",
+            "name_fr": "Office fédéral de l'environnement",
+            "name_en": "Federal Office for the Environment",
+            "acronym_de": "BAFU",
+            "acronym_fr": "OFEV",
+            "acronym_en": "FOEN",
+        }
+        Provider.objects.create(**model_fields)
+        model = Provider.objects.last()
+
+        actual = to_response(model, lang="it")
+
+        expected = ProviderSchema(
+            id=str(model.id),
+            name="Federal Office for the Environment",
+            name_translations=TranslationsSchema(
+                de="Bundesamt für Umwelt",
+                fr="Office fédéral de l'environnement",
+                en="Federal Office for the Environment",
+                it=None,
+                rm=None,
+            ),
+            acronym="FOEN",
+            acronym_translations=TranslationsSchema(
+                de="BAFU",
+                fr="OFEV",
+                en="FOEN",
+                it=None,
+                rm=None,
+            )
+        )
+
+        assert actual == expected
 
     def test_get_provider_returns_existing_provider_with_default_language(self):
 
