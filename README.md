@@ -55,15 +55,22 @@ You may want to do an initial sync of your database by applying the most recent 
 app/manage.py migrate
 ```
 
-You may also want to import a BOD database dump and migrate its data.
+### Importing Data from the BOD
+
+The "Betriebsobjekte Datenbank" (BOD) is a central database for running and configuring the map
+viewer and some of its services. It contains metadata and translations on the individual layers
+and configurations for display and serving the data through our services such as Web Map Service
+(WMS), Web Map Tiling Service (WMTS) and our current api (mf-chsdi3/api3).
+
+You can import a BOD dump and migrate its data:
 
 ```bash
-make setup-bod-db
-make import-bod-db file=dump.sql
+make setup-bod
+make import-bod file=dump.sql
 app/manage.py bod_migrate
 ```
 
-To generate more BOD database models, run:
+To generate more BOD models, run:
 
 ```bash
 app/manage.py inspectdb --database=bod

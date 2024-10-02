@@ -1,11 +1,12 @@
 from bod.models import ContactOrganisation
+from provider.models import Provider
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from provider.models import Provider
 
 
 class Command(BaseCommand):
-    help = "Migrates data from a BOD database"
+    help = "Migrates data from a BOD"
 
     def add_arguments(self, parser):
         parser.add_argument(

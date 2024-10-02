@@ -22,6 +22,7 @@ class DatabaseRouterTestCase(TestCase):
 
     def test_writing_to_bod_not_supported_outside_tests(self):
         with warnings.catch_warnings():
+            # we know that manipulating settings.DATABASES is a bad idea, ignore this warning
             warnings.simplefilter("ignore", UserWarning)
             databases = deepcopy(settings.DATABASES)
             databases['bod']['NAME'] = '__bod_db___'

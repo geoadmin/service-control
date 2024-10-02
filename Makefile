@@ -151,15 +151,15 @@ start-local-db: ## Run the local db as docker container
 test: ## Run tests locally
 	$(PYTHON) $(DJANGO_MANAGER) test $(APP_SRC_DIR)
 
-.PHONY: create-bod-db
-setup-bod-db: ## Set up the bod db locally
+.PHONY: setup-bod
+setup-bod: ## Set up the bod locally
 	$(PSQL) -c 'CREATE ROLE "pgkogis";'
 	$(PSQL) -c 'CREATE ROLE "www-data";'
 	$(PSQL) -c 'CREATE ROLE "bod_admin";'
 	$(PSQL) -c 'CREATE ROLE "rdsadmin";'
 
-.PHONY: import-bod-db
-import-bod-db: ## Import the bod db locally
+.PHONY: import-bod
+import-bod: ## Import the bod locally
 	$(PSQL) -c 'DROP DATABASE IF EXISTS bod_master;'
 	$(PSQL) -c 'CREATE DATABASE bod_master;'
 	$(PGRESTORE) -d bod_master $(file) --v

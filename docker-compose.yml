@@ -17,9 +17,9 @@ services:
   bod:
     image: postgis/postgis:13-3.4
     environment:
-      - POSTGRES_USER=${DB_BOD_USER}
-      - POSTGRES_PASSWORD=${DB_BOD_PW}
-      - POSTGRES_DB=${DB_BOD_NAME}
+      - POSTGRES_USER=${BOD_USER}
+      - POSTGRES_PASSWORD=${BOD_PW}
+      - POSTGRES_DB=${BOD_NAME}
     volumes:
       - source: ${PWD}/.volumes/postgis
         target: /var/lib/postgresql
@@ -27,4 +27,4 @@ services:
         bind:
           create_host_path: true
     ports:
-      - "${DB_BOD_PORT}:5432"
+      - "${BOD_PORT}:5432"

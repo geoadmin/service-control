@@ -17,10 +17,7 @@ class CustomTestRunner(DiscoverRunner):
         self.unmanaged_models = []
 
     def setup_test_environment(self, *args, **kwargs):
-        self.unmanaged_models = [
-            model for model in apps.get_models()
-            if not model._meta.managed
-        ]
+        self.unmanaged_models = [model for model in apps.get_models() if not model._meta.managed]
         for model in self.unmanaged_models:
             model._meta.managed = True
         super().setup_test_environment(*args, **kwargs)
