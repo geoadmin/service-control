@@ -1,7 +1,13 @@
+import datetime
+from unittest import mock
+
+from distributions.api import dataset_to_response
 from distributions.api import router
 from distributions.api import to_response
 from distributions.models import Attribution
+from distributions.models import Dataset
 from distributions.schemas import AttributionSchema
+from distributions.schemas import DatasetSchema
 from ninja.testing import TestClient
 from provider.models import Provider
 from schemas import TranslationsSchema
@@ -616,4 +622,59 @@ class ApiTestCase(TestCase):
                     "provider_id": str(provider2.id),
                 },
             ]
+        }
+
+    def test_dataset_to_response_returns_response_as_expected(self):
+        provider = Provider.objects.create(acronym_de="BAFU")
+        attribution = Attribution.objects.create(
+            name_de="Kantone",
+            provider=provider,
+        )
+        model_fields = {
+            "slug": "ch.bafu.neophyten-haargurke",
+            "provider": provider,
+            "attribution": attribution,
+        }
+        time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
+        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
+            model = Dataset.objects.create(**model_fields)
+
+        actual = dataset_to_response(model)
+
+        assert actual == DatasetSchema(
+            id=str(model.id),
+            slug="ch.bafu.neophyten-haargurke",
+            created=time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            updated=time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            provider_id=str(provider.id),
+            attribution_id=str(attribution.id),
+        )
+
+    def test_get_dataset_returns_specified_dataset(self):
+        provider = Provider.objects.create(acronym_de="BAFU")
+        attribution = Attribution.objects.create(
+            name_de="Kantone",
+            provider=provider,
+        )
+        model_fields = {
+            "slug": "ch.bafu.neophyten-haargurke",
+            "provider": provider,
+            "attribution": attribution,
+        }
+        time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
+        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
+            dataset = Dataset.objects.create(**model_fields)
+        dataset_id = dataset.id
+
+        client = TestClient(router)
+        response = client.get(f"datasets/{dataset_id}")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "id": f"{dataset_id}",
+            "slug": "ch.bafu.neophyten-haargurke",
+            "created": dataset.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "updated": dataset.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "provider_id": str(provider.id),
+            "attribution_id": str(provider.id),
         }

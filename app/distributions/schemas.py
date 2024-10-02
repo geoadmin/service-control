@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from ninja import Schema
 from schemas import TranslationsSchema
 
@@ -13,3 +15,12 @@ class AttributionSchema(Schema):
 
 class AttributionListSchema(Schema):
     items: list[AttributionSchema]
+
+
+class DatasetSchema(Schema):
+    id: str
+    slug: str
+    created: datetime
+    updated: datetime
+    provider_id: str
+    attribution_id: str

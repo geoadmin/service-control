@@ -8,8 +8,10 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
 from .models import Attribution
+from .models import Dataset
 from .schemas import AttributionListSchema
 from .schemas import AttributionSchema
+from .schemas import DatasetSchema
 
 router = Router()
 
@@ -107,3 +109,27 @@ def attributions(request: HttpRequest, lang: LanguageCode | None = None):
 
     schemas = [to_response(model, lang_to_use) for model in models]
     return AttributionListSchema(items=schemas)
+
+
+def dataset_to_response(model: Dataset) -> DatasetSchema:
+    """
+    Transforms the given model into a response object.
+    """
+    return DatasetSchema(
+        id=str(model.id),
+        slug=model.slug,
+        created=model.created,
+        updated=model.updated,
+        provider_id=str(model.provider.id),
+        attribution_id=str(model.attribution.id),
+    )
+
+
+@router.get("datasets/{dataset_id}", response={200: DatasetSchema}, exclude_none=True)
+def dataset(request: HttpRequest, dataset_id: int):
+    """
+    Get the dataset with the given ID.
+    """
+    model = get_object_or_404(Dataset, id=dataset_id)
+    response = dataset_to_response(model)
+    return response
