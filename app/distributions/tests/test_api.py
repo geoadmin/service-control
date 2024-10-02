@@ -409,3 +409,207 @@ class ApiTestCase(TestCase):
             },
             "provider_id": str(provider.id),
         }
+
+    def test_get_attributions_returns_single_attribution_with_given_language(self):
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "name_de": "BAFU",
+            "name_fr": "OFEV",
+            "name_en": "FOEN",
+            "name_it": "UFAM",
+            "name_rm": "UFAM",
+            "description_de": "Bundesamt für Umwelt",
+            "description_fr": "Office fédéral de l'environnement",
+            "description_en": "Federal Office for the Environment",
+            "description_it": "Ufficio federale dell'ambiente",
+            "description_rm": "Uffizi federal per l'ambient",
+            "provider": provider,
+        }
+        Attribution.objects.create(**model_fields)
+        attribution_id = Attribution.objects.last().id
+
+        client = TestClient(router)
+        response = client.get("/?lang=fr")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [{
+                "id": f"{attribution_id}",
+                "name": "OFEV",
+                "name_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                    "it": "UFAM",
+                    "rm": "UFAM",
+                },
+                "description": "Office fédéral de l'environnement",
+                "description_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                    "it": "Ufficio federale dell'ambiente",
+                    "rm": "Uffizi federal per l'ambient",
+                },
+                "provider_id": str(provider.id),
+            }]
+        }
+
+    def test_get_attributions_skips_translations_that_are_not_available(self):
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "name_de": "BAFU",
+            "name_fr": "OFEV",
+            "name_en": "FOEN",
+            "description_de": "Bundesamt für Umwelt",
+            "description_fr": "Office fédéral de l'environnement",
+            "description_en": "Federal Office for the Environment",
+            "provider": provider,
+        }
+        Attribution.objects.create(**model_fields)
+        attribution_id = Attribution.objects.last().id
+
+        client = TestClient(router)
+        response = client.get("/")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [{
+                "id": f"{attribution_id}",
+                "name": "FOEN",
+                "name_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                },
+                "description": "Federal Office for the Environment",
+                "description_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                },
+                "provider_id": str(provider.id),
+            }]
+        }
+
+    def test_get_attributions_returns_attribution_with_language_from_header(self):
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "name_de": "BAFU",
+            "name_fr": "OFEV",
+            "name_en": "FOEN",
+            "description_de": "Bundesamt für Umwelt",
+            "description_fr": "Office fédéral de l'environnement",
+            "description_en": "Federal Office for the Environment",
+            "provider": provider,
+        }
+        attribution_id = Attribution.objects.create(**model_fields).id
+
+        client = TestClient(router)
+        response = client.get("/", headers={"Accept-Language": "de"})
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [{
+                "id": f"{attribution_id}",
+                "name": "BAFU",
+                "name_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                },
+                "description": "Bundesamt für Umwelt",
+                "description_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                },
+                "provider_id": str(provider.id),
+            }]
+        }
+
+    def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_language(self):
+
+        provider1 = Provider.objects.create()
+        model_fields = {
+            "name_de": "BAFU",
+            "name_fr": "OFEV",
+            "name_en": "FOEN",
+            "name_it": "UFAM",
+            "name_rm": "UFAM",
+            "description_de": "Bundesamt für Umwelt",
+            "description_fr": "Office fédéral de l'environnement",
+            "description_en": "Federal Office for the Environment",
+            "description_it": "Ufficio federale dell'ambiente",
+            "description_rm": "Uffizi federal per l'ambient",
+            "provider": provider1,
+        }
+        attribution_id_1 = Attribution.objects.create(**model_fields).id
+
+        provider2 = Provider.objects.create()
+        model_fields = {
+            "name_de": "BAV",
+            "name_fr": "OFT",
+            "name_en": "FOT",
+            "name_it": "UFT",
+            "name_rm": "UFT",
+            "description_de": "Bundesamt für Verkehr",
+            "description_fr": "Office fédéral des transports",
+            "description_en": "Federal Office of Transport",
+            "description_it": "Ufficio federale dei trasporti",
+            "description_rm": "Uffizi federal da traffic",
+            "provider": provider2,
+        }
+        attribution_id_2 = Attribution.objects.create(**model_fields).id
+
+        client = TestClient(router)
+        response = client.get("/?lang=fr")
+
+        assert response.status_code == 200
+        assert response.data == {
+            "items": [
+                {
+                    "id": f"{attribution_id_1}",
+                    "name": "OFEV",
+                    "name_translations": {
+                        "de": "BAFU",
+                        "fr": "OFEV",
+                        "en": "FOEN",
+                        "it": "UFAM",
+                        "rm": "UFAM",
+                    },
+                    "description": "Office fédéral de l'environnement",
+                    "description_translations": {
+                        "de": "Bundesamt für Umwelt",
+                        "fr": "Office fédéral de l'environnement",
+                        "en": "Federal Office for the Environment",
+                        "it": "Ufficio federale dell'ambiente",
+                        "rm": "Uffizi federal per l'ambient",
+                    },
+                    "provider_id": str(provider1.id),
+                },
+                {
+                    "id": f"{attribution_id_2}",
+                    "name": "OFT",
+                    "name_translations": {
+                        "de": "BAV",
+                        "fr": "OFT",
+                        "en": "FOT",
+                        "it": "UFT",
+                        "rm": "UFT",
+                    },
+                    "description": "Office fédéral des transports",
+                    "description_translations": {
+                        "de": "Bundesamt für Verkehr",
+                        "fr": "Office fédéral des transports",
+                        "en": "Federal Office of Transport",
+                        "it": "Ufficio federale dei trasporti",
+                        "rm": "Uffizi federal da traffic",
+                    },
+                    "provider_id": str(provider2.id),
+                },
+            ]
+        }

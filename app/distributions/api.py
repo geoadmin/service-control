@@ -8,6 +8,7 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
 from .models import Attribution
+from .schemas import AttributionListSchema
 from .schemas import AttributionSchema
 
 router = Router()
@@ -91,3 +92,18 @@ def attribution(request: HttpRequest, attribution_id: int, lang: LanguageCode | 
     lang_to_use = get_language(lang, request.headers)
     response = to_response(model, lang_to_use)
     return response
+
+
+@router.get("/", response={200: AttributionListSchema}, exclude_none=True)
+def attributions(request: HttpRequest, lang: LanguageCode | None = None):
+    """
+    Get all attributions, return translatable fields in the given language.
+
+    For more details on how individual attributions are returned, see the
+    corresponding endpoint for a specific attribution.
+    """
+    models = Attribution.objects.order_by("id").all()
+    lang_to_use = get_language(lang, request.headers)
+
+    schemas = [to_response(model, lang_to_use) for model in models]
+    return AttributionListSchema(items=schemas)

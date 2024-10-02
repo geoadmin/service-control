@@ -9,3 +9,7 @@ class AttributionSchema(Schema):
     description: str
     description_translations: TranslationsSchema
     provider_id: str
+
+
+class AttributionListSchema(Schema):
+    items: list[AttributionSchema]
