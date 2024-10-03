@@ -55,6 +55,8 @@ You may want to do an initial sync of your database by applying the most recent 
 app/manage.py migrate
 ```
 
+You can ignore warnings that 'bod' has unreflected changes.
+
 ### Importing Data from the BOD
 
 The "Betriebsobjekte Datenbank" (BOD) is a central database for running and configuring the map
@@ -75,6 +77,15 @@ To generate more BOD models, run:
 ```bash
 app/manage.py inspectdb --database=bod
 ```
+
+To be able to add data to the BOD during testing (which is otherwise read only), you need to first 
+create migrations for new models:
+
+```bash
+app/manage.py makemigrations bod
+```
+
+Afterwards, remove the `options={'managed': False}` part from the newly created migrations.
 
 ## Local Development
 

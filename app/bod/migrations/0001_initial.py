@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='ContactOrganisation',
+            name='BodContactOrganisation',
             fields=[
                 ('pk_contactorganisation_id', models.AutoField(primary_key=True, serialize=False)),
                 ('abkuerzung_de', models.CharField(blank=True, max_length=255, null=True)),

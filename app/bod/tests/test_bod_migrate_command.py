@@ -1,6 +1,6 @@
 from io import StringIO
 
-from bod.models import ContactOrganisation
+from bod.models import BodContactOrganisation
 from provider.models import Provider
 
 from django.core.management import call_command
@@ -12,7 +12,7 @@ class BodMigrateCommandTest(TestCase):
     databases = {'default', 'bod'}
 
     def setUp(self):
-        ContactOrganisation.objects.create(
+        BodContactOrganisation.objects.create(
             pk_contactorganisation_id=17,
             name_de="Bundesamt für Umwelt",
             name_fr="Office fédéral de l'environnement",
@@ -75,6 +75,33 @@ class BodMigrateCommandTest(TestCase):
         self.assertEqual(provider.acronym_it, "UFAM")
         self.assertEqual(provider.acronym_rm, "UFAM")
 
+    def test_command_removes_orphaned_providers(self):
+        provider = Provider.objects.create(
+            name_de="XXX",
+            name_fr="XXX",
+            name_en="XXX",
+            acronym_de="XXX",
+            acronym_fr="XXX",
+            acronym_en="XXX",
+            _legacy_id=16
+        )
+        provider = Provider.objects.create(
+            name_de="YYY",
+            name_fr="YYY",
+            name_en="YYY",
+            acronym_de="YYYY",
+            acronym_fr="YYYY",
+            acronym_en="YYYY",
+        )
+
+        out = StringIO()
+        call_command("bod_migrate", verbose=True, stdout=out)
+        self.assertIn("1 provider(s) removed", out.getvalue())
+        self.assertIn("1 provider(s) added", out.getvalue())
+        self.assertEqual(Provider.objects.count(), 2)
+        self.assertEqual({'BAFU', 'YYYY'},
+                         set(Provider.objects.values_list('acronym_de', flat=True)))
+
     def test_command_does_not_import_if_dry_run(self):
         out = StringIO()
         call_command("bod_migrate", dry_run=True, stdout=out)
@@ -93,7 +120,7 @@ class BodMigrateCommandTest(TestCase):
         )
         out = StringIO()
         call_command("bod_migrate", clear=True, stdout=out)
-        self.assertIn("1 provider(s) deleted", out.getvalue())
+        self.assertIn("1 provider(s) cleared", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())
         self.assertEqual(Provider.objects.count(), 1)
 

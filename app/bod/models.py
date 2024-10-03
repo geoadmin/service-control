@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class ContactOrganisation(models.Model):
+class BodContactOrganisation(models.Model):
     pk_contactorganisation_id = models.AutoField(primary_key=True)
 
     abkuerzung_de = models.CharField(max_length=255, blank=True, null=True)
