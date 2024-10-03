@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -17,5 +18,5 @@ class BodContactOrganisation(models.Model):
     name_rm = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = settings.TESTING
         db_table = 'contactorganisation'

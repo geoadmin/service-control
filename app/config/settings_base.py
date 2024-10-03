@@ -146,5 +146,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Test runner
-TEST_RUNNER = 'config.test_runner.CustomTestRunner'
+# Testing
+TESTING = False

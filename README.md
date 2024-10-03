@@ -78,14 +78,17 @@ To generate more BOD models, run:
 app/manage.py inspectdb --database=bod
 ```
 
-To be able to add data to the BOD during testing (which is otherwise read only), you need to first 
-create migrations for new models:
+Although the BOD models are unmanaged (no migrations applied), we nevertheless need migrations for
+testing. Since these are only used for testing, you might remove the initial migration and recreate
+it:
 
 ```bash
+rm rm app/bod/migrations/0001_initial.py
 app/manage.py makemigrations bod
 ```
 
-Afterwards, remove the `options={'managed': False}` part from the newly created migrations.
+Afterwards, you need to set `managed` flag to `django.conf.settings.TESTING` both in the models
+and the migrations.
 
 ## Local Development
 

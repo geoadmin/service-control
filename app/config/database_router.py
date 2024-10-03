@@ -8,12 +8,6 @@ class CustomRouter:
 
     """
 
-    @property
-    def testing(self):
-        """ Return True if we are currently in a test. """
-
-        return settings.DATABASES['bod']['NAME'].startswith('test_bod')
-
     def db_for_read(self, model, **hints):
         """ Use BOD for reading BOD models. """
 
@@ -25,7 +19,7 @@ class CustomRouter:
         """ Use BOD for writing BOD models during tests. """
 
         if model._meta.app_label == 'bod':
-            if not self.testing:
+            if not settings.TESTING:
                 raise RuntimeError('Writing to the BOD not supported')
             return 'bod'
         return None
@@ -34,5 +28,5 @@ class CustomRouter:
         """ Allow BOD migrations only during tests. """
 
         if app_label == 'bod':
-            return self.testing
+            return settings.TESTING
         return None
