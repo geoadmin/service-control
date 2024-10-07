@@ -1,6 +1,6 @@
 from ninja.testing import TestClient
+from provider.api import provider_to_response
 from provider.api import router
-from provider.api import to_response
 from provider.models import Provider
 from provider.schemas import ProviderSchema
 from schemas import TranslationsSchema
@@ -25,11 +25,11 @@ class ApiTestCase(TestCase):
         }
         Provider.objects.create(**model_fields)
 
-    def test_to_response_returns_response_with_language_as_defined(self):
+    def test_provider_to_response_returns_response_with_language_as_defined(self):
 
         model = Provider.objects.last()
 
-        actual = to_response(model, lang="de")
+        actual = provider_to_response(model, lang="de")
 
         expected = ProviderSchema(
             id=str(model.id),
@@ -53,7 +53,7 @@ class ApiTestCase(TestCase):
 
         assert actual == expected
 
-    def test_to_response_returns_response_with_default_language_if_undefined(self):
+    def test_provider_to_response_returns_response_with_default_language_if_undefined(self):
 
         provider = Provider.objects.last()
         provider.name_it = None
@@ -61,7 +61,7 @@ class ApiTestCase(TestCase):
         provider.acronym_it = None
         provider.acronym_rm = None
 
-        actual = to_response(provider, lang="it")
+        actual = provider_to_response(provider, lang="it")
 
         expected = ProviderSchema(
             id=str(provider.id),

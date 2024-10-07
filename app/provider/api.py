@@ -14,7 +14,7 @@ from .schemas import TranslationsSchema
 router = Router()
 
 
-def to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
+def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
     """
     Transforms the given model using the given language into a response object.
     """
@@ -88,7 +88,7 @@ def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None =
     """
     model = get_object_or_404(Provider, id=provider_id)
     lang_to_use = get_language(lang, request.headers)
-    response = to_response(model, lang_to_use)
+    response = provider_to_response(model, lang_to_use)
     return response
 
 
@@ -103,5 +103,5 @@ def providers(request: HttpRequest, lang: LanguageCode | None = None):
     models = Provider.objects.order_by("id").all()
     lang_to_use = get_language(lang, request.headers)
 
-    schemas = [to_response(model, lang_to_use) for model in models]
+    schemas = [provider_to_response(model, lang_to_use) for model in models]
     return ProviderListSchema(items=schemas)
