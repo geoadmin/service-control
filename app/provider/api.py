@@ -9,34 +9,33 @@ from django.shortcuts import get_object_or_404
 from .models import Provider
 from .schemas import ProviderListSchema
 from .schemas import ProviderSchema
-from .schemas import TranslationsSchema
 
 router = Router()
 
 
-def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
+def provider_to_response(model: Provider, lang: LanguageCode) -> dict:
     """
-    Transforms the given model using the given language into a response object.
+    Transforms the given model using the given language into the response structure.
     """
-    response = ProviderSchema(
-        id=str(model.id),
-        name=get_translation(model, "name", lang),
-        name_translations=TranslationsSchema(
-            de=model.name_de,
-            fr=model.name_fr,
-            en=model.name_en,
-            it=model.name_it,
-            rm=model.name_rm,
-        ),
-        acronym=get_translation(model, "acronym", lang),
-        acronym_translations=TranslationsSchema(
-            de=model.acronym_de,
-            fr=model.acronym_fr,
-            en=model.acronym_en,
-            it=model.acronym_it,
-            rm=model.acronym_rm,
-        )
-    )
+    response = {
+        "id": str(model.id),
+        "name": get_translation(model, "name", lang),
+        "name_translations": {
+            "de": model.name_de,
+            "fr": model.name_fr,
+            "en": model.name_en,
+            "it": model.name_it,
+            "rm": model.name_rm,
+        },
+        "acronym": get_translation(model, "acronym", lang),
+        "acronym_translations": {
+            "de": model.acronym_de,
+            "fr": model.acronym_fr,
+            "en": model.acronym_en,
+            "it": model.acronym_it,
+            "rm": model.acronym_rm,
+        }
+    }
     return response
 
 
@@ -104,4 +103,4 @@ def providers(request: HttpRequest, lang: LanguageCode | None = None):
     lang_to_use = get_language(lang, request.headers)
 
     schemas = [provider_to_response(model, lang_to_use) for model in models]
-    return ProviderListSchema(items=schemas)
+    return {"items": schemas}

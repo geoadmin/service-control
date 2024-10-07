@@ -2,8 +2,6 @@ from ninja.testing import TestClient
 from provider.api import provider_to_response
 from provider.api import router
 from provider.models import Provider
-from provider.schemas import ProviderSchema
-from schemas import TranslationsSchema
 
 from django.test import TestCase
 
@@ -31,25 +29,25 @@ class ApiTestCase(TestCase):
 
         actual = provider_to_response(model, lang="de")
 
-        expected = ProviderSchema(
-            id=str(model.id),
-            name="Bundesamt für Umwelt",
-            name_translations=TranslationsSchema(
-                de="Bundesamt für Umwelt",
-                fr="Office fédéral de l'environnement",
-                en="Federal Office for the Environment",
-                it="Ufficio federale dell'ambiente",
-                rm="Uffizi federal per l'ambient",
-            ),
-            acronym="BAFU",
-            acronym_translations=TranslationsSchema(
-                de="BAFU",
-                fr="OFEV",
-                en="FOEN",
-                it="UFAM",
-                rm="UFAM",
-            )
-        )
+        expected = {
+            "id": str(model.id),
+            "name": "Bundesamt für Umwelt",
+            "name_translations": {
+                "de": "Bundesamt für Umwelt",
+                "fr": "Office fédéral de l'environnement",
+                "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
+            },
+            "acronym": "BAFU",
+            "acronym_translations": {
+                "de": "BAFU",
+                "fr": "OFEV",
+                "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
+            }
+        }
 
         assert actual == expected
 
@@ -63,25 +61,25 @@ class ApiTestCase(TestCase):
 
         actual = provider_to_response(provider, lang="it")
 
-        expected = ProviderSchema(
-            id=str(provider.id),
-            name="Federal Office for the Environment",
-            name_translations=TranslationsSchema(
-                de="Bundesamt für Umwelt",
-                fr="Office fédéral de l'environnement",
-                en="Federal Office for the Environment",
-                it=None,
-                rm=None,
-            ),
-            acronym="FOEN",
-            acronym_translations=TranslationsSchema(
-                de="BAFU",
-                fr="OFEV",
-                en="FOEN",
-                it=None,
-                rm=None,
-            )
-        )
+        expected = {
+            "id": str(provider.id),
+            "name": "Federal Office for the Environment",
+            "name_translations": {
+                "de": "Bundesamt für Umwelt",
+                "fr": "Office fédéral de l'environnement",
+                "en": "Federal Office for the Environment",
+                "it": None,
+                "rm": None,
+            },
+            "acronym": "FOEN",
+            "acronym_translations": {
+                "de": "BAFU",
+                "fr": "OFEV",
+                "en": "FOEN",
+                "it": None,
+                "rm": None,
+            }
+        }
 
         assert actual == expected
 

@@ -1,5 +1,4 @@
 from ninja import Router
-from schemas import TranslationsSchema
 from utils.language import LanguageCode
 from utils.language import get_language
 from utils.language import get_translation
@@ -17,30 +16,30 @@ from .schemas import DatasetSchema
 router = Router()
 
 
-def attribution_to_response(model: Attribution, lang: LanguageCode) -> AttributionSchema:
+def attribution_to_response(model: Attribution, lang: LanguageCode) -> dict:
     """
-    Transforms the given model using the given language into a response object.
+    Transforms the given model using the given language into the response structure
     """
-    response = AttributionSchema(
-        id=str(model.id),
-        name=get_translation(model, "name", lang),
-        name_translations=TranslationsSchema(
-            de=model.name_de,
-            fr=model.name_fr,
-            en=model.name_en,
-            it=model.name_it,
-            rm=model.name_rm,
-        ),
-        description=get_translation(model, "description", lang),
-        description_translations=TranslationsSchema(
-            de=model.description_de,
-            fr=model.description_fr,
-            en=model.description_en,
-            it=model.description_it,
-            rm=model.description_rm,
-        ),
-        provider_id=str(model.provider.id),
-    )
+    response = {
+        "id": str(model.id),
+        "name": get_translation(model, "name", lang),
+        "name_translations": {
+            "de": model.name_de,
+            "fr": model.name_fr,
+            "en": model.name_en,
+            "it": model.name_it,
+            "rm": model.name_rm,
+        },
+        "description": get_translation(model, "description", lang),
+        "description_translations": {
+            "de": model.description_de,
+            "fr": model.description_fr,
+            "en": model.description_en,
+            "it": model.description_it,
+            "rm": model.description_rm,
+        },
+        "provider_id": str(model.provider.id),
+    }
     return response
 
 
@@ -109,21 +108,7 @@ def attributions(request: HttpRequest, lang: LanguageCode | None = None):
     lang_to_use = get_language(lang, request.headers)
 
     responses = [attribution_to_response(model, lang_to_use) for model in models]
-    return AttributionListSchema(items=responses)
-
-
-def dataset_to_response(model: Dataset) -> DatasetSchema:
-    """
-    Transforms the given model into a response object.
-    """
-    return DatasetSchema(
-        id=str(model.id),
-        slug=model.slug,
-        created=model.created,
-        updated=model.updated,
-        provider_id=str(model.provider.id),
-        attribution_id=str(model.attribution.id),
-    )
+    return {"items": responses}
 
 
 @router.get("datasets/{dataset_id}", response={200: DatasetSchema}, exclude_none=True)
@@ -132,8 +117,7 @@ def dataset(request: HttpRequest, dataset_id: int):
     Get the dataset with the given ID.
     """
     model = get_object_or_404(Dataset, id=dataset_id)
-    response = dataset_to_response(model)
-    return response
+    return model
 
 
 @router.get("datasets", response={200: DatasetListSchema}, exclude_none=True)
@@ -145,5 +129,4 @@ def datasets(request: HttpRequest):
     corresponding endpoint for a specific attribution.
     """
     models = Dataset.objects.order_by("id").all()
-    responses = [dataset_to_response(model) for model in models]
-    return DatasetListSchema(items=responses)
+    return {"items": models}
