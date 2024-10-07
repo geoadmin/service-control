@@ -32,8 +32,7 @@ class ApiTestCase(TestCase):
             "description_rm": "Uffizi federal per l'ambient",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        model = Attribution.objects.last()
+        model = Attribution.objects.create(**model_fields)
 
         actual = attribution_to_response(model, lang="de")
 
@@ -71,8 +70,7 @@ class ApiTestCase(TestCase):
             "description_en": "Federal Office for the Environment",
             "provider": provider
         }
-        Attribution.objects.create(**model_fields)
-        model = Attribution.objects.last()
+        model = Attribution.objects.create(**model_fields)
 
         actual = attribution_to_response(model, lang="it")
 
@@ -115,8 +113,7 @@ class ApiTestCase(TestCase):
             "description_rm": "Uffizi federal per l'ambient",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get(f"/attributions/{attribution_id}")
@@ -159,8 +156,7 @@ class ApiTestCase(TestCase):
             "description_rm": "Uffizi federal per l'ambient",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get(f"attributions/{attribution_id}?lang=de")
@@ -207,8 +203,7 @@ class ApiTestCase(TestCase):
             "description_en": "Federal Office for the Environment",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get(f"attributions/{attribution_id}")
@@ -243,8 +238,7 @@ class ApiTestCase(TestCase):
             "description_en": "Federal Office for the Environment",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get(f"attributions/{attribution_id}", headers={"Accept-Language": "de"})
@@ -281,8 +275,7 @@ class ApiTestCase(TestCase):
             "description_en": "Federal Office for the Environment",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get(
@@ -319,8 +312,7 @@ class ApiTestCase(TestCase):
             "description_en": "Federal Office for the Environment",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get(f"attributions/{attribution_id}", headers={"Accept-Language": ""})
@@ -355,8 +347,7 @@ class ApiTestCase(TestCase):
             "description_en": "Federal Office for the Environment",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get(
@@ -394,8 +385,7 @@ class ApiTestCase(TestCase):
             "description_en": "Federal Office for the Environment",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get(
@@ -436,8 +426,7 @@ class ApiTestCase(TestCase):
             "description_rm": "Uffizi federal per l'ambient",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get("attributions?lang=fr")
@@ -478,8 +467,7 @@ class ApiTestCase(TestCase):
             "description_en": "Federal Office for the Environment",
             "provider": provider,
         }
-        Attribution.objects.create(**model_fields)
-        attribution_id = Attribution.objects.last().id
+        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get("attributions")

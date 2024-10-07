@@ -23,8 +23,7 @@ class ApiTestCase(TestCase):
             "acronym_it": "UFAM",
             "acronym_rm": "UFAM",
         }
-        Provider.objects.create(**model_fields)
-        model = Provider.objects.last()
+        model = Provider.objects.create(**model_fields)
 
         actual = to_response(model, lang="de")
 
@@ -59,8 +58,7 @@ class ApiTestCase(TestCase):
             "acronym_fr": "OFEV",
             "acronym_en": "FOEN",
         }
-        Provider.objects.create(**model_fields)
-        model = Provider.objects.last()
+        model = Provider.objects.create(**model_fields)
 
         actual = to_response(model, lang="it")
 
@@ -100,8 +98,7 @@ class ApiTestCase(TestCase):
             "acronym_it": "UFAM",
             "acronym_rm": "UFAM",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}")
@@ -141,8 +138,7 @@ class ApiTestCase(TestCase):
             "acronym_it": "UFAM",
             "acronym_rm": "UFAM",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}?lang=de")
@@ -186,8 +182,7 @@ class ApiTestCase(TestCase):
             "acronym_fr": "OFEV",
             "acronym_en": "FOEN",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}")
@@ -219,8 +214,7 @@ class ApiTestCase(TestCase):
             "acronym_fr": "OFEV",
             "acronym_en": "FOEN",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}", headers={"Accept-Language": "de"})
@@ -252,8 +246,7 @@ class ApiTestCase(TestCase):
             "acronym_fr": "OFEV",
             "acronym_en": "FOEN",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}?lang=fr", headers={"Accept-Language": "de"})
@@ -285,8 +278,7 @@ class ApiTestCase(TestCase):
             "acronym_fr": "OFEV",
             "acronym_en": "FOEN",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}", headers={"Accept-Language": ""})
@@ -318,8 +310,7 @@ class ApiTestCase(TestCase):
             "acronym_fr": "OFEV",
             "acronym_en": "FOEN",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}", headers={"Accept-Language": "cn, *, de-DE, en"})
@@ -353,8 +344,7 @@ class ApiTestCase(TestCase):
             "acronym_fr": "OFEV",
             "acronym_en": "FOEN",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"})
@@ -390,8 +380,7 @@ class ApiTestCase(TestCase):
             "acronym_it": "UFAM",
             "acronym_rm": "UFAM",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get("/?lang=fr")
@@ -429,8 +418,7 @@ class ApiTestCase(TestCase):
             "acronym_fr": "OFEV",
             "acronym_en": "FOEN",
         }
-        Provider.objects.create(**provider)
-        provider_id = Provider.objects.last().id
+        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get("/")
