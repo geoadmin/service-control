@@ -10,7 +10,7 @@ from django.test import TestCase
 
 class ApiTestCase(TestCase):
 
-    def test_to_response_returns_response_with_language_as_defined(self):
+    def setUp(self):
         model_fields = {
             "name_de": "Bundesamt für Umwelt",
             "name_fr": "Office fédéral de l'environnement",
@@ -23,7 +23,11 @@ class ApiTestCase(TestCase):
             "acronym_it": "UFAM",
             "acronym_rm": "UFAM",
         }
-        model = Provider.objects.create(**model_fields)
+        Provider.objects.create(**model_fields)
+
+    def test_to_response_returns_response_with_language_as_defined(self):
+
+        model = Provider.objects.last()
 
         actual = to_response(model, lang="de")
 
@@ -50,20 +54,17 @@ class ApiTestCase(TestCase):
         assert actual == expected
 
     def test_to_response_returns_response_with_default_language_if_undefined(self):
-        model_fields = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        model = Provider.objects.create(**model_fields)
 
-        actual = to_response(model, lang="it")
+        provider = Provider.objects.last()
+        provider.name_it = None
+        provider.name_rm = None
+        provider.acronym_it = None
+        provider.acronym_rm = None
+
+        actual = to_response(provider, lang="it")
 
         expected = ProviderSchema(
-            id=str(model.id),
+            id=str(provider.id),
             name="Federal Office for the Environment",
             name_translations=TranslationsSchema(
                 de="Bundesamt für Umwelt",
@@ -86,19 +87,7 @@ class ApiTestCase(TestCase):
 
     def test_get_provider_returns_existing_provider_with_default_language(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "name_it": "Ufficio federale dell'ambiente",
-            "name_rm": "Uffizi federal per l'ambient",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-            "acronym_it": "UFAM",
-            "acronym_rm": "UFAM",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}")
@@ -126,19 +115,7 @@ class ApiTestCase(TestCase):
 
     def test_get_provider_returns_provider_with_language_from_query(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "name_it": "Ufficio federale dell'ambiente",
-            "name_rm": "Uffizi federal per l'ambient",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-            "acronym_it": "UFAM",
-            "acronym_rm": "UFAM",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}?lang=de")
@@ -167,29 +144,26 @@ class ApiTestCase(TestCase):
     def test_get_provider_returns_404_for_nonexisting_provider(self):
 
         client = TestClient(router)
-        response = client.get("/1")
+        response = client.get("/2")
 
         assert response.status_code == 404
         assert response.data == {"detail": "Not Found"}
 
     def test_get_provider_skips_translations_that_are_not_available(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider = Provider.objects.last()
+        provider.name_it = None
+        provider.name_rm = None
+        provider.acronym_it = None
+        provider.acronym_rm = None
+        provider.save()
 
         client = TestClient(router)
-        response = client.get(f"/{provider_id}")
+        response = client.get(f"/{provider.id}")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider_id}",
+            "id": f"{provider.id}",
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -206,15 +180,7 @@ class ApiTestCase(TestCase):
 
     def test_get_provider_returns_provider_with_language_from_header(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}", headers={"Accept-Language": "de"})
@@ -227,26 +193,22 @@ class ApiTestCase(TestCase):
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
             "acronym": "BAFU",
             "acronym_translations": {
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             }
         }
 
     def test_get_provider_returns_provider_with_language_from_query_param_even_if_header_set(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}?lang=fr", headers={"Accept-Language": "de"})
@@ -259,26 +221,22 @@ class ApiTestCase(TestCase):
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
             "acronym": "OFEV",
             "acronym_translations": {
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             }
         }
 
     def test_get_provider_returns_provider_with_default_language_if_header_empty(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}", headers={"Accept-Language": ""})
@@ -291,26 +249,22 @@ class ApiTestCase(TestCase):
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
             "acronym": "FOEN",
             "acronym_translations": {
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             }
         }
 
     def test_get_provider_returns_provider_with_first_known_language_from_header(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}", headers={"Accept-Language": "cn, *, de-DE, en"})
@@ -323,28 +277,23 @@ class ApiTestCase(TestCase):
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
             "acronym": "BAFU",
             "acronym_translations": {
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             }
         }
 
     def test_get_provider_returns_provider_with_first_known_language_from_header_ignoring_qfactor(
         self
     ):
-
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider_id = Provider.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"/{provider_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"})
@@ -357,30 +306,20 @@ class ApiTestCase(TestCase):
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
             "acronym": "OFEV",
             "acronym_translations": {
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             }
         }
 
     def test_get_providers_returns_single_provider_with_given_language(self):
-
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "name_it": "Ufficio federale dell'ambiente",
-            "name_rm": "Uffizi federal per l'ambient",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-            "acronym_it": "UFAM",
-            "acronym_rm": "UFAM",
-        }
-        provider_id = Provider.objects.create(**provider).id
 
         client = TestClient(router)
         response = client.get("/?lang=fr")
@@ -388,7 +327,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{provider_id}",
+                "id": f"{Provider.objects.last().id}",
                 "name": "Office fédéral de l'environnement",
                 "name_translations": {
                     "de": "Bundesamt für Umwelt",
@@ -410,15 +349,12 @@ class ApiTestCase(TestCase):
 
     def test_get_providers_skips_translations_that_are_not_available(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        provider_id = Provider.objects.create(**provider).id
+        provider = Provider.objects.last()
+        provider.name_it = None
+        provider.name_rm = None
+        provider.acronym_it = None
+        provider.acronym_rm = None
+        provider.save()
 
         client = TestClient(router)
         response = client.get("/")
@@ -426,7 +362,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{provider_id}",
+                "id": f"{provider.id}",
                 "name": "Federal Office for the Environment",
                 "name_translations": {
                     "de": "Bundesamt für Umwelt",
@@ -444,53 +380,33 @@ class ApiTestCase(TestCase):
 
     def test_get_providers_returns_provider_with_language_from_header(self):
 
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-        }
-        provider_id = Provider.objects.create(**provider).id
-
         client = TestClient(router)
         response = client.get("/", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{provider_id}",
+                "id": f"{Provider.objects.last().id}",
                 "name": "Bundesamt für Umwelt",
                 "name_translations": {
                     "de": "Bundesamt für Umwelt",
                     "fr": "Office fédéral de l'environnement",
                     "en": "Federal Office for the Environment",
+                    "it": "Ufficio federale dell'ambiente",
+                    "rm": "Uffizi federal per l'ambient",
                 },
                 "acronym": "BAFU",
                 "acronym_translations": {
                     "de": "BAFU",
                     "fr": "OFEV",
                     "en": "FOEN",
+                    "it": "UFAM",
+                    "rm": "UFAM",
                 }
             }]
         }
 
     def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(self):
-
-        provider = {
-            "name_de": "Bundesamt für Umwelt",
-            "name_fr": "Office fédéral de l'environnement",
-            "name_en": "Federal Office for the Environment",
-            "name_it": "Ufficio federale dell'ambiente",
-            "name_rm": "Uffizi federal per l'ambient",
-            "acronym_de": "BAFU",
-            "acronym_fr": "OFEV",
-            "acronym_en": "FOEN",
-            "acronym_it": "UFAM",
-            "acronym_rm": "UFAM",
-        }
-        provider_id_1 = Provider.objects.create(**provider).id
 
         provider = {
             "name_de": "Bundesamt für Verkehr",
@@ -504,7 +420,7 @@ class ApiTestCase(TestCase):
             "acronym_it": "UFT",
             "acronym_rm": "UFT",
         }
-        provider_id_2 = Provider.objects.create(**provider).id
+        Provider.objects.create(**provider)
 
         client = TestClient(router)
         response = client.get("/?lang=fr")
@@ -513,7 +429,7 @@ class ApiTestCase(TestCase):
         assert response.data == {
             "items": [
                 {
-                    "id": f"{provider_id_1}",
+                    "id": f"{Provider.objects.first().id}",
                     "name": "Office fédéral de l'environnement",
                     "name_translations": {
                         "de": "Bundesamt für Umwelt",
@@ -532,7 +448,7 @@ class ApiTestCase(TestCase):
                     }
                 },
                 {
-                    "id": f"{provider_id_2}",
+                    "id": f"{Provider.objects.last().id}",
                     "name": "Office fédéral des transports",
                     "name_translations": {
                         "de": "Bundesamt für Verkehr",

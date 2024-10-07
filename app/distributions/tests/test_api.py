@@ -17,9 +17,9 @@ from django.test import TestCase
 
 class ApiTestCase(TestCase):
 
-    def test_attribution_to_response_returns_response_with_language_as_defined(self):
+    def setUp(self):
         provider = Provider.objects.create()
-        model_fields = {
+        attribution_fields = {
             "name_de": "BAFU",
             "name_fr": "OFEV",
             "name_en": "FOEN",
@@ -32,8 +32,20 @@ class ApiTestCase(TestCase):
             "description_rm": "Uffizi federal per l'ambient",
             "provider": provider,
         }
-        model = Attribution.objects.create(**model_fields)
+        attribution = Attribution.objects.create(**attribution_fields)
 
+        dataset_fields = {
+            "slug": "ch.bafu.neophyten-haargurke",
+            "provider": provider,
+            "attribution": attribution,
+        }
+        self.time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
+        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=self.time_created)):
+            Dataset.objects.create(**dataset_fields)
+
+    def test_attribution_to_response_returns_response_with_language_as_defined(self):
+
+        model = Attribution.objects.last()
         actual = attribution_to_response(model, lang="de")
 
         expected = AttributionSchema(
@@ -54,23 +66,18 @@ class ApiTestCase(TestCase):
                 it="Ufficio federale dell'ambiente",
                 rm="Uffizi federal per l'ambient",
             ),
-            provider_id=str(provider.id)
+            provider_id=str(Provider.objects.last().id)
         )
 
         assert actual == expected
 
     def test_attribution_to_response_returns_response_with_default_language_if_undefined(self):
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider
-        }
-        model = Attribution.objects.create(**model_fields)
+
+        model = Attribution.objects.last()
+        model.name_it = None
+        model.name_rm = None
+        model.description_it = None
+        model.description_rm = None
 
         actual = attribution_to_response(model, lang="it")
 
@@ -92,35 +99,21 @@ class ApiTestCase(TestCase):
                 it=None,
                 rm=None,
             ),
-            provider_id=str(provider.id),
+            provider_id=str(Provider.objects.last().id),
         )
 
         assert actual == expected
 
     def test_get_attribution_returns_existing_attribution_with_default_language(self):
 
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "name_it": "UFAM",
-            "name_rm": "UFAM",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "description_it": "Ufficio federale dell'ambiente",
-            "description_rm": "Uffizi federal per l'ambient",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"/attributions/{attribution_id}")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{attribution_id}",
+            "id": str(attribution_id),
             "name": "FOEN",
             "name_translations": {
                 "de": "BAFU",
@@ -137,33 +130,19 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(provider.id),
+            "provider_id": str(Provider.objects.last().id),
         }
 
     def test_get_attribution_returns_attribution_with_language_from_query(self):
 
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "name_it": "UFAM",
-            "name_rm": "UFAM",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "description_it": "Ufficio federale dell'ambiente",
-            "description_rm": "Uffizi federal per l'ambient",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"attributions/{attribution_id}?lang=de")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{attribution_id}",
+            "id": str(attribution_id),
             "name": "BAFU",
             "name_translations": {
                 "de": "BAFU",
@@ -180,7 +159,7 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(provider.id),
+            "provider_id": str(Provider.objects.last().id),
         }
 
     def test_get_attribution_returns_404_for_nonexisting_attribution(self):
@@ -193,24 +172,19 @@ class ApiTestCase(TestCase):
 
     def test_get_attribution_skips_translations_that_are_not_available(self):
 
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        model = Attribution.objects.last()
+        model.name_it = None
+        model.name_rm = None
+        model.description_it = None
+        model.description_rm = None
+        model.save()
 
         client = TestClient(router)
-        response = client.get(f"attributions/{attribution_id}")
+        response = client.get(f"attributions/{model.id}")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{attribution_id}",
+            "id": str(model.id),
             "name": "FOEN",
             "name_translations": {
                 "de": "BAFU",
@@ -223,22 +197,12 @@ class ApiTestCase(TestCase):
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
             },
-            "provider_id": str(provider.id),
+            "provider_id": str(Provider.objects.last().id),
         }
 
     def test_get_attribution_returns_attribution_with_language_from_header(self):
 
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"attributions/{attribution_id}", headers={"Accept-Language": "de"})
@@ -251,31 +215,25 @@ class ApiTestCase(TestCase):
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             },
             "description": "Bundesamt für Umwelt",
             "description_translations": {
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(provider.id),
+            "provider_id": str(Provider.objects.last().id),
         }
 
     def test_get_attribution_returns_attribution_with_language_from_query_param_even_if_header_set(
         self
     ):
 
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
         response = client.get(
@@ -290,64 +248,52 @@ class ApiTestCase(TestCase):
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             },
             "description": "Office fédéral de l'environnement",
             "description_translations": {
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(provider.id),
+            "provider_id": str(Provider.objects.last().id),
         }
 
     def test_get_attribution_returns_attribution_with_default_language_if_header_empty(self):
 
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
         response = client.get(f"attributions/{attribution_id}", headers={"Accept-Language": ""})
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{attribution_id}",
+            "id": str(attribution_id),
             "name": "FOEN",
             "name_translations": {
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             },
             "description": "Federal Office for the Environment",
             "description_translations": {
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(provider.id),
+            "provider_id": str(Provider.objects.last().id),
         }
 
     def test_get_attribution_returns_attribution_with_first_known_language_from_header(self):
 
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
         response = client.get(
@@ -362,30 +308,24 @@ class ApiTestCase(TestCase):
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             },
             "description": "Bundesamt für Umwelt",
             "description_translations": {
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(provider.id),
+            "provider_id": str(Provider.objects.last().id),
         }
 
     def test_get_attribution_returns_attribution_with_first_language_from_header_ignoring_qfactor(
         self
     ):
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        attribution_id = Attribution.objects.last().id
 
         client = TestClient(router)
         response = client.get(
@@ -400,33 +340,21 @@ class ApiTestCase(TestCase):
                 "de": "BAFU",
                 "fr": "OFEV",
                 "en": "FOEN",
+                "it": "UFAM",
+                "rm": "UFAM",
             },
             "description": "Office fédéral de l'environnement",
             "description_translations": {
                 "de": "Bundesamt für Umwelt",
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
+                "it": "Ufficio federale dell'ambiente",
+                "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(provider.id),
+            "provider_id": str(Provider.objects.last().id),
         }
 
     def test_get_attributions_returns_single_attribution_with_given_language(self):
-
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "name_it": "UFAM",
-            "name_rm": "UFAM",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "description_it": "Ufficio federale dell'ambiente",
-            "description_rm": "Uffizi federal per l'ambient",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get("attributions?lang=fr")
@@ -434,7 +362,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{attribution_id}",
+                "id": f"{Attribution.objects.last().id}",
                 "name": "OFEV",
                 "name_translations": {
                     "de": "BAFU",
@@ -451,23 +379,18 @@ class ApiTestCase(TestCase):
                     "it": "Ufficio federale dell'ambiente",
                     "rm": "Uffizi federal per l'ambient",
                 },
-                "provider_id": str(provider.id),
+                "provider_id": str(Provider.objects.last().id),
             }]
         }
 
     def test_get_attributions_skips_translations_that_are_not_available(self):
 
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
+        model = Attribution.objects.last()
+        model.name_it = None
+        model.name_rm = None
+        model.description_it = None
+        model.description_rm = None
+        model.save()
 
         client = TestClient(router)
         response = client.get("attributions")
@@ -475,7 +398,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{attribution_id}",
+                "id": f"{Attribution.objects.last().id}",
                 "name": "FOEN",
                 "name_translations": {
                     "de": "BAFU",
@@ -488,23 +411,11 @@ class ApiTestCase(TestCase):
                     "fr": "Office fédéral de l'environnement",
                     "en": "Federal Office for the Environment",
                 },
-                "provider_id": str(provider.id),
+                "provider_id": str(Provider.objects.last().id),
             }]
         }
 
     def test_get_attributions_returns_attribution_with_language_from_header(self):
-
-        provider = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "provider": provider,
-        }
-        attribution_id = Attribution.objects.create(**model_fields).id
 
         client = TestClient(router)
         response = client.get("attributions", headers={"Accept-Language": "de"})
@@ -512,40 +423,31 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{attribution_id}",
+                "id": f"{Attribution.objects.last().id}",
                 "name": "BAFU",
                 "name_translations": {
                     "de": "BAFU",
                     "fr": "OFEV",
                     "en": "FOEN",
+                    "it": "UFAM",
+                    "rm": "UFAM",
                 },
                 "description": "Bundesamt für Umwelt",
                 "description_translations": {
                     "de": "Bundesamt für Umwelt",
                     "fr": "Office fédéral de l'environnement",
                     "en": "Federal Office for the Environment",
+                    "it": "Ufficio federale dell'ambiente",
+                    "rm": "Uffizi federal per l'ambient",
                 },
-                "provider_id": str(provider.id),
+                "provider_id": str(Provider.objects.last().id),
             }]
         }
 
     def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_language(self):
 
-        provider1 = Provider.objects.create()
-        model_fields = {
-            "name_de": "BAFU",
-            "name_fr": "OFEV",
-            "name_en": "FOEN",
-            "name_it": "UFAM",
-            "name_rm": "UFAM",
-            "description_de": "Bundesamt für Umwelt",
-            "description_fr": "Office fédéral de l'environnement",
-            "description_en": "Federal Office for the Environment",
-            "description_it": "Ufficio federale dell'ambiente",
-            "description_rm": "Uffizi federal per l'ambient",
-            "provider": provider1,
-        }
-        attribution_id_1 = Attribution.objects.create(**model_fields).id
+        provider1 = Provider.objects.last()
+        attribution_id_1 = Attribution.objects.last().id
 
         provider2 = Provider.objects.create()
         model_fields = {
@@ -613,104 +515,54 @@ class ApiTestCase(TestCase):
         }
 
     def test_dataset_to_response_returns_response_as_expected(self):
-        provider = Provider.objects.create(acronym_de="BAFU")
-        attribution = Attribution.objects.create(
-            name_de="Kantone",
-            provider=provider,
-        )
-        model_fields = {
-            "slug": "ch.bafu.neophyten-haargurke",
-            "provider": provider,
-            "attribution": attribution,
-        }
-        time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
-        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
-            model = Dataset.objects.create(**model_fields)
+        dataset = Dataset.objects.last()
 
-        actual = dataset_to_response(model)
+        actual = dataset_to_response(dataset)
 
         assert actual == DatasetSchema(
-            id=str(model.id),
+            id=str(dataset.id),
             slug="ch.bafu.neophyten-haargurke",
-            created=time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            updated=time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            provider_id=str(provider.id),
-            attribution_id=str(attribution.id),
+            created=self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            updated=self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            provider_id=str(Provider.objects.last().id),
+            attribution_id=str(Attribution.objects.last().id),
         )
 
     def test_get_dataset_returns_specified_dataset(self):
-        provider = Provider.objects.create(acronym_de="BAFU")
-        attribution = Attribution.objects.create(
-            name_de="Kantone",
-            provider=provider,
-        )
-        model_fields = {
-            "slug": "ch.bafu.neophyten-haargurke",
-            "provider": provider,
-            "attribution": attribution,
-        }
-        time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
-        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
-            dataset = Dataset.objects.create(**model_fields)
+        dataset_id = Dataset.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"datasets/{dataset.id}")
+        response = client.get(f"datasets/{dataset_id}")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{dataset.id}",
+            "id": f"{dataset_id}",
             "slug": "ch.bafu.neophyten-haargurke",
-            "created": dataset.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "updated": dataset.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "provider_id": str(provider.id),
-            "attribution_id": str(provider.id),
+            "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "provider_id": str(Provider.objects.last().id),
+            "attribution_id": str(Attribution.objects.last().id),
         }
 
     def test_get_datasets_returns_single_dataset_as_expected(self):
 
-        provider = Provider.objects.create(acronym_de="BAFU")
-        attribution = Attribution.objects.create(
-            name_de="Kantone",
-            provider=provider,
-        )
-        model_fields = {
-            "slug": "ch.bafu.neophyten-haargurke",
-            "provider": provider,
-            "attribution": attribution,
-        }
-        time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
-        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
-            dataset = Dataset.objects.create(**model_fields)
-
         client = TestClient(router)
         response = client.get("datasets")
 
+        dataset = Dataset.objects.last()
         assert response.status_code == 200
         assert response.data == {
             "items": [{
                 "id": f"{dataset.id}",
                 "slug": "ch.bafu.neophyten-haargurke",
-                "created": dataset.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "updated": dataset.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "provider_id": str(provider.id),
-                "attribution_id": str(provider.id),
+                "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "provider_id": str(Provider.objects.last().id),
+                "attribution_id": str(Attribution.objects.last().id),
             }]
         }
 
     def test_get_datasets_returns_all_datasets_ordered_by_id(self):
-        provider1 = Provider.objects.create(acronym_de="Provider1")
-        attribution1 = Attribution.objects.create(
-            name_de="Attribution1",
-            provider=provider1,
-        )
-        model_fields1 = {
-            "slug": "slug1",
-            "provider": provider1,
-            "attribution": attribution1,
-        }
-        time_created1 = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
-        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created1)):
-            dataset1 = Dataset.objects.create(**model_fields1)
 
         provider2 = Provider.objects.create(acronym_de="Provider2")
         attribution2 = Attribution.objects.create(
@@ -729,16 +581,17 @@ class ApiTestCase(TestCase):
         client = TestClient(router)
         response = client.get("datasets")
 
+        dataset1 = Dataset.objects.first()
         assert response.status_code == 200
         assert response.data == {
             "items": [
                 {
                     "id": f"{dataset1.id}",
-                    "slug": "slug1",
-                    "created": dataset1.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "updated": dataset1.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "provider_id": str(provider1.id),
-                    "attribution_id": str(provider1.id),
+                    "slug": dataset1.slug,
+                    "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "provider_id": str(Provider.objects.first().id),
+                    "attribution_id": str(Attribution.objects.first().id),
                 },
                 {
                     "id": f"{dataset2.id}",
