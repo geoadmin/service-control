@@ -723,7 +723,7 @@ class ApiTestCase(TestCase):
             "attribution": attribution2,
         }
         time_created2 = datetime.datetime(2024, 9, 12, 16, 28, 0, tzinfo=datetime.UTC)
-        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created1)):
+        with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created2)):
             dataset2 = Dataset.objects.create(**model_fields2)
 
         client = TestClient(router)
