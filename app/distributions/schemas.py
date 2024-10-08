@@ -22,8 +22,8 @@ class DatasetSchema(Schema):
     slug: str
     created: datetime
     updated: datetime
-    provider_id: str
-    attribution_id: str
+    provider_id: int
+    attribution_id: int
 
 
 class DatasetListSchema(Schema):

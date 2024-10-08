@@ -121,8 +121,8 @@ def dataset_to_response(model: Dataset) -> DatasetSchema:
         slug=model.slug,
         created=model.created,
         updated=model.updated,
-        provider_id=str(model.provider.id),
-        attribution_id=str(model.attribution.id),
+        provider_id=model.provider.id,
+        attribution_id=model.attribution.id,
     )
 
 

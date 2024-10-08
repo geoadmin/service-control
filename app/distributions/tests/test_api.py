@@ -524,8 +524,8 @@ class ApiTestCase(TestCase):
             slug="ch.bafu.neophyten-haargurke",
             created=self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             updated=self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            provider_id=str(Provider.objects.last().id),
-            attribution_id=str(Attribution.objects.last().id),
+            provider_id=Provider.objects.last().id,
+            attribution_id=Attribution.objects.last().id,
         )
 
     def test_get_dataset_returns_specified_dataset(self):
@@ -540,8 +540,8 @@ class ApiTestCase(TestCase):
             "slug": "ch.bafu.neophyten-haargurke",
             "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "provider_id": str(Provider.objects.last().id),
-            "attribution_id": str(Attribution.objects.last().id),
+            "provider_id": Provider.objects.last().id,
+            "attribution_id": Attribution.objects.last().id,
         }
 
     def test_get_datasets_returns_single_dataset_as_expected(self):
@@ -557,8 +557,8 @@ class ApiTestCase(TestCase):
                 "slug": "ch.bafu.neophyten-haargurke",
                 "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "provider_id": str(Provider.objects.last().id),
-                "attribution_id": str(Attribution.objects.last().id),
+                "provider_id": Provider.objects.last().id,
+                "attribution_id": Attribution.objects.last().id,
             }]
         }
 
@@ -590,16 +590,16 @@ class ApiTestCase(TestCase):
                     "slug": dataset1.slug,
                     "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "provider_id": str(Provider.objects.first().id),
-                    "attribution_id": str(Attribution.objects.first().id),
+                    "provider_id": Provider.objects.first().id,
+                    "attribution_id": Attribution.objects.first().id,
                 },
                 {
                     "id": dataset2.id,
                     "slug": "slug2",
                     "created": dataset2.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "updated": dataset2.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    "provider_id": str(provider2.id),
-                    "attribution_id": str(provider2.id),
+                    "provider_id": provider2.id,
+                    "attribution_id": provider2.id,
                 },
             ]
         }
