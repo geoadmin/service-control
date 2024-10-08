@@ -112,28 +112,13 @@ def attributions(request: HttpRequest, lang: LanguageCode | None = None):
     return AttributionListSchema(items=responses)
 
 
-def dataset_to_response(model: Dataset) -> DatasetSchema:
-    """
-    Transforms the given model into a response object.
-    """
-    return DatasetSchema(
-        id=model.id,
-        slug=model.slug,
-        created=model.created,
-        updated=model.updated,
-        provider_id=model.provider.id,
-        attribution_id=model.attribution.id,
-    )
-
-
 @router.get("datasets/{dataset_id}", response={200: DatasetSchema}, exclude_none=True)
 def dataset(request: HttpRequest, dataset_id: int):
     """
     Get the dataset with the given ID.
     """
     model = get_object_or_404(Dataset, id=dataset_id)
-    response = dataset_to_response(model)
-    return response
+    return model
 
 
 @router.get("datasets", response={200: DatasetListSchema}, exclude_none=True)
@@ -145,5 +130,4 @@ def datasets(request: HttpRequest):
     corresponding endpoint for a specific attribution.
     """
     models = Dataset.objects.order_by("id").all()
-    responses = [dataset_to_response(model) for model in models]
-    return DatasetListSchema(items=responses)
+    return DatasetListSchema(items=models)

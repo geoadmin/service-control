@@ -2,12 +2,10 @@ import datetime
 from unittest import mock
 
 from distributions.api import attribution_to_response
-from distributions.api import dataset_to_response
 from distributions.api import router
 from distributions.models import Attribution
 from distributions.models import Dataset
 from distributions.schemas import AttributionSchema
-from distributions.schemas import DatasetSchema
 from ninja.testing import TestClient
 from provider.models import Provider
 from schemas import TranslationsSchema
@@ -513,20 +511,6 @@ class ApiTestCase(TestCase):
                 },
             ]
         }
-
-    def test_dataset_to_response_returns_response_as_expected(self):
-        dataset = Dataset.objects.last()
-
-        actual = dataset_to_response(dataset)
-
-        assert actual == DatasetSchema(
-            id=dataset.id,
-            slug="ch.bafu.neophyten-haargurke",
-            created=self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            updated=self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            provider_id=Provider.objects.last().id,
-            attribution_id=Attribution.objects.last().id,
-        )
 
     def test_get_dataset_returns_specified_dataset(self):
         dataset_id = Dataset.objects.last().id
