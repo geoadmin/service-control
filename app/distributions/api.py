@@ -39,7 +39,7 @@ def attribution_to_response(model: Attribution, lang: LanguageCode) -> Attributi
             it=model.description_it,
             rm=model.description_rm,
         ),
-        provider_id=str(model.provider.id),
+        provider_id=model.provider.id,
     )
     return response
 

@@ -10,7 +10,7 @@ class AttributionSchema(Schema):
     name_translations: TranslationsSchema
     description: str
     description_translations: TranslationsSchema
-    provider_id: str
+    provider_id: int
 
 
 class AttributionListSchema(Schema):

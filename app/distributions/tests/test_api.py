@@ -66,7 +66,7 @@ class ApiTestCase(TestCase):
                 it="Ufficio federale dell'ambiente",
                 rm="Uffizi federal per l'ambient",
             ),
-            provider_id=str(Provider.objects.last().id)
+            provider_id=Provider.objects.last().id
         )
 
         assert actual == expected
@@ -99,7 +99,7 @@ class ApiTestCase(TestCase):
                 it=None,
                 rm=None,
             ),
-            provider_id=str(Provider.objects.last().id),
+            provider_id=Provider.objects.last().id,
         )
 
         assert actual == expected
@@ -130,7 +130,7 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(Provider.objects.last().id),
+            "provider_id": Provider.objects.last().id,
         }
 
     def test_get_attribution_returns_attribution_with_language_from_query(self):
@@ -159,7 +159,7 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(Provider.objects.last().id),
+            "provider_id": Provider.objects.last().id,
         }
 
     def test_get_attribution_returns_404_for_nonexisting_attribution(self):
@@ -197,7 +197,7 @@ class ApiTestCase(TestCase):
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
             },
-            "provider_id": str(Provider.objects.last().id),
+            "provider_id": Provider.objects.last().id,
         }
 
     def test_get_attribution_returns_attribution_with_language_from_header(self):
@@ -226,7 +226,7 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(Provider.objects.last().id),
+            "provider_id": Provider.objects.last().id,
         }
 
     def test_get_attribution_returns_attribution_with_language_from_query_param_even_if_header_set(
@@ -259,7 +259,7 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(Provider.objects.last().id),
+            "provider_id": Provider.objects.last().id,
         }
 
     def test_get_attribution_returns_attribution_with_default_language_if_header_empty(self):
@@ -288,7 +288,7 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(Provider.objects.last().id),
+            "provider_id": Provider.objects.last().id,
         }
 
     def test_get_attribution_returns_attribution_with_first_known_language_from_header(self):
@@ -319,7 +319,7 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(Provider.objects.last().id),
+            "provider_id": Provider.objects.last().id,
         }
 
     def test_get_attribution_returns_attribution_with_first_language_from_header_ignoring_qfactor(
@@ -351,7 +351,7 @@ class ApiTestCase(TestCase):
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": str(Provider.objects.last().id),
+            "provider_id": Provider.objects.last().id,
         }
 
     def test_get_attributions_returns_single_attribution_with_given_language(self):
@@ -379,7 +379,7 @@ class ApiTestCase(TestCase):
                     "it": "Ufficio federale dell'ambiente",
                     "rm": "Uffizi federal per l'ambient",
                 },
-                "provider_id": str(Provider.objects.last().id),
+                "provider_id": Provider.objects.last().id,
             }]
         }
 
@@ -411,7 +411,7 @@ class ApiTestCase(TestCase):
                     "fr": "Office fédéral de l'environnement",
                     "en": "Federal Office for the Environment",
                 },
-                "provider_id": str(Provider.objects.last().id),
+                "provider_id": Provider.objects.last().id,
             }]
         }
 
@@ -440,7 +440,7 @@ class ApiTestCase(TestCase):
                     "it": "Ufficio federale dell'ambiente",
                     "rm": "Uffizi federal per l'ambient",
                 },
-                "provider_id": str(Provider.objects.last().id),
+                "provider_id": Provider.objects.last().id,
             }]
         }
 
@@ -489,7 +489,7 @@ class ApiTestCase(TestCase):
                         "it": "Ufficio federale dell'ambiente",
                         "rm": "Uffizi federal per l'ambient",
                     },
-                    "provider_id": str(provider1.id),
+                    "provider_id": provider1.id,
                 },
                 {
                     "id": attribution_id_2,
@@ -509,7 +509,7 @@ class ApiTestCase(TestCase):
                         "it": "Ufficio federale dei trasporti",
                         "rm": "Uffizi federal da traffic",
                     },
-                    "provider_id": str(provider2.id),
+                    "provider_id": provider2.id,
                 },
             ]
         }
