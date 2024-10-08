@@ -1,4 +1,5 @@
 from bod.models import BodContactOrganisation
+from bod.models import BodTranslations
 from provider.models import Provider
 
 from django.core.management.base import BaseCommand
@@ -10,7 +11,8 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.messages = []
+        self.counts = {}
+        self.verbose = False
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -29,24 +31,71 @@ class Command(BaseCommand):
             help="Show more output",
         )
 
-    def clear(self):
-        cleared, _ = Provider.objects.all().delete()
-        if cleared:
-            self.messages.append(f"{cleared} provider(s) cleared")
+    def increment_counter(self, model, operation, value=1):
+        """ Updates internal counters of operations on models. """
 
-    def import_providers(self, verbose):
-        added = 0
-        updated = 0
-        removed = 0
+        self.counts.setdefault(model, {})
+        self.counts[model].setdefault(operation, 0)
+        self.counts[model][operation] += value
+
+    def print(self, message):
+        """ Print a message to stdout, if verbose. """
+
+        if self.verbose:
+            self.stdout.write(message)
+
+    def update_model(self, model, attribute, new_value, new_model):
+        """ Update the given model and print changes. """
+
+        changed = False
+        old_value = getattr(model, attribute)
+        if old_value != new_value:
+            changed = True
+            setattr(model, attribute, new_value)
+            if not new_model:
+                self.print(
+                    f"Changed {model.__class__.__name__} {model.id} {attribute} from '{old_value}'"
+                    f" to '{new_value}'"
+                )
+        return changed
+
+    def clear(self):
+        """ Remove existing providers previously imported from BOD. """
+
+        _, cleared = Provider.objects.filter(_legacy_id__isnull=False).delete()
+        for model, count in cleared.items():
+            self.increment_counter(model.split('.')[-1].lower(), 'cleared', count)
+
+    def import_providers(self):
+        """ Import providers from the old contact organizations table.
+
+        This function adds new providers, updates existing ones (with a matching legacy ID) and
+        removes orphans (with a legacy id not found in the BOD). It also ensures one attribution
+        per provider.
+
+        In general, each entry in the old organizations table corresponds to one in the new table
+        providers (although with different column names). For attributions, the BOD stores one
+        attribution per organization in a column of the organizations table with translations in
+        the translations table. Here, we create one attribution entry for each provider or remove
+        additional ones.
+
+        """
         processed = set()
 
         for organization in BodContactOrganisation.objects.all():
+            # Keep track of processed organizations for orphan removal
             legacy_id = organization.pk_contactorganisation_id
             processed.add(legacy_id)
+
+            # Get or create provider
             provider, created = Provider.objects.get_or_create(_legacy_id=legacy_id)
-            changed = False
+            if created:
+                self.increment_counter('provider', 'added')
+                self.print(f"Added provider '{organization.name_en}'")
+
+            # Update provider attributes
+            any_changed = False
             for provider_attribute, organization_attribute in (
-                ('name_de', 'name_de'),
                 ('name_de', 'name_de'),
                 ('name_en', 'name_en'),
                 ('name_fr', 'name_fr'),
@@ -58,47 +107,88 @@ class Command(BaseCommand):
                 ('acronym_it', 'abkuerzung_it'),
                 ('acronym_rm', 'abkuerzung_rm'),
             ):
-                old = getattr(provider, provider_attribute)
-                new = getattr(organization, organization_attribute)
-                if old != new:
-                    changed = True
-                    setattr(provider, provider_attribute, new)
-                    if verbose and not created:
-                        self.stdout.write(
-                            f"Changed provider {provider.id} ({legacy_id}) "
-                            f"{provider_attribute} from '{old}' to '{new}'"
-                        )
-            if changed and not created:
-                updated += 1
-            if created:
-                added += 1
-                if verbose:
-                    self.stdout.write(f"Added provider '{organization.name_en}'")
+                changed = self.update_model(
+                    provider,
+                    provider_attribute,
+                    getattr(organization, organization_attribute),
+                    created
+                )
+                any_changed = any_changed or changed
+            if any_changed and not created:
+                self.increment_counter('provider', 'updated')
 
+            # Save provider
             provider.save()
 
-        removed, _ = Provider.objects.filter(_legacy_id__isnull=False).exclude(
-            _legacy_id__in=processed).delete()
+            # Get or create attribution
+            attribution, created = provider.attribution_set.get_or_create()
+            if created:
+                self.increment_counter('attribution', 'added')
+                self.print(f"Added attribution '{organization.attribution}'")
 
-        if added:
-            self.messages.append(f"{added} provider(s) added")
-        if updated:
-            self.messages.append(f"{updated} provider(s) updated")
-        if removed:
-            self.messages.append(f"{removed} provider(s) removed")
+            # Remove additional attributions
+            removed, _ = provider.attribution_set.exclude(id=attribution.id).delete()
+            self.increment_counter('attribution', 'removed', removed)
+
+            # Update attribution
+            any_changed = False
+            translation = BodTranslations.objects.filter(msg_id=organization.attribution).first()
+            for attribution_attribute, translation_attribute in (
+                ('name_de', 'de'),
+                ('name_fr', 'fr'),
+                ('name_en', 'en'),
+                ('name_it', 'it'),
+                ('name_rm', 'rm'),
+                ('description_de', 'de'),
+                ('description_fr', 'fr'),
+                ('description_en', 'en'),
+                ('description_it', 'it'),
+                ('description_rm', 'rm')
+            ):
+                changed = self.update_model(
+                    attribution,
+                    attribution_attribute,
+                    getattr(translation, translation_attribute, '') or '',
+                    created
+                )
+                any_changed = any_changed or changed
+            if any_changed and not created:
+                self.increment_counter('attribution', 'updated')
+
+            # Save attribution
+            attribution.save()
+
+        # Remove orphaned providers
+        orphans = Provider.objects.filter(_legacy_id__isnull=False
+                                         ).exclude(_legacy_id__in=processed)
+        _, removed = orphans.delete()
+        for model, count in removed.items():
+            self.increment_counter(model.split('.')[-1].lower(), 'removed', count)
 
     def handle(self, *args, **options):
-        verbose = "verbose" in options
+        """ Main entry point of command. """
+
+        self.verbose = options["verbose"]
         with transaction.atomic():
+            # Clear data
             if options["clear"]:
                 self.clear()
 
-            self.import_providers(verbose)
+            # Import data
+            self.import_providers()
 
-            for message in self.messages:
-                self.stdout.write(self.style.SUCCESS(message))
-            self.stdout.write(self.style.SUCCESS("Done"))
+            # Print counts
+            printed = False
+            for model in sorted(self.counts):
+                for operation in sorted(self.counts[model]):
+                    count = self.counts[model][operation]
+                    if count:
+                        printed = True
+                        self.stdout.write(self.style.SUCCESS(f"{count} {model}(s) {operation}"))
+            if not printed:
+                self.stdout.write(self.style.SUCCESS("nothing to be done"))
 
+            # Abort if dry run
             if options["dry_run"]:
                 self.stdout.write(self.style.WARNING("dry run, aborting transaction"))
                 transaction.set_rollback(True)

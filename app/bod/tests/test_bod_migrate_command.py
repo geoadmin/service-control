@@ -1,6 +1,8 @@
 from io import StringIO
 
 from bod.models import BodContactOrganisation
+from bod.models import BodTranslations
+from distributions.models import Attribution
 from provider.models import Provider
 
 from django.core.management import call_command
@@ -24,14 +26,20 @@ class BodMigrateCommandTest(TestCase):
             abkuerzung_en="FOEN",
             abkuerzung_it="UFAM",
             abkuerzung_rm="UFAM",
+            attribution="ch.bafu"
+        )
+        BodTranslations.objects.create(
+            msg_id="ch.bafu", de="BAFU", fr="OFEV", en="FOEN", it="UFAM", rm="UFAM"
         )
 
-    def test_command_imports_providers(self):
+    def test_command_imports(self):
         out = StringIO()
         call_command("bod_migrate", verbose=True, stdout=out)
         self.assertIn("Added provider 'Federal Office for the Environment'", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())
+        self.assertIn("1 attribution(s) added", out.getvalue())
         self.assertEqual(Provider.objects.count(), 1)
+        self.assertEqual(Attribution.objects.count(), 1)
 
         provider = Provider.objects.first()
         self.assertEqual(provider.name_de, "Bundesamt für Umwelt")
@@ -45,7 +53,19 @@ class BodMigrateCommandTest(TestCase):
         self.assertEqual(provider.acronym_it, "UFAM")
         self.assertEqual(provider.acronym_rm, "UFAM")
 
-    def test_command_updates_providers(self):
+        attribution = provider.attribution_set.first()
+        self.assertEqual(attribution.name_de, "BAFU")
+        self.assertEqual(attribution.name_fr, "OFEV")
+        self.assertEqual(attribution.name_en, "FOEN")
+        self.assertEqual(attribution.name_it, "UFAM")
+        self.assertEqual(attribution.name_rm, "UFAM")
+        self.assertEqual(attribution.description_de, "BAFU")
+        self.assertEqual(attribution.description_fr, "OFEV")
+        self.assertEqual(attribution.description_en, "FOEN")
+        self.assertEqual(attribution.description_it, "UFAM")
+        self.assertEqual(attribution.description_rm, "UFAM")
+
+    def test_command_updates(self):
         provider = Provider.objects.create(
             name_de="XXX",
             name_fr="XXX",
@@ -55,13 +75,26 @@ class BodMigrateCommandTest(TestCase):
             acronym_en="",
             _legacy_id=17
         )
+        attribution = Attribution.objects.create(
+            name_de="XXX",
+            name_fr="XXX",
+            name_en="XXX",
+            description_de="BAFU",
+            description_fr="",
+            description_en="",
+            provider=provider
+        )
 
         out = StringIO()
         call_command("bod_migrate", verbose=True, stdout=out)
-        self.assertIn(f"Changed provider {provider.id} (17) name_de", out.getvalue())
-        self.assertNotIn(f"Changed provider {provider.id} (17) acronym_de", out.getvalue())
+        self.assertIn(f"Changed Provider {provider.id} name_de", out.getvalue())
+        self.assertNotIn(f"Changed Provider {provider.id} acronym_de", out.getvalue())
         self.assertIn("1 provider(s) updated", out.getvalue())
+        self.assertIn(f"Changed Attribution {attribution.id} name_de", out.getvalue())
+        self.assertNotIn(f"Changed Attribution {attribution.id} description_de", out.getvalue())
+        self.assertIn("1 attribution(s) updated", out.getvalue())
         self.assertEqual(Provider.objects.count(), 1)
+        self.assertEqual(Attribution.objects.count(), 1)
 
         provider = Provider.objects.first()
         self.assertEqual(provider.name_de, "Bundesamt für Umwelt")
@@ -75,7 +108,20 @@ class BodMigrateCommandTest(TestCase):
         self.assertEqual(provider.acronym_it, "UFAM")
         self.assertEqual(provider.acronym_rm, "UFAM")
 
-    def test_command_removes_orphaned_providers(self):
+        attribution = provider.attribution_set.first()
+        self.assertEqual(attribution.name_de, "BAFU")
+        self.assertEqual(attribution.name_fr, "OFEV")
+        self.assertEqual(attribution.name_en, "FOEN")
+        self.assertEqual(attribution.name_it, "UFAM")
+        self.assertEqual(attribution.name_rm, "UFAM")
+        self.assertEqual(attribution.description_de, "BAFU")
+        self.assertEqual(attribution.description_fr, "OFEV")
+        self.assertEqual(attribution.description_en, "FOEN")
+        self.assertEqual(attribution.description_it, "UFAM")
+        self.assertEqual(attribution.description_rm, "UFAM")
+
+    def test_command_removes_orphaned(self):
+        # Add objects which will be removed
         provider = Provider.objects.create(
             name_de="XXX",
             name_fr="XXX",
@@ -85,6 +131,16 @@ class BodMigrateCommandTest(TestCase):
             acronym_en="XXX",
             _legacy_id=16
         )
+        attribution = Attribution.objects.create(
+            name_de="XXX",
+            name_fr="XXX",
+            name_en="XXX",
+            description_de="XXX",
+            description_fr="XXX",
+            description_en="XXX",
+            provider=provider
+        )
+        # Add objects which will not be removed
         provider = Provider.objects.create(
             name_de="YYY",
             name_fr="YYY",
@@ -93,36 +149,68 @@ class BodMigrateCommandTest(TestCase):
             acronym_fr="YYYY",
             acronym_en="YYYY",
         )
+        attribution = Attribution.objects.create(
+            name_de="YYYY",
+            name_fr="YYYY",
+            name_en="YYYY",
+            description_de="YYY",
+            description_fr="YYY",
+            description_en="YYY",
+            provider=provider
+        )
 
         out = StringIO()
         call_command("bod_migrate", verbose=True, stdout=out)
         self.assertIn("1 provider(s) removed", out.getvalue())
+        self.assertIn("1 attribution(s) removed", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())
+        self.assertIn("1 attribution(s) added", out.getvalue())
         self.assertEqual(Provider.objects.count(), 2)
+        self.assertEqual(Attribution.objects.count(), 2)
         self.assertEqual({'BAFU', 'YYYY'},
                          set(Provider.objects.values_list('acronym_de', flat=True)))
+        self.assertEqual({'BAFU', 'YYYY'},
+                         set(Attribution.objects.values_list('name_de', flat=True)))
 
     def test_command_does_not_import_if_dry_run(self):
         out = StringIO()
         call_command("bod_migrate", dry_run=True, stdout=out)
         self.assertIn("1 provider(s) added", out.getvalue())
+        self.assertIn("1 attribution(s) added", out.getvalue())
         self.assertIn("dry run, aborting", out.getvalue())
         self.assertEqual(Provider.objects.count(), 0)
+        self.assertEqual(Attribution.objects.count(), 0)
 
     def test_command_clears_existing_data(self):
-        Provider.objects.create(
+        provider = Provider.objects.create(
             name_de="XXX",
             name_fr="XXX",
             name_en="XXX",
             acronym_de="XXX",
             acronym_fr="XXX",
             acronym_en="XXX",
+            _legacy_id=150
         )
+        attribution = Attribution.objects.create(
+            name_de="XXX",
+            name_fr="XXX",
+            name_en="XXX",
+            description_de="XXX",
+            description_fr="XXX",
+            description_en="XXX",
+            provider=provider
+        )
+
         out = StringIO()
         call_command("bod_migrate", clear=True, stdout=out)
         self.assertIn("1 provider(s) cleared", out.getvalue())
+        self.assertIn("1 attribution(s) cleared", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())
+        self.assertIn("1 attribution(s) added", out.getvalue())
         self.assertEqual(Provider.objects.count(), 1)
 
         provider = Provider.objects.first()
         self.assertEqual(provider.name_de, "Bundesamt für Umwelt")
+
+        attribution = provider.attribution_set.first()
+        self.assertEqual(attribution.name_de, "BAFU")

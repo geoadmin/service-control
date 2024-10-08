@@ -17,6 +17,22 @@ class BodContactOrganisation(models.Model):
     name_it = models.CharField(max_length=255, blank=True, null=True)
     name_rm = models.CharField(max_length=255, blank=True, null=True)
 
+    attribution = models.TextField(blank=True, null=True)
+
     class Meta:
         managed = settings.TESTING
         db_table = 'contactorganisation'
+
+
+class BodTranslations(models.Model):
+    msg_id = models.CharField(primary_key=True, max_length=255)
+
+    de = models.CharField(max_length=5000, blank=True, null=True)
+    fr = models.CharField(max_length=5000, blank=True, null=True)
+    it = models.CharField(max_length=5000, blank=True, null=True)
+    rm = models.CharField(max_length=5000, blank=True, null=True)
+    en = models.CharField(max_length=5000, blank=True, null=True)
+
+    class Meta:
+        managed = settings.TESTING
+        db_table = 'translations'

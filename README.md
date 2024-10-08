@@ -83,7 +83,7 @@ testing. Since these are only used for testing, you might remove the initial mig
 it:
 
 ```bash
-rm rm app/bod/migrations/0001_initial.py
+rm app/bod/migrations/0001_initial.py
 app/manage.py makemigrations bod
 ```
 
