@@ -109,7 +109,7 @@ def attributions(request: HttpRequest, lang: LanguageCode | None = None):
     lang_to_use = get_language(lang, request.headers)
 
     responses = [attribution_to_response(model, lang_to_use) for model in models]
-    return AttributionListSchema(items=responses)
+    return {"items": responses}
 
 
 @router.get("datasets/{dataset_id}", response={200: DatasetSchema}, exclude_none=True)
@@ -130,4 +130,4 @@ def datasets(request: HttpRequest):
     corresponding endpoint for a specific attribution.
     """
     models = Dataset.objects.order_by("id").all()
-    return DatasetListSchema(items=models)
+    return {"items": models}
