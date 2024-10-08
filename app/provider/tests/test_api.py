@@ -32,7 +32,7 @@ class ApiTestCase(TestCase):
         actual = provider_to_response(model, lang="de")
 
         expected = ProviderSchema(
-            id=str(model.id),
+            id=model.id,
             name="Bundesamt für Umwelt",
             name_translations=TranslationsSchema(
                 de="Bundesamt für Umwelt",
@@ -94,7 +94,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider_id}",
+            "id": provider_id,
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -122,7 +122,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider_id}",
+            "id": provider_id,
             "name": "Bundesamt für Umwelt",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -163,7 +163,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider.id}",
+            "id": provider.id,
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -187,7 +187,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider_id}",
+            "id": provider_id,
             "name": "Bundesamt für Umwelt",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -215,7 +215,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider_id}",
+            "id": provider_id,
             "name": "Office fédéral de l'environnement",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -243,7 +243,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider_id}",
+            "id": provider_id,
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -271,7 +271,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider_id}",
+            "id": provider_id,
             "name": "Bundesamt für Umwelt",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -300,7 +300,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{provider_id}",
+            "id": provider_id,
             "name": "Office fédéral de l'environnement",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -327,7 +327,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{Provider.objects.last().id}",
+                "id": Provider.objects.last().id,
                 "name": "Office fédéral de l'environnement",
                 "name_translations": {
                     "de": "Bundesamt für Umwelt",
@@ -362,7 +362,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{provider.id}",
+                "id": provider.id,
                 "name": "Federal Office for the Environment",
                 "name_translations": {
                     "de": "Bundesamt für Umwelt",
@@ -386,7 +386,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{Provider.objects.last().id}",
+                "id": Provider.objects.last().id,
                 "name": "Bundesamt für Umwelt",
                 "name_translations": {
                     "de": "Bundesamt für Umwelt",
@@ -429,7 +429,7 @@ class ApiTestCase(TestCase):
         assert response.data == {
             "items": [
                 {
-                    "id": f"{Provider.objects.first().id}",
+                    "id": Provider.objects.first().id,
                     "name": "Office fédéral de l'environnement",
                     "name_translations": {
                         "de": "Bundesamt für Umwelt",
@@ -448,7 +448,7 @@ class ApiTestCase(TestCase):
                     }
                 },
                 {
-                    "id": f"{Provider.objects.last().id}",
+                    "id": Provider.objects.last().id,
                     "name": "Office fédéral des transports",
                     "name_translations": {
                         "de": "Bundesamt für Verkehr",

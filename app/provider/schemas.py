@@ -3,7 +3,7 @@ from schemas import TranslationsSchema
 
 
 class ProviderSchema(Schema):
-    id: str
+    id: int
     name: str
     name_translations: TranslationsSchema
     acronym: str

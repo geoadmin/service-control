@@ -19,7 +19,7 @@ def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
     Transforms the given model using the given language into a response object.
     """
     response = ProviderSchema(
-        id=str(model.id),
+        id=model.id,
         name=get_translation(model, "name", lang),
         name_translations=TranslationsSchema(
             de=model.name_de,
@@ -49,7 +49,7 @@ def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None =
              "acronym" would take the value of the corresponding translation.
 
                 {
-                    "id": "1",
+                    "id": 1,
                     "name": "German",
                     "name_translations": {
                         "de": "German",
