@@ -1,8 +1,10 @@
 from io import StringIO
 
 from bod.models import BodContactOrganisation
+from bod.models import BodDataset
 from bod.models import BodTranslations
 from distributions.models import Attribution
+from distributions.models import Dataset
 from provider.models import Provider
 
 from django.core.management import call_command
@@ -31,6 +33,9 @@ class BodMigrateCommandTest(TestCase):
         BodTranslations.objects.create(
             msg_id="ch.bafu", de="BAFU", fr="OFEV", en="FOEN", it="UFAM", rm="UFAM"
         )
+        BodDataset.objects.create(
+            id=170, id_dataset="ch.bafu.auen-vegetationskarten", fk_contactorganisation_id=17
+        )
 
     def test_command_imports(self):
         out = StringIO()
@@ -38,8 +43,10 @@ class BodMigrateCommandTest(TestCase):
         self.assertIn("Added provider 'Federal Office for the Environment'", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())
         self.assertIn("1 attribution(s) added", out.getvalue())
+        self.assertIn("1 dataset(s) added", out.getvalue())
         self.assertEqual(Provider.objects.count(), 1)
         self.assertEqual(Attribution.objects.count(), 1)
+        self.assertEqual(Dataset.objects.count(), 1)
 
         provider = Provider.objects.first()
         self.assertEqual(provider.name_de, "Bundesamt für Umwelt")
@@ -64,6 +71,10 @@ class BodMigrateCommandTest(TestCase):
         self.assertEqual(attribution.description_en, "FOEN")
         self.assertEqual(attribution.description_it, "UFAM")
         self.assertEqual(attribution.description_rm, "UFAM")
+
+        dataset = provider.dataset_set.first()
+        self.assertEqual(dataset.attribution, attribution)
+        self.assertEqual(dataset.slug, "ch.bafu.auen-vegetationskarten")
 
     def test_command_updates(self):
         provider = Provider.objects.create(
@@ -84,6 +95,9 @@ class BodMigrateCommandTest(TestCase):
             description_en="",
             provider=provider
         )
+        dataset = Dataset.objects.create(
+            slug="XXX", provider=provider, attribution=attribution, _legacy_id=170
+        )
 
         out = StringIO()
         call_command("bod_migrate", verbosity=2, stdout=out)
@@ -93,8 +107,11 @@ class BodMigrateCommandTest(TestCase):
         self.assertIn(f"Changed Attribution {attribution.id} name_de", out.getvalue())
         self.assertNotIn(f"Changed Attribution {attribution.id} description_de", out.getvalue())
         self.assertIn("1 attribution(s) updated", out.getvalue())
+        self.assertIn(f"Changed Dataset {dataset.id} slug", out.getvalue())
+        self.assertIn("1 dataset(s) updated", out.getvalue())
         self.assertEqual(Provider.objects.count(), 1)
         self.assertEqual(Attribution.objects.count(), 1)
+        self.assertEqual(Dataset.objects.count(), 1)
 
         provider = Provider.objects.first()
         self.assertEqual(provider.name_de, "Bundesamt für Umwelt")
@@ -119,6 +136,9 @@ class BodMigrateCommandTest(TestCase):
         self.assertEqual(attribution.description_en, "FOEN")
         self.assertEqual(attribution.description_it, "UFAM")
         self.assertEqual(attribution.description_rm, "UFAM")
+
+        dataset = provider.dataset_set.first()
+        self.assertEqual(dataset.slug, "ch.bafu.auen-vegetationskarten")
 
     def test_command_removes_orphaned(self):
         # Add objects which will be removed
@@ -140,6 +160,10 @@ class BodMigrateCommandTest(TestCase):
             description_en="XXX",
             provider=provider
         )
+        Dataset.objects.create(
+            slug="XXX", provider=provider, attribution=attribution, _legacy_id=160
+        )
+
         # Add objects which will not be removed
         provider = Provider.objects.create(
             name_de="YYY",
@@ -158,28 +182,36 @@ class BodMigrateCommandTest(TestCase):
             description_en="YYY",
             provider=provider
         )
+        Dataset.objects.create(slug="YYYY", provider=provider, attribution=attribution)
 
         out = StringIO()
         call_command("bod_migrate", verbosity=2, stdout=out)
         self.assertIn("1 provider(s) removed", out.getvalue())
         self.assertIn("1 attribution(s) removed", out.getvalue())
+        self.assertIn("1 dataset(s) removed", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())
         self.assertIn("1 attribution(s) added", out.getvalue())
+        self.assertIn("1 dataset(s) added", out.getvalue())
         self.assertEqual(Provider.objects.count(), 2)
         self.assertEqual(Attribution.objects.count(), 2)
+        self.assertEqual(Dataset.objects.count(), 2)
         self.assertEqual({'BAFU', 'YYYY'},
                          set(Provider.objects.values_list('acronym_de', flat=True)))
         self.assertEqual({'BAFU', 'YYYY'},
                          set(Attribution.objects.values_list('name_de', flat=True)))
+        self.assertEqual({'ch.bafu.auen-vegetationskarten', 'YYYY'},
+                         set(Dataset.objects.values_list('slug', flat=True)))
 
     def test_command_does_not_import_if_dry_run(self):
         out = StringIO()
         call_command("bod_migrate", dry_run=True, stdout=out)
         self.assertIn("1 provider(s) added", out.getvalue())
         self.assertIn("1 attribution(s) added", out.getvalue())
+        self.assertIn("1 dataset(s) added", out.getvalue())
         self.assertIn("dry run, aborting", out.getvalue())
         self.assertEqual(Provider.objects.count(), 0)
         self.assertEqual(Attribution.objects.count(), 0)
+        self.assertEqual(Dataset.objects.count(), 0)
 
     def test_command_clears_existing_data(self):
         provider = Provider.objects.create(
@@ -200,17 +232,24 @@ class BodMigrateCommandTest(TestCase):
             description_en="XXX",
             provider=provider
         )
+        Dataset.objects.create(slug="YYYY", provider=provider, attribution=attribution)
 
         out = StringIO()
         call_command("bod_migrate", clear=True, stdout=out)
         self.assertIn("1 provider(s) cleared", out.getvalue())
         self.assertIn("1 attribution(s) cleared", out.getvalue())
+        self.assertIn("1 dataset(s) cleared", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())
         self.assertIn("1 attribution(s) added", out.getvalue())
+        self.assertIn("1 dataset(s) added", out.getvalue())
         self.assertEqual(Provider.objects.count(), 1)
+        self.assertEqual(Dataset.objects.count(), 1)
 
         provider = Provider.objects.first()
         self.assertEqual(provider.name_de, "Bundesamt für Umwelt")
 
         attribution = provider.attribution_set.first()
         self.assertEqual(attribution.name_de, "BAFU")
+
+        dataset = provider.dataset_set.first()
+        self.assertEqual(dataset.slug, "ch.bafu.auen-vegetationskarten")

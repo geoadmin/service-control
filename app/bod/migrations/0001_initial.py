@@ -34,6 +34,18 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='BodDataset',
+            fields=[
+                ('id', models.AutoField(primary_key=True, serialize=False, unique=True)),
+                ('id_dataset', models.TextField()),
+                ('fk_contactorganisation_id', models.IntegerField(blank=True, null=True)),
+            ],
+            options={
+                'db_table': 'dataset',
+                'managed': settings.TESTING,
+            },
+        ),
+        migrations.CreateModel(
             name='BodTranslations',
             fields=[
                 ('msg_id', models.CharField(max_length=255, primary_key=True, serialize=False)),

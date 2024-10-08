@@ -24,6 +24,16 @@ class BodContactOrganisation(models.Model):
         db_table = 'contactorganisation'
 
 
+class BodDataset(models.Model):
+    id = models.AutoField(unique=True, primary_key=True)
+    id_dataset = models.TextField()
+    fk_contactorganisation_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = settings.TESTING
+        db_table = 'dataset'
+
+
 class BodTranslations(models.Model):
     msg_id = models.CharField(primary_key=True, max_length=255)
 

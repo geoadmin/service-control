@@ -1,8 +1,10 @@
 from typing import Any
 
 from bod.models import BodContactOrganisation
+from bod.models import BodDataset
 from bod.models import BodTranslations
 from distributions.models import Attribution
+from distributions.models import Dataset
 from provider.models import Provider
 from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
@@ -27,7 +29,11 @@ class Handler(CommandHandler):
         self.counts[model][operation] += value
 
     def update_model(
-        self, model: Provider | Attribution, attribute: str, new_value: str, new_model: bool
+        self,
+        model: Provider | Attribution | Dataset,
+        attribute: str,
+        new_value: str,
+        new_model: bool
     ) -> bool:
         """ Update the given model and print changes. """
 
@@ -55,13 +61,10 @@ class Handler(CommandHandler):
 
         This function adds new providers, updates existing ones (with a matching legacy ID) and
         removes orphans (with a legacy id not found in the BOD). It also ensures one attribution
-        per provider.
+        per provider and imports datasets.
 
         In general, each entry in the old organizations table corresponds to one in the new table
-        providers (although with different column names). For attributions, the BOD stores one
-        attribution per organization in a column of the organizations table with translations in
-        the translations table. Here, we create one attribution entry for each provider or remove
-        additional ones.
+        providers (although with different column names).
 
         """
         processed = set()
@@ -78,34 +81,16 @@ class Handler(CommandHandler):
                 self.print(f"Added provider '{organization.name_en}'")
 
             # Update provider attributes
-            any_changed = False
-            for provider_attribute, organization_attribute in (
-                ('name_de', 'name_de'),
-                ('name_en', 'name_en'),
-                ('name_fr', 'name_fr'),
-                ('name_it', 'name_it'),
-                ('name_rm', 'name_rm'),
-                ('acronym_de', 'abkuerzung_de'),
-                ('acronym_fr', 'abkuerzung_fr'),
-                ('acronym_en', 'abkuerzung_en'),
-                ('acronym_it', 'abkuerzung_it'),
-                ('acronym_rm', 'abkuerzung_rm'),
-            ):
-                changed = self.update_model(
-                    provider,
-                    provider_attribute,
-                    getattr(organization, organization_attribute),
-                    created
-                )
-                any_changed = any_changed or changed
-            if any_changed and not created:
-                self.increment_counter('provider', 'updated')
+            self.update_provider(provider, organization, created)
 
             # Save provider
             provider.save()
 
             # Import attribution
-            self.import_attribution(provider, organization)
+            attribution = self.import_attribution(provider, organization)
+
+            # Update datasets
+            self.import_datasets(provider, attribution, legacy_id)
 
         # Remove orphaned providers
         orphans = Provider.objects.filter(_legacy_id__isnull=False
@@ -114,7 +99,44 @@ class Handler(CommandHandler):
         for model, count in removed.items():
             self.increment_counter(model.split('.')[-1].lower(), 'removed', count)
 
-    def import_attribution(self, provider: Provider, organization: BodContactOrganisation) -> None:
+    def update_provider(
+        self, provider: Provider, organization: BodContactOrganisation, new_model: bool
+    ) -> None:
+        """ Update the attributes of a provider. """
+
+        any_changed = False
+        for provider_attribute, organization_attribute in (
+            ('name_de', 'name_de'),
+            ('name_en', 'name_en'),
+            ('name_fr', 'name_fr'),
+            ('name_it', 'name_it'),
+            ('name_rm', 'name_rm'),
+            ('acronym_de', 'abkuerzung_de'),
+            ('acronym_fr', 'abkuerzung_fr'),
+            ('acronym_en', 'abkuerzung_en'),
+            ('acronym_it', 'abkuerzung_it'),
+            ('acronym_rm', 'abkuerzung_rm'),
+        ):
+            changed = self.update_model(
+                provider,
+                provider_attribute,
+                getattr(organization, organization_attribute),
+                new_model
+            )
+            any_changed = any_changed or changed
+        if any_changed and not new_model:
+            self.increment_counter('provider', 'updated')
+
+    def import_attribution(
+        self, provider: Provider, organization: BodContactOrganisation
+    ) -> Attribution:
+        """ Import the attribution of a provider from the old contact organizations table.
+
+        The BOD stores one attribution per organization in a column of the organizations table with
+        translations in the translations table. Here, we create one attribution entry for each
+        provider or remove additional ones.
+        """
+
         # Get or create attribution
         attribution, created = provider.attribution_set.get_or_create()
         if created:
@@ -126,6 +148,18 @@ class Handler(CommandHandler):
         self.increment_counter('attribution', 'removed', removed)
 
         # Update attribution
+        self.update_attribution(attribution, organization, created)
+
+        # Save attribution
+        attribution.save()
+
+        return attribution
+
+    def update_attribution(
+        self, attribution: Attribution, organization: BodContactOrganisation, new_model: bool
+    ) -> None:
+        """ Update the attributes of an attribution. """
+
         any_changed = False
         translation = BodTranslations.objects.filter(msg_id=organization.attribution).first()
         for attribution_attribute, translation_attribute in (
@@ -144,14 +178,53 @@ class Handler(CommandHandler):
                 attribution,
                 attribution_attribute,
                 getattr(translation, translation_attribute, '') or '',
-                created
+                new_model
             )
             any_changed = any_changed or changed
-        if any_changed and not created:
+        if any_changed and not new_model:
             self.increment_counter('attribution', 'updated')
 
-        # Save attribution
-        attribution.save()
+    def import_datasets(self, provider: Provider, attribution: Attribution, legacy_id: int) -> None:
+        """ Import all datasets for a given provider. """
+
+        processed = set()
+        for bod_dataset in BodDataset.objects.filter(fk_contactorganisation_id=legacy_id):
+            # Keep track of processed BOD datasets for orphan removal
+            legacy_id = bod_dataset.id
+            processed.add(legacy_id)
+
+            # Get or create dataset
+            dataset, created = Dataset.objects.get_or_create(
+                provider=provider, attribution=attribution, _legacy_id=legacy_id
+            )
+            if created:
+                self.increment_counter('dataset', 'added')
+                self.print(f"Added dataset '{bod_dataset.id_dataset}'")
+
+            # Update dataset attributes
+            self.update_dataset(dataset, bod_dataset, created)
+
+            # Save dataset
+            dataset.save()
+
+        # Remove orphaned datasets
+        orphans = Dataset.objects.filter(_legacy_id__isnull=False,
+                                         provider=provider).exclude(_legacy_id__in=processed)
+        _, removed = orphans.delete()
+        for model, count in removed.items():
+            self.increment_counter(model.split('.')[-1].lower(), 'removed', count)
+
+    def update_dataset(self, dataset: Dataset, bod_dataset: BodDataset, new_model: bool) -> None:
+        """ Update the attributes of a dataset. """
+
+        any_changed = False
+        for dataset_attribute, bod_dataset_attribute in (('slug', 'id_dataset'),):
+            changed = self.update_model(
+                dataset, dataset_attribute, getattr(bod_dataset, bod_dataset_attribute), new_model
+            )
+            any_changed = any_changed or changed
+        if any_changed and not new_model:
+            self.increment_counter('dataset', 'updated')
 
     def run(self) -> None:
         """ Main entry point of command. """
