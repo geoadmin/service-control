@@ -22,7 +22,7 @@ def attribution_to_response(model: Attribution, lang: LanguageCode) -> Attributi
     Transforms the given model using the given language into a response object.
     """
     response = AttributionSchema(
-        id=str(model.id),
+        id=model.id,
         name=get_translation(model, "name", lang),
         name_translations=TranslationsSchema(
             de=model.name_de,
@@ -53,7 +53,7 @@ def attribution(request: HttpRequest, attribution_id: int, lang: LanguageCode | 
              "description" would take the value of the corresponding translation.
 
                 {
-                    "id": "1",
+                    "id": 1,
                     "name": "German",
                     "name_translations": {
                         "de": "German",

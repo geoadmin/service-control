@@ -5,7 +5,7 @@ from schemas import TranslationsSchema
 
 
 class AttributionSchema(Schema):
-    id: str
+    id: int
     name: str
     name_translations: TranslationsSchema
     description: str

@@ -49,7 +49,7 @@ class ApiTestCase(TestCase):
         actual = attribution_to_response(model, lang="de")
 
         expected = AttributionSchema(
-            id=str(model.id),
+            id=model.id,
             name="BAFU",
             name_translations=TranslationsSchema(
                 de="BAFU",
@@ -82,7 +82,7 @@ class ApiTestCase(TestCase):
         actual = attribution_to_response(model, lang="it")
 
         expected = AttributionSchema(
-            id=str(model.id),
+            id=model.id,
             name="FOEN",
             name_translations=TranslationsSchema(
                 de="BAFU",
@@ -113,7 +113,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": str(attribution_id),
+            "id": attribution_id,
             "name": "FOEN",
             "name_translations": {
                 "de": "BAFU",
@@ -142,7 +142,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": str(attribution_id),
+            "id": attribution_id,
             "name": "BAFU",
             "name_translations": {
                 "de": "BAFU",
@@ -184,7 +184,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": str(model.id),
+            "id": model.id,
             "name": "FOEN",
             "name_translations": {
                 "de": "BAFU",
@@ -209,7 +209,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{attribution_id}",
+            "id": attribution_id,
             "name": "BAFU",
             "name_translations": {
                 "de": "BAFU",
@@ -242,7 +242,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{attribution_id}",
+            "id": attribution_id,
             "name": "OFEV",
             "name_translations": {
                 "de": "BAFU",
@@ -271,7 +271,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": str(attribution_id),
+            "id": attribution_id,
             "name": "FOEN",
             "name_translations": {
                 "de": "BAFU",
@@ -302,7 +302,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{attribution_id}",
+            "id": attribution_id,
             "name": "BAFU",
             "name_translations": {
                 "de": "BAFU",
@@ -334,7 +334,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{attribution_id}",
+            "id": attribution_id,
             "name": "OFEV",
             "name_translations": {
                 "de": "BAFU",
@@ -362,7 +362,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{Attribution.objects.last().id}",
+                "id": Attribution.objects.last().id,
                 "name": "OFEV",
                 "name_translations": {
                     "de": "BAFU",
@@ -398,7 +398,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{Attribution.objects.last().id}",
+                "id": Attribution.objects.last().id,
                 "name": "FOEN",
                 "name_translations": {
                     "de": "BAFU",
@@ -423,7 +423,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{Attribution.objects.last().id}",
+                "id": Attribution.objects.last().id,
                 "name": "BAFU",
                 "name_translations": {
                     "de": "BAFU",
@@ -472,7 +472,7 @@ class ApiTestCase(TestCase):
         assert response.data == {
             "items": [
                 {
-                    "id": f"{attribution_id_1}",
+                    "id": attribution_id_1,
                     "name": "OFEV",
                     "name_translations": {
                         "de": "BAFU",
@@ -492,7 +492,7 @@ class ApiTestCase(TestCase):
                     "provider_id": str(provider1.id),
                 },
                 {
-                    "id": f"{attribution_id_2}",
+                    "id": attribution_id_2,
                     "name": "OFT",
                     "name_translations": {
                         "de": "BAV",
