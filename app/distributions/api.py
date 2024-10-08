@@ -117,7 +117,7 @@ def dataset_to_response(model: Dataset) -> DatasetSchema:
     Transforms the given model into a response object.
     """
     return DatasetSchema(
-        id=str(model.id),
+        id=model.id,
         slug=model.slug,
         created=model.created,
         updated=model.updated,

@@ -520,7 +520,7 @@ class ApiTestCase(TestCase):
         actual = dataset_to_response(dataset)
 
         assert actual == DatasetSchema(
-            id=str(dataset.id),
+            id=dataset.id,
             slug="ch.bafu.neophyten-haargurke",
             created=self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             updated=self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -536,7 +536,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 200
         assert response.data == {
-            "id": f"{dataset_id}",
+            "id": dataset_id,
             "slug": "ch.bafu.neophyten-haargurke",
             "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -553,7 +553,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": f"{dataset.id}",
+                "id": dataset.id,
                 "slug": "ch.bafu.neophyten-haargurke",
                 "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -586,7 +586,7 @@ class ApiTestCase(TestCase):
         assert response.data == {
             "items": [
                 {
-                    "id": f"{dataset1.id}",
+                    "id": dataset1.id,
                     "slug": dataset1.slug,
                     "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "updated": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -594,7 +594,7 @@ class ApiTestCase(TestCase):
                     "attribution_id": str(Attribution.objects.first().id),
                 },
                 {
-                    "id": f"{dataset2.id}",
+                    "id": dataset2.id,
                     "slug": "slug2",
                     "created": dataset2.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "updated": dataset2.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),

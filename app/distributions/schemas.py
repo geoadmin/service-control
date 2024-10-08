@@ -18,7 +18,7 @@ class AttributionListSchema(Schema):
 
 
 class DatasetSchema(Schema):
-    id: str
+    id: int
     slug: str
     created: datetime
     updated: datetime
