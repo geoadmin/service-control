@@ -55,9 +55,7 @@ You may want to do an initial sync of your database by applying the most recent 
 app/manage.py migrate
 ```
 
-You can ignore warnings that 'bod' has unreflected changes.
-
-### Importing Data from the BOD
+## Importing Data from the BOD
 
 The "Betriebsobjekte Datenbank" (BOD) is a central database for running and configuring the map
 viewer and some of its services. It contains metadata and translations on the individual layers
