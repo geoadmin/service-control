@@ -34,7 +34,7 @@ class BodMigrateCommandTest(TestCase):
 
     def test_command_imports(self):
         out = StringIO()
-        call_command("bod_migrate", verbose=True, stdout=out)
+        call_command("bod_migrate", verbosity=2, stdout=out)
         self.assertIn("Added provider 'Federal Office for the Environment'", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())
         self.assertIn("1 attribution(s) added", out.getvalue())
@@ -86,7 +86,7 @@ class BodMigrateCommandTest(TestCase):
         )
 
         out = StringIO()
-        call_command("bod_migrate", verbose=True, stdout=out)
+        call_command("bod_migrate", verbosity=2, stdout=out)
         self.assertIn(f"Changed Provider {provider.id} name_de", out.getvalue())
         self.assertNotIn(f"Changed Provider {provider.id} acronym_de", out.getvalue())
         self.assertIn("1 provider(s) updated", out.getvalue())
@@ -160,7 +160,7 @@ class BodMigrateCommandTest(TestCase):
         )
 
         out = StringIO()
-        call_command("bod_migrate", verbose=True, stdout=out)
+        call_command("bod_migrate", verbosity=2, stdout=out)
         self.assertIn("1 provider(s) removed", out.getvalue())
         self.assertIn("1 attribution(s) removed", out.getvalue())
         self.assertIn("1 provider(s) added", out.getvalue())

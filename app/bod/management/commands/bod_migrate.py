@@ -1,35 +1,20 @@
 from bod.models import BodContactOrganisation
 from bod.models import BodTranslations
 from provider.models import Provider
+from utils.command import CommandHandler
+from utils.command import CustomBaseCommand
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import CommandParser
 from django.db import transaction
 
 
-class Command(BaseCommand):
-    help = "Migrates data from a BOD"
+class Handler(CommandHandler):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, command, options):
+        super().__init__(command, options)
+        self.clear = options["clear"]
+        self.dry_run = options["dry_run"]
         self.counts = {}
-        self.verbose = False
-
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "--clear",
-            action="store_true",
-            help="Delete existing objects before importing",
-        )
-        parser.add_argument(
-            "--dry-run",
-            action="store_true",
-            help="Dry run, abort transaction in the end",
-        )
-        parser.add_argument(
-            "--verbose",
-            action="store_true",
-            help="Show more output",
-        )
 
     def increment_counter(self, model, operation, value=1):
         """ Updates internal counters of operations on models. """
@@ -37,12 +22,6 @@ class Command(BaseCommand):
         self.counts.setdefault(model, {})
         self.counts[model].setdefault(operation, 0)
         self.counts[model][operation] += value
-
-    def print(self, message):
-        """ Print a message to stdout, if verbose. """
-
-        if self.verbose:
-            self.stdout.write(message)
 
     def update_model(self, model, attribute, new_value, new_model):
         """ Update the given model and print changes. """
@@ -59,7 +38,7 @@ class Command(BaseCommand):
                 )
         return changed
 
-    def clear(self):
+    def clear_providers(self):
         """ Remove existing providers previously imported from BOD. """
 
         _, cleared = Provider.objects.filter(_legacy_id__isnull=False).delete()
@@ -120,43 +99,8 @@ class Command(BaseCommand):
             # Save provider
             provider.save()
 
-            # Get or create attribution
-            attribution, created = provider.attribution_set.get_or_create()
-            if created:
-                self.increment_counter('attribution', 'added')
-                self.print(f"Added attribution '{organization.attribution}'")
-
-            # Remove additional attributions
-            removed, _ = provider.attribution_set.exclude(id=attribution.id).delete()
-            self.increment_counter('attribution', 'removed', removed)
-
-            # Update attribution
-            any_changed = False
-            translation = BodTranslations.objects.filter(msg_id=organization.attribution).first()
-            for attribution_attribute, translation_attribute in (
-                ('name_de', 'de'),
-                ('name_fr', 'fr'),
-                ('name_en', 'en'),
-                ('name_it', 'it'),
-                ('name_rm', 'rm'),
-                ('description_de', 'de'),
-                ('description_fr', 'fr'),
-                ('description_en', 'en'),
-                ('description_it', 'it'),
-                ('description_rm', 'rm')
-            ):
-                changed = self.update_model(
-                    attribution,
-                    attribution_attribute,
-                    getattr(translation, translation_attribute, '') or '',
-                    created
-                )
-                any_changed = any_changed or changed
-            if any_changed and not created:
-                self.increment_counter('attribution', 'updated')
-
-            # Save attribution
-            attribution.save()
+            # Import attriubtion
+            self.import_attribution(provider, organization)
 
         # Remove orphaned providers
         orphans = Provider.objects.filter(_legacy_id__isnull=False
@@ -165,14 +109,52 @@ class Command(BaseCommand):
         for model, count in removed.items():
             self.increment_counter(model.split('.')[-1].lower(), 'removed', count)
 
-    def handle(self, *args, **options):
+    def import_attribution(self, provider, organization):
+        # Get or create attribution
+        attribution, created = provider.attribution_set.get_or_create()
+        if created:
+            self.increment_counter('attribution', 'added')
+            self.print(f"Added attribution '{organization.attribution}'")
+
+        # Remove additional attributions
+        removed, _ = provider.attribution_set.exclude(id=attribution.id).delete()
+        self.increment_counter('attribution', 'removed', removed)
+
+        # Update attribution
+        any_changed = False
+        translation = BodTranslations.objects.filter(msg_id=organization.attribution).first()
+        for attribution_attribute, translation_attribute in (
+            ('name_de', 'de'),
+            ('name_fr', 'fr'),
+            ('name_en', 'en'),
+            ('name_it', 'it'),
+            ('name_rm', 'rm'),
+            ('description_de', 'de'),
+            ('description_fr', 'fr'),
+            ('description_en', 'en'),
+            ('description_it', 'it'),
+            ('description_rm', 'rm')
+        ):
+            changed = self.update_model(
+                attribution,
+                attribution_attribute,
+                getattr(translation, translation_attribute, '') or '',
+                created
+            )
+            any_changed = any_changed or changed
+        if any_changed and not created:
+            self.increment_counter('attribution', 'updated')
+
+        # Save attribution
+        attribution.save()
+
+    def run(self):
         """ Main entry point of command. """
 
-        self.verbose = options["verbose"]
         with transaction.atomic():
             # Clear data
-            if options["clear"]:
-                self.clear()
+            if self.clear:
+                self.clear_providers()
 
             # Import data
             self.import_providers()
@@ -186,9 +168,29 @@ class Command(BaseCommand):
                         printed = True
                         self.stdout.write(self.style.SUCCESS(f"{count} {model}(s) {operation}"))
             if not printed:
-                self.stdout.write(self.style.SUCCESS("nothing to be done"))
+                self.print_success("nothing to be done")
 
             # Abort if dry run
-            if options["dry_run"]:
-                self.stdout.write(self.style.WARNING("dry run, aborting transaction"))
+            if self.dry_run:
+                self.print_warning("dry run, aborting transaction")
                 transaction.set_rollback(True)
+
+
+class Command(CustomBaseCommand):
+    help = "Migrates data from a BOD"
+
+    def add_arguments(self, parser: CommandParser) -> None:
+        super().add_arguments(parser)
+        parser.add_argument(
+            "--clear",
+            action="store_true",
+            help="Delete existing objects before importing",
+        )
+        parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="Dry run, abort transaction in the end",
+        )
+
+    def handle(self, *args, **options):
+        Handler(self, options).run()
