@@ -1,5 +1,8 @@
+from typing import Any
+
 from bod.models import BodContactOrganisation
 from bod.models import BodTranslations
+from distributions.models import Attribution
 from provider.models import Provider
 from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
@@ -10,20 +13,22 @@ from django.db import transaction
 
 class Handler(CommandHandler):
 
-    def __init__(self, command, options):
+    def __init__(self, command: CustomBaseCommand, options: dict['str', Any]):
         super().__init__(command, options)
         self.clear = options["clear"]
         self.dry_run = options["dry_run"]
-        self.counts = {}
+        self.counts: dict[str, dict[str, int]] = {}
 
-    def increment_counter(self, model, operation, value=1):
+    def increment_counter(self, model: str, operation: str, value: int = 1) -> None:
         """ Updates internal counters of operations on models. """
 
         self.counts.setdefault(model, {})
         self.counts[model].setdefault(operation, 0)
         self.counts[model][operation] += value
 
-    def update_model(self, model, attribute, new_value, new_model):
+    def update_model(
+        self, model: Provider | Attribution, attribute: str, new_value: str, new_model: bool
+    ) -> bool:
         """ Update the given model and print changes. """
 
         changed = False
@@ -38,14 +43,14 @@ class Handler(CommandHandler):
                 )
         return changed
 
-    def clear_providers(self):
+    def clear_providers(self) -> None:
         """ Remove existing providers previously imported from BOD. """
 
         _, cleared = Provider.objects.filter(_legacy_id__isnull=False).delete()
         for model, count in cleared.items():
             self.increment_counter(model.split('.')[-1].lower(), 'cleared', count)
 
-    def import_providers(self):
+    def import_providers(self) -> None:
         """ Import providers from the old contact organizations table.
 
         This function adds new providers, updates existing ones (with a matching legacy ID) and
@@ -99,7 +104,7 @@ class Handler(CommandHandler):
             # Save provider
             provider.save()
 
-            # Import attriubtion
+            # Import attribution
             self.import_attribution(provider, organization)
 
         # Remove orphaned providers
@@ -109,7 +114,7 @@ class Handler(CommandHandler):
         for model, count in removed.items():
             self.increment_counter(model.split('.')[-1].lower(), 'removed', count)
 
-    def import_attribution(self, provider, organization):
+    def import_attribution(self, provider: Provider, organization: BodContactOrganisation) -> None:
         # Get or create attribution
         attribution, created = provider.attribution_set.get_or_create()
         if created:
@@ -148,7 +153,7 @@ class Handler(CommandHandler):
         # Save attribution
         attribution.save()
 
-    def run(self):
+    def run(self) -> None:
         """ Main entry point of command. """
 
         with transaction.atomic():
@@ -192,5 +197,5 @@ class Command(CustomBaseCommand):
             help="Dry run, abort transaction in the end",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
         Handler(self, options).run()

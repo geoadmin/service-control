@@ -1,4 +1,7 @@
+from typing import Any
+
 from django.conf import settings
+from django.db.models import Model
 
 
 class CustomRouter:
@@ -8,14 +11,14 @@ class CustomRouter:
 
     """
 
-    def db_for_read(self, model, **hints):
+    def db_for_read(self, model: Model, **hints: Any) -> str | None:
         """ Use BOD for reading BOD models. """
 
         if model._meta.app_label == 'bod':
             return 'bod'
         return None
 
-    def db_for_write(self, model, **hints):
+    def db_for_write(self, model: Model, **hints: Any) -> str | None:
         """ Use BOD for writing BOD models during tests. """
 
         if model._meta.app_label == 'bod':
@@ -24,7 +27,9 @@ class CustomRouter:
             return 'bod'
         return None
 
-    def allow_migrate(self, db, app_label, model_name=None, **hints):
+    def allow_migrate(
+        self, db: Any, app_label: str, model_name: Any = None, **hints: Any
+    ) -> bool | None:
         """ Allow BOD migrations only during tests. """
 
         if app_label == 'bod':
