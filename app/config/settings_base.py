@@ -105,7 +105,7 @@ DATABASES = {
     }
 }
 
-DATABASE_ROUTERS = ['config.database_router.CustomRouter']
+DATABASE_ROUTERS = ['utils.database_router.CustomRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
