@@ -8,7 +8,7 @@ DEBUG = False
 
 
 # Read configuration from file
-def get_logging_config():
+def get_logging_config() -> dict[str, object]:
     '''Read logging configuration
     Read and parse the yaml logging configuration file passed in the environment variable
     LOGGING_CFG and return it as dictionary

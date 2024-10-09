@@ -4,7 +4,7 @@ import os
 import sys
 
 
-def main():
+def main() -> None:
     """Run administrative tasks."""
     # default to the prod settings. Can be overwritten with .env
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings_prod')
