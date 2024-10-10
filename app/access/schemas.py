@@ -8,3 +8,7 @@ class UserSchema(Schema):
     last_name: str
     email: str
     provider_id: int
+
+
+class UserListSchema(Schema):
+    items: list[UserSchema]
