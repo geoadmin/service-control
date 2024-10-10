@@ -76,16 +76,19 @@ To generate more BOD models, run:
 app/manage.py inspectdb --database=bod
 ```
 
-Although the BOD models are unmanaged (no migrations applied), we nevertheless need migrations for
-testing. Since these are only used for testing, you might remove the initial migration and recreate
-it:
+The BOD models are unmanaged, meaning Django does not manage any migrations for these models.
+However, migrations are still needed during tests to set up the test BOD. To achieve this, it is
+necessary to create migrations for the models and dynamically adjust the `managed` flag based on
+whether the tests or the server is running (`django.conf.settings.TESTING`). Since these migrations
+are only for testing purposes, the previous migration file can be removed and recreated:
+
 
 ```bash
 rm app/bod/migrations/0001_initial.py
 app/manage.py makemigrations bod
 ```
 
-Afterwards, you need to set `managed` flag to `django.conf.settings.TESTING` both in the models
+Afterward, the `managed` flag needs to be set to `django.conf.settings.TESTING` in both the models
 and the migrations.
 
 ## Local Development

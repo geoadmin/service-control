@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='_legacy_id',
             field=models.IntegerField(
                 blank=True,
-                help_text='This field is used to track objects imported from the BOD database',
+                help_text='This field is used to track objects imported from the BOD',
                 null=True,
                 verbose_name='Legacy ID'
             ),

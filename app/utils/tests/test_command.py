@@ -60,7 +60,7 @@ class Command(CustomBaseCommand):
 class CustomCommandTest(TestCase):
 
     def test_print_to_stdout_default_verbosity(self):
-        # no verbosity given = 1
+        # default verbosity == 1
         out = StringIO()
         err = StringIO()
         call_command(Command(), stdout=out, stderr=err)
@@ -126,7 +126,7 @@ class CustomCommandTest(TestCase):
         self.assertIn("Error John\nextra={'n': 'Doe'}", err.getvalue())
 
     def test_print_to_log_default_verbosity(self):
-        # no verbosity given = 1
+        # default verbosity == 1
         command = Command()
         call_command(command, logger=True)
         calls = command.handler.logger.mock_calls

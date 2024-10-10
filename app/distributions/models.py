@@ -44,5 +44,5 @@ class Dataset(models.Model):
         null=True,
         blank=True,
         db_index=False,
-        help_text="This field is used to track objects imported from the BOD database"
+        help_text="This field is used to track objects imported from the BOD"
     )
