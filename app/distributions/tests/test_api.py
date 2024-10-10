@@ -583,7 +583,7 @@ class ApiTestCase(TestCase):
                     "created": dataset2.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "updated": dataset2.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "provider_id": provider2.id,
-                    "attribution_id": provider2.id,
+                    "attribution_id": attribution2.id,
                 },
             ]
         }
