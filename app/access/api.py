@@ -4,6 +4,7 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
 from .models import User
+from .schemas import UserListSchema
 from .schemas import UserSchema
 
 router = Router()
@@ -23,7 +24,7 @@ def user_to_response(model: User) -> UserSchema:
     return response
 
 
-@router.get("/{user_id}", response={200: UserSchema}, exclude_none=True)
+@router.get("users/{user_id}", response={200: UserSchema}, exclude_none=True)
 def user(request: HttpRequest, user_id: int) -> UserSchema:
     """
     Get the user with the given ID.
@@ -31,3 +32,13 @@ def user(request: HttpRequest, user_id: int) -> UserSchema:
     model = get_object_or_404(User, id=user_id)
     response = user_to_response(model)
     return response
+
+
+@router.get("users", response={200: UserListSchema}, exclude_none=True)
+def users(request: HttpRequest) -> UserListSchema:
+    """
+    Get all users.
+    """
+    models = User.objects.order_by("id").all()
+    schemas = [user_to_response(model) for model in models]
+    return UserListSchema(items=schemas)
