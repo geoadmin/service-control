@@ -38,6 +38,8 @@ YAPF := $(PIPENV_RUN) yapf
 ISORT := $(PIPENV_RUN) isort
 PYLINT := $(PIPENV_RUN) pylint
 MYPY := $(PIPENV_RUN) mypy
+PSQL := PGPASSWORD=postgres psql -h localhost -p 15433 -U postgres
+PGRESTORE := PGPASSWORD=postgres pg_restore -h localhost -p 15433 -U postgres
 
 # Find all python files that are not inside a hidden directory (directory starting with .)
 PYTHON_FILES := $(shell find $(APP_SRC_DIR) -type f -name "*.py" -print)
@@ -148,6 +150,19 @@ start-local-db: ## Run the local db as docker container
 .PHONY: test
 test: ## Run tests locally
 	$(TEST)
+
+.PHONY: setup-bod
+setup-bod: ## Set up the bod locally
+	$(PSQL) -c 'CREATE ROLE "pgkogis";'
+	$(PSQL) -c 'CREATE ROLE "www-data";'
+	$(PSQL) -c 'CREATE ROLE "bod_admin";'
+	$(PSQL) -c 'CREATE ROLE "rdsadmin";'
+
+.PHONY: import-bod
+import-bod: ## Import the bod locally
+	$(PSQL) -c 'DROP DATABASE IF EXISTS bod_master;'
+	$(PSQL) -c 'CREATE DATABASE bod_master;'
+	$(PGRESTORE) -d bod_master $(file) --v
 
 .PHONY: help
 help: ## Display this help

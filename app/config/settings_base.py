@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.messages',
     'provider',
-    'distributions'
+    'distributions',
+    'bod'
 ]
 
 MIDDLEWARE = [
@@ -87,8 +88,24 @@ DATABASES = {
         'TEST': {
             'NAME': env.str('DB_NAME_TEST', 'test_service_control'),
         }
+    },
+    'bod': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env.str('BOD_NAME', 'service_control'),
+        'USER': env.str('BOD_USER', 'service_control'),
+        'PASSWORD': env.str('BOD_PW', 'service_control'),
+        'HOST': env.str('BOD_HOST', 'service_control'),
+        'PORT': env.str('BOD_PORT', "5432"),
+        'OPTIONS': {
+            'options': '-c search_path=public'
+        },
+        'TEST': {
+            'NAME': 'test_bod',
+        }
     }
 }
+
+DATABASE_ROUTERS = ['utils.database_router.CustomRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -128,3 +145,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Testing
+TESTING = False

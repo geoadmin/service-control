@@ -24,3 +24,11 @@ class Provider(models.Model):
     acronym_en = models.CharField(_(_context, "Acronym (English)"))
     acronym_it = models.CharField(_(_context, "Acronym (Italian)"), null=True, blank=True)
     acronym_rm = models.CharField(_(_context, "Acronym (Romansh)"), null=True, blank=True)
+
+    _legacy_id = models.IntegerField(
+        _(_context, "Legacy ID"),
+        null=True,
+        blank=True,
+        db_index=False,
+        help_text="This field is used to track objects imported from the BOD"
+    )
