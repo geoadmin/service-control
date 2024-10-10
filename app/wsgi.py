@@ -75,4 +75,4 @@ if __name__ == '__main__':
         'timeout': 60,
         'logconfig_dict': get_logging_config()
     }
-    StandaloneApplication(application, options).run()
+    StandaloneApplication(application, options).run()  # type:ignore[no-untyped-call]
