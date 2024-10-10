@@ -4,6 +4,7 @@ from utils.language import LanguageCode
 from utils.language import get_language
 from utils.language import get_translation
 
+from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
@@ -45,7 +46,11 @@ def attribution_to_response(model: Attribution, lang: LanguageCode) -> Attributi
 
 
 @router.get("attributions/{attribution_id}", response={200: AttributionSchema}, exclude_none=True)
-def attribution(request: HttpRequest, attribution_id: int, lang: LanguageCode | None = None):
+def attribution(
+    request: HttpRequest,
+    attribution_id: int,
+    lang: LanguageCode | None = None
+) -> AttributionSchema:
     """
     Get the attribution with the given ID, return translatable fields in the given language.
 
@@ -98,7 +103,8 @@ def attribution(request: HttpRequest, attribution_id: int, lang: LanguageCode | 
 
 
 @router.get("attributions", response={200: AttributionListSchema}, exclude_none=True)
-def attributions(request: HttpRequest, lang: LanguageCode | None = None):
+def attributions(request: HttpRequest,
+                 lang: LanguageCode | None = None) -> dict[str, list[AttributionSchema]]:
     """
     Get all attributions, return translatable fields in the given language.
 
@@ -113,7 +119,7 @@ def attributions(request: HttpRequest, lang: LanguageCode | None = None):
 
 
 @router.get("datasets/{dataset_id}", response={200: DatasetSchema}, exclude_none=True)
-def dataset(request: HttpRequest, dataset_id: int):
+def dataset(request: HttpRequest, dataset_id: int) -> Dataset:
     """
     Get the dataset with the given ID.
     """
@@ -122,7 +128,7 @@ def dataset(request: HttpRequest, dataset_id: int):
 
 
 @router.get("datasets", response={200: DatasetListSchema}, exclude_none=True)
-def datasets(request: HttpRequest):
+def datasets(request: HttpRequest) -> dict[str, QuerySet[Dataset]]:
     """
     Get all datasets.
 

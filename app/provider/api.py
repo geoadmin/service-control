@@ -41,7 +41,9 @@ def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
 
 
 @router.get("/{provider_id}", response={200: ProviderSchema}, exclude_none=True)
-def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None = None):
+def provider(
+    request: HttpRequest, provider_id: int, lang: LanguageCode | None = None
+) -> ProviderSchema:
     """
     Get the provider with the given ID, return translatable fields in the given language.
 
@@ -93,7 +95,7 @@ def provider(request: HttpRequest, provider_id: int, lang: LanguageCode | None =
 
 
 @router.get("/", response={200: ProviderListSchema}, exclude_none=True)
-def providers(request: HttpRequest, lang: LanguageCode | None = None):
+def providers(request: HttpRequest, lang: LanguageCode | None = None) -> ProviderListSchema:
     """
     Get all providers, return translatable fields in the given language.
 
