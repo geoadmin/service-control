@@ -15,3 +15,20 @@ services:
     ports:
       - "${DB_PORT}:5432"
 
+  cognito:
+    image: jagregory/cognito-local:latest
+    volumes:
+      - source: ${PWD}/.volumes/cognito
+        target: /app/.cognito
+        type: bind
+        bind:
+          create_host_path: true
+    ports:
+      - "${COGNITO_PORT}:9229"
+    # add an empty user pool json if not already existing, then run the service
+    entrypoint: >
+      /bin/sh -c "
+        [ ! -f /app/.cognito/db/${COGNITO_POOL_ID}.json ] &&
+        echo '{}' > /app/.cognito/db/${COGNITO_POOL_ID}.json
+        node /app/start.js;
+      "
