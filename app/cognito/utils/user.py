@@ -7,7 +7,7 @@ logger = getLogger(__name__)
 
 # TODO: Replace me with the actual user model
 class User:
-    id: int
+    username: str
     email: str
 
 
@@ -18,27 +18,27 @@ def add_user(user: User) -> None:
     """
 
     client = Client()
-    username = str(user.id)
+    username = str(user.username)
     existing = client.get_user(username)
     if existing is not None:
-        logger.warning("User %s already exists, updating", username)
         client.update_user(username, user.email)
+        logger.warning("User %s already exists, updated instead of created", username)
     else:
         client.create_user(username, user.email)
-    logger.info("User %s created", username)
+        logger.info("User %s created", username)
 
 
 def delete_user(user: User) -> None:
     """ Delete the given user from cognito. """
 
     client = Client()
-    username = str(user.id)
+    username = str(user.username)
     existing = client.get_user(username)
     if existing is not None:
         client.delete_user(username)
+        logger.info("User %s deleted", username)
     else:
-        logger.warning("User %s does not exist, ignoring", username)
-    logger.info("User %s deleted", username)
+        logger.warning("User %s does not exist, not deleted", username)
 
 
 def update_user(user: User) -> None:
@@ -48,11 +48,11 @@ def update_user(user: User) -> None:
     """
 
     client = Client()
-    username = str(user.id)
+    username = str(user.username)
     existing = client.get_user(username)
     if existing is not None:
         client.update_user(username, user.email)
+        logger.info("User %s updated", username)
     else:
-        logger.warning("User %s does not exist, adding", username)
         client.create_user(username, user.email)
-    logger.info("User %s updated", username)
+        logger.warning("User %s does not exist, creating", username)

@@ -8,8 +8,8 @@ from django.test import TestCase
 
 class DummyUser:
 
-    def __init__(self, id_, email):
-        self.id = id_
+    def __init__(self, username, email):
+        self.username = username
         self.email = email
 
 
@@ -22,7 +22,7 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_adds(self, client, users):
-        users.return_value = [DummyUser(1, '1@example.org')]
+        users.return_value = [DummyUser('1', '1@example.org')]
         client.return_value.get_users.return_value = []
 
         out = StringIO()
@@ -48,7 +48,7 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_updates(self, client, users):
-        users.return_value = [DummyUser(1, '1@example.org')]
+        users.return_value = [DummyUser('1', '1@example.org')]
         client.return_value.get_users.return_value = [cognito_user('1', '2@example.org')]
 
         out = StringIO()
@@ -61,7 +61,7 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_does_not_updates_if_unchanged(self, client, users):
-        users.return_value = [DummyUser(1, '1@example.org')]
+        users.return_value = [DummyUser('1', '1@example.org')]
         client.return_value.get_users.return_value = [cognito_user('1', '1@example.org')]
 
         out = StringIO()
@@ -72,7 +72,7 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_clears(self, client, users):
-        users.return_value = [DummyUser(1, '1@example.org')]
+        users.return_value = [DummyUser('1', '1@example.org')]
         client.return_value.get_users.side_effect = [[cognito_user('1', '1@example.org')], []]
 
         out = StringIO()
@@ -88,7 +88,7 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_runs_dry(self, client, users):
-        users.return_value = [DummyUser(1, '1@example.org'), DummyUser(2, '2@example.org')]
+        users.return_value = [DummyUser('1', '1@example.org'), DummyUser('2', '2@example.org')]
         client.return_value.get_users.return_value = [
             cognito_user('1', '10@example.org'), cognito_user('3', '3@example.org')
         ]
