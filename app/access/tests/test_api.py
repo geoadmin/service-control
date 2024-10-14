@@ -13,6 +13,7 @@ class ApiTestCase(TestCase):
     def setUp(self):
         provider = Provider.objects.create()
         model_fields = {
+            "username": "dude",
             "first_name": "Jeffrey",
             "last_name": "Lebowski",
             "email": "dude@bowling.com",
@@ -27,7 +28,7 @@ class ApiTestCase(TestCase):
         actual = user_to_response(model)
 
         expected = UserSchema(
-            id=model.id,
+            username="dude",
             first_name="Jeffrey",
             last_name="Lebowski",
             email="dude@bowling.com",
@@ -38,14 +39,12 @@ class ApiTestCase(TestCase):
 
     def test_get_user_returns_existing_user(self):
 
-        user_id = User.objects.last().id
-
         client = TestClient(router)
-        response = client.get(f"users/{user_id}")
+        response = client.get(f"users/dude")
 
         assert response.status_code == 200
         assert response.data == {
-            "id": user_id,
+            "username": "dude",
             "first_name": "Jeffrey",
             "last_name": "Lebowski",
             "email": "dude@bowling.com",
@@ -55,7 +54,7 @@ class ApiTestCase(TestCase):
     def test_get_user_returns_404_if_nonexisting(self):
 
         client = TestClient(router)
-        response = client.get("users/2")
+        response = client.get("users/nihilist")
 
         assert response.status_code == 404
         assert response.data == {"detail": "Not Found"}
@@ -68,7 +67,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 200
         assert response.data == {
             "items": [{
-                "id": User.objects.last().id,
+                "username": "dude",
                 "first_name": "Jeffrey",
                 "last_name": "Lebowski",
                 "email": "dude@bowling.com",
@@ -79,12 +78,13 @@ class ApiTestCase(TestCase):
     def test_get_users_returns_users_ordered_by_id(self):
 
         model_fields = {
+            "username": "veteran",
             "first_name": "Walter",
             "last_name": "Sobchak",
             "email": "veteran@bowling.com",
             "provider": Provider.objects.last(),
         }
-        user_id_2 = User.objects.create(**model_fields).id
+        User.objects.create(**model_fields)
 
         client = TestClient(router)
         response = client.get("users")
@@ -93,14 +93,14 @@ class ApiTestCase(TestCase):
         assert response.data == {
             "items": [
                 {
-                    "id": User.objects.first().id,
+                    "username": "dude",
                     "first_name": "Jeffrey",
                     "last_name": "Lebowski",
                     "email": "dude@bowling.com",
                     "provider_id": Provider.objects.last().id,
                 },
                 {
-                    "id": user_id_2,
+                    "username": "veteran",
                     "first_name": "Walter",
                     "last_name": "Sobchak",
                     "email": "veteran@bowling.com",
