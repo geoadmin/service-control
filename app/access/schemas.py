@@ -4,7 +4,7 @@ from pydantic import EmailStr
 
 class UserSchema(Schema):
 
-    id: int
+    username: str
     first_name: str
     last_name: str
     email: EmailStr

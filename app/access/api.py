@@ -15,7 +15,7 @@ def user_to_response(model: User) -> UserSchema:
     Maps the given model to the corresponding schema.
     """
     response = UserSchema(
-        id=model.id,
+        username=model.username,
         first_name=model.first_name,
         last_name=model.last_name,
         email=model.email,
@@ -24,12 +24,12 @@ def user_to_response(model: User) -> UserSchema:
     return response
 
 
-@router.get("users/{user_id}", response={200: UserSchema}, exclude_none=True)
-def user(request: HttpRequest, user_id: int) -> UserSchema:
+@router.get("users/{username}", response={200: UserSchema}, exclude_none=True)
+def user(request: HttpRequest, username: str) -> UserSchema:
     """
-    Get the user with the given ID.
+    Get the user with the given username.
     """
-    model = get_object_or_404(User, id=user_id)
+    model = get_object_or_404(User, username=username)
     response = user_to_response(model)
     return response
 
@@ -39,6 +39,6 @@ def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     """
     Get all users.
     """
-    models = User.objects.order_by("id").all()
+    models = User.objects.all()
     responses = [user_to_response(model) for model in models]
     return {"items": responses}
