@@ -35,10 +35,10 @@ def user(request: HttpRequest, user_id: int) -> UserSchema:
 
 
 @router.get("users", response={200: UserListSchema}, exclude_none=True)
-def users(request: HttpRequest) -> UserListSchema:
+def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     """
     Get all users.
     """
     models = User.objects.order_by("id").all()
-    schemas = [user_to_response(model) for model in models]
-    return UserListSchema(items=schemas)
+    responses = [user_to_response(model) for model in models]
+    return {"items": responses}
