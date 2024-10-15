@@ -1,7 +1,7 @@
 from unittest.mock import call
 from unittest.mock import patch
 
-from cognito.utils.user import add_user
+from cognito.utils.user import create_user
 from cognito.utils.user import delete_user
 from cognito.utils.user import update_user
 
@@ -19,61 +19,60 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
-    def test_add_user_adds_user(self, logger, client):
-        client.return_value.get_user.return_value = None
+    def test_create_user_creates_user(self, logger, client):
+        client.return_value.create_user.return_value = True
 
-        add_user(DummyUser('123', 'test@example.org'))
+        created = create_user(DummyUser('123', 'test@example.org'))
 
-        self.assertIn(call().create_user('123', 'test@example.org'), client.mock_calls)
+        self.assertEqual(created, True)
         self.assertIn(call.info('User %s created', '123'), logger.mock_calls)
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
-    def test_add_user_updates_existing_user(self, logger, client):
-        client.return_value.get_user.return_value = {'Username': '123'}
+    def test_create_user_does_not_create_existing_user(self, logger, client):
+        client.return_value.create_user.return_value = False
 
-        add_user(DummyUser('123', 'test@example.org'))
+        created = create_user(DummyUser('123', 'test@example.org'))
 
-        self.assertIn(call().update_user('123', 'test@example.org'), client.mock_calls)
-        self.assertIn(
-            call.warning('User %s already exists, updated instead of created', '123'),
-            logger.mock_calls
-        )
+        self.assertEqual(created, False)
+        self.assertIn(call.warning('User %s already exists, not created', '123'), logger.mock_calls)
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
     def test_delete_user_deletes_user(self, logger, client):
-        client.return_value.get_user.return_value = {'Username': '123'}
+        client.return_value.delete_user.return_value = True
 
-        delete_user(DummyUser('123', 'test@example.org'))
+        deleted = delete_user(DummyUser('123', 'test@example.org'))
 
-        self.assertIn(call().delete_user('123'), client.mock_calls)
+        self.assertEqual(deleted, True)
         self.assertIn(call.info('User %s deleted', '123'), logger.mock_calls)
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
-    def test_delete_when_user_not_exists(self, logger, client):
-        client.return_value.get_user.return_value = None
+    def test_delete_user_does_not_delete_nonexisting_user(self, logger, client):
+        client.return_value.delete_user.return_value = False
 
-        delete_user(DummyUser('123', 'test@example.org'))
+        deleted = delete_user(DummyUser('123', 'test@example.org'))
+
+        self.assertEqual(deleted, False)
         self.assertIn(call.warning('User %s does not exist, not deleted', '123'), logger.mock_calls)
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
     def test_update_user_updates_user(self, logger, client):
-        client.return_value.get_user.return_value = {'Username': '123'}
+        client.return_value.update_user.return_value = True
 
-        update_user(DummyUser('123', 'test@example.org'))
+        updated = update_user(DummyUser('123', 'test@example.org'))
 
-        self.assertIn(call().update_user('123', 'test@example.org'), client.mock_calls)
+        self.assertEqual(updated, True)
         self.assertIn(call.info('User %s updated', '123'), logger.mock_calls)
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
-    def test_update_user_adds_non_existing_user(self, logger, client):
-        client.return_value.get_user.return_value = None
+    def test_update_user_does_not_update_nonexisting_user(self, logger, client):
+        client.return_value.update_user.return_value = False
 
-        update_user(DummyUser('123', 'test@example.org'))
+        updated = update_user(DummyUser('123', 'test@example.org'))
 
-        self.assertNotIn(call().add_user('123', 'test@example.org'), client.mock_calls)
-        self.assertIn(call.warning('User %s does not exist, creating', '123'), logger.mock_calls)
+        self.assertEqual(updated, False)
+        self.assertIn(call.warning('User %s does not exist, not updated', '123'), logger.mock_calls)
