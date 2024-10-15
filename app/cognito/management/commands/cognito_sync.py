@@ -1,8 +1,8 @@
 from typing import Any
 
 from cognito.utils.client import Client
+from cognito.utils.client import user_attributes_to_dict
 from cognito.utils.user import User
-from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
 from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
@@ -23,54 +23,67 @@ class Handler(CommandHandler):
         self.client = Client()
         self.counts = {'added': 0, 'deleted': 0, 'updated': 0}
 
-    def attributes_to_dict(self, user: UserTypeTypeDef) -> dict[str, str]:
-        """ Converts the attributes from a cognito uses to a dict. """
-        return {attribute['Name']: attribute['Value'] for attribute in user.get('Attributes', {})}
-
     def clear_users(self) -> None:
         """ Remove all existing cognito users. """
 
-        for user in self.client.get_users():
+        for user in self.client.list_users():
             self.counts['deleted'] += 1
             username = user['Username']
             self.print(f'deleting user {username}')
             if not self.dry_run:
-                self.client.delete_user(username)
+                deleted = self.client.delete_user(username)
+                if not deleted:
+                    self.print_error('Could not delete %s', username)
 
     def sync_users(self) -> None:
         """ Synchronizes local and cognito users. """
 
         # Get all remote and local users
-        local = {user.username: user for user in get_local_users()}
-        remote = {user['Username']: user for user in self.client.get_users()}
+        local_users = {user.username: user for user in get_local_users()}
+        local_usernames = set(local_users.keys())
+        remote_users = {user['Username']: user for user in self.client.list_users()}
+        remote_usernames = set(remote_users.keys())
 
         # Add local only user
-        for username in set(local.keys()).difference(set(remote.keys())):
+        for username in local_usernames.difference(remote_usernames):
             self.counts['added'] += 1
             self.print(f'adding user {username}')
             if not self.dry_run:
-                self.client.create_user(username, local[username].email)
+                created = self.client.create_user(username, local_users[username].email)
+                if not created:
+                    self.print_error('Could not create %s', username)
 
         # Remove remote only user
-        for username in set(remote.keys()).difference(set(local.keys())):
+        for username in remote_usernames.difference(local_usernames):
             self.counts['deleted'] += 1
             self.print(f'deleting user {username}')
             if not self.dry_run:
-                self.client.delete_user(username)
+                deleted = self.client.delete_user(username)
+                if not deleted:
+                    self.print_error('Could not delete %s', username)
 
         # Update common users
-        for username in set(local.keys()).intersection(set(remote.keys())):
-            if local[username].email != self.attributes_to_dict(remote[username]).get('email'):
+        for username in local_usernames.intersection(remote_usernames):
+            remote_attributes = user_attributes_to_dict(remote_users[username])
+            if local_users[username].email != remote_attributes.get('email'):
                 self.counts['updated'] += 1
                 self.print(f'updating user {username}')
                 if not self.dry_run:
-                    self.client.update_user(username, local[username].email)
+                    updated = self.client.update_user(username, local_users[username].email)
+                    if not updated:
+                        self.print_error('Could not delete %s', username)
 
     def run(self) -> None:
         """ Main entry point of command. """
 
         # Clear data
         if self.clear:
+            self.print_warning('this action will delete all managed users from cognito', level=0)
+            confirm = input('are you sure you want to proceed? [yes/no]: ')
+            if confirm.lower() != 'yes':
+                self.print_warning('operation cancelled', level=0)
+                return
+
             self.clear_users()
 
         # Sync data

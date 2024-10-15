@@ -11,48 +11,47 @@ class User:
     email: str
 
 
-def add_user(user: User) -> None:
+def create_user(user: User) -> bool:
     """ Add the given user to cognito.
 
-    Update the user, if he already exists.
+    Returns True, if the user has been created.
     """
 
     client = Client()
-    username = str(user.username)
-    existing = client.get_user(username)
-    if existing is not None:
-        client.update_user(username, user.email)
-        logger.warning("User %s already exists, updated instead of created", username)
+    created = client.create_user(user.username, user.email)
+    if created:
+        logger.info("User %s created", user.username)
     else:
-        client.create_user(username, user.email)
-        logger.info("User %s created", username)
+        logger.warning("User %s already exists, not created", user.username)
+
+    return created
 
 
-def delete_user(user: User) -> None:
-    """ Delete the given user from cognito. """
+def delete_user(user: User) -> bool:
+    """ Delete the given user from cognito.
+
+    Returns True, if the user has been deleted.
+    """
 
     client = Client()
-    username = str(user.username)
-    existing = client.get_user(username)
-    if existing is not None:
-        client.delete_user(username)
-        logger.info("User %s deleted", username)
+    deleted = client.delete_user(user.username)
+    if deleted:
+        logger.info("User %s deleted", user.username)
     else:
-        logger.warning("User %s does not exist, not deleted", username)
+        logger.warning("User %s does not exist, not deleted", user.username)
+    return deleted
 
 
-def update_user(user: User) -> None:
+def update_user(user: User) -> bool:
     """ Update the given user in cognito.
 
-    Add the user, if he not already exists.
+    Returns True, if the user has been updated.
     """
 
     client = Client()
-    username = str(user.username)
-    existing = client.get_user(username)
-    if existing is not None:
-        client.update_user(username, user.email)
-        logger.info("User %s updated", username)
+    updated = client.update_user(user.username, user.email)
+    if updated:
+        logger.info("User %s updated", user.username)
     else:
-        client.create_user(username, user.email)
-        logger.warning("User %s does not exist, creating", username)
+        logger.warning("User %s does not exist, not updated", user.username)
+    return updated

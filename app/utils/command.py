@@ -5,6 +5,9 @@ from typing import Any
 from django.core.management.base import BaseCommand
 from django.core.management.base import CommandParser
 
+# These classes are also used in the service-stac. Ensure that any changes made here are reflected
+# there as well.
+
 
 class CustomBaseCommand(BaseCommand):
 
