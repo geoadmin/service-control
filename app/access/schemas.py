@@ -1,5 +1,4 @@
 from ninja import Schema
-from pydantic import EmailStr
 
 
 class UserSchema(Schema):
@@ -7,7 +6,7 @@ class UserSchema(Schema):
     username: str
     first_name: str
     last_name: str
-    email: EmailStr
+    email: str
     provider_id: int
 
 
