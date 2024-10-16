@@ -59,7 +59,7 @@ class Handler(CommandHandler):
     def update_user(self, local_user: User, remote_user: UserTypeTypeDef) -> None:
         """ Update a remote user in cognito. """
 
-        remote_attributes = user_attributes_to_dict(remote_user)
+        remote_attributes = user_attributes_to_dict(remote_user['Attributes'])
         if local_user.email != remote_attributes.get('email'):
             self.counts['updated'] += 1
             self.print(f'updating user {local_user.username}')

@@ -1,15 +1,15 @@
 from boto3 import client
 from mypy_boto3_cognito_idp.type_defs import AdminGetUserResponseTypeDef
+from mypy_boto3_cognito_idp.type_defs import AttributeTypeTypeDef
 from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
 
 from django.conf import settings
 
 
-def user_attributes_to_dict(user: UserTypeTypeDef | AdminGetUserResponseTypeDef) -> dict[str, str]:
+def user_attributes_to_dict(attributes: list[AttributeTypeTypeDef]) -> dict[str, str]:
     """ Converts the attributes from a cognito user to a dict. """
 
-    attributes = user.get('Attributes') or user.get('UserAttributes') or []
-    return {attr['Name']: attr['Value'] for attr in attributes}  # type:ignore[attr-defined]
+    return {attr['Name']: attr['Value'] for attr in attributes}
 
 
 class Client:
@@ -36,7 +36,8 @@ class Client:
             users.extend(response['Users'])
 
         return [
-            user for user in users if user_attributes_to_dict(user).get('custom:managed') == 'True'
+            user for user in users
+            if user_attributes_to_dict(user['Attributes']).get('custom:managed') == 'True'
         ]
 
     def get_user(
@@ -54,7 +55,7 @@ class Client:
         except self.client.exceptions.UserNotFoundException:
             return None
         if not return_unmanaged:
-            attributes = user_attributes_to_dict(response)
+            attributes = user_attributes_to_dict(response['UserAttributes'])
             if attributes.get('custom:managed') != 'True':
                 return None
 
