@@ -9,6 +9,7 @@ logger = getLogger(__name__)
 class User:
     username: str
     email: str
+    is_active: bool
 
 
 def create_user(user: User) -> bool:
@@ -27,19 +28,19 @@ def create_user(user: User) -> bool:
     return created
 
 
-def delete_user(user: User) -> bool:
-    """ Delete the given user from cognito.
+def disable_user(user: User) -> bool:
+    """ Disable the given user in cognito.
 
-    Returns True, if the user has been deleted.
+    Returns True, if the user has been disabled.
     """
 
     client = Client()
-    deleted = client.delete_user(user.username)
-    if deleted:
-        logger.info("User %s deleted", user.username)
+    disabled = client.disable_user(user.username)
+    if disabled:
+        logger.info("User %s disabled", user.username)
     else:
-        logger.warning("User %s does not exist, not deleted", user.username)
-    return deleted
+        logger.warning("User %s does not exist, not disabled", user.username)
+    return disabled
 
 
 def update_user(user: User) -> bool:

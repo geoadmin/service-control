@@ -116,3 +116,29 @@ class Client:
             )
             return True
         return False
+
+    def enable_user(self, username: str) -> bool:
+        """ Enable the given user.
+
+        Returns False, if the user does not exist or doesn't have the managed flag.
+
+        """
+
+        user = self.get_user(username)
+        if user is not None:
+            self.client.admin_enable_user(UserPoolId=self.user_pool_id, Username=username)
+            return True
+        return False
+
+    def disable_user(self, username: str) -> bool:
+        """ Disable the given user.
+
+        Returns False, if the user does not exist or doesn't have the managed flag.
+
+        """
+
+        user = self.get_user(username)
+        if user is not None:
+            self.client.admin_disable_user(UserPoolId=self.user_pool_id, Username=username)
+            return True
+        return False

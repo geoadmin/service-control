@@ -8,13 +8,18 @@ from django.test import TestCase
 
 class DummyUser:
 
-    def __init__(self, username, email):
+    def __init__(self, username, email, is_active):
         self.username = username
         self.email = email
+        self.is_active = is_active
 
 
-def cognito_user(username, email):
-    return {'Username': username, 'Attributes': [{'Name': 'email', 'Value': email}]}
+def cognito_user(username, email, enabled):
+    return {
+        'Username': username, 'Enabled': enabled, 'Attributes': [{
+            'Name': 'email', 'Value': email
+        }]
+    }
 
 
 class CognitoSyncCommandTest(TestCase):
@@ -22,7 +27,7 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_adds(self, client, users):
-        users.return_value = [DummyUser('1', '1@example.org')]
+        users.return_value = [DummyUser('1', '1@example.org', True)]
         client.return_value.list_users.return_value = []
 
         out = StringIO()
@@ -34,9 +39,23 @@ class CognitoSyncCommandTest(TestCase):
 
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
+    def test_command_adds_disabled(self, client, users):
+        users.return_value = [DummyUser('1', '1@example.org', False)]
+        client.return_value.list_users.return_value = []
+
+        out = StringIO()
+        call_command('cognito_sync', verbosity=2, stdout=out)
+
+        self.assertIn('adding user 1', out.getvalue())
+        self.assertIn('1 user(s) added', out.getvalue())
+        self.assertIn(call().create_user('1', '1@example.org'), client.mock_calls)
+        self.assertIn(call().disable_user('1'), client.mock_calls)
+
+    @patch('cognito.management.commands.cognito_sync.get_local_users')
+    @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_deletes(self, client, users):
         users.return_value = []
-        client.return_value.list_users.return_value = [cognito_user('1', '1@example.org')]
+        client.return_value.list_users.return_value = [cognito_user('1', '1@example.org', True)]
 
         out = StringIO()
         call_command('cognito_sync', verbosity=2, stdout=out)
@@ -48,8 +67,8 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_updates(self, client, users):
-        users.return_value = [DummyUser('1', '1@example.org')]
-        client.return_value.list_users.return_value = [cognito_user('1', '2@example.org')]
+        users.return_value = [DummyUser('1', '1@example.org', True)]
+        client.return_value.list_users.return_value = [cognito_user('1', '2@example.org', True)]
 
         out = StringIO()
         call_command('cognito_sync', verbosity=2, stdout=out)
@@ -60,9 +79,35 @@ class CognitoSyncCommandTest(TestCase):
 
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
+    def test_command_enables(self, client, users):
+        users.return_value = [DummyUser('1', '1@example.org', True)]
+        client.return_value.list_users.return_value = [cognito_user('1', '2@example.org', False)]
+
+        out = StringIO()
+        call_command('cognito_sync', verbosity=2, stdout=out)
+
+        self.assertIn('enabling user 1', out.getvalue())
+        self.assertIn('1 user(s) enabled', out.getvalue())
+        self.assertIn(call().enable_user('1'), client.mock_calls)
+
+    @patch('cognito.management.commands.cognito_sync.get_local_users')
+    @patch('cognito.management.commands.cognito_sync.Client')
+    def test_command_disables(self, client, users):
+        users.return_value = [DummyUser('1', '1@example.org', False)]
+        client.return_value.list_users.return_value = [cognito_user('1', '2@example.org', True)]
+
+        out = StringIO()
+        call_command('cognito_sync', verbosity=2, stdout=out)
+
+        self.assertIn('disabling user 1', out.getvalue())
+        self.assertIn('1 user(s) disabled', out.getvalue())
+        self.assertIn(call().disable_user('1'), client.mock_calls)
+
+    @patch('cognito.management.commands.cognito_sync.get_local_users')
+    @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_does_not_updates_if_unchanged(self, client, users):
-        users.return_value = [DummyUser('1', '1@example.org')]
-        client.return_value.list_users.return_value = [cognito_user('1', '1@example.org')]
+        users.return_value = [DummyUser('1', '1@example.org', True)]
+        client.return_value.list_users.return_value = [cognito_user('1', '1@example.org', True)]
 
         out = StringIO()
         call_command('cognito_sync', verbosity=2, stdout=out)
@@ -74,8 +119,9 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_clears_if_confirmed(self, client, users, input_):
         input_.side_effect = ['yes']
-        users.return_value = [DummyUser('1', '1@example.org')]
-        client.return_value.list_users.side_effect = [[cognito_user('1', '1@example.org')], []]
+        users.return_value = [DummyUser('1', '1@example.org', True)]
+        client.return_value.list_users.side_effect = [[cognito_user('1', '1@example.org', True)],
+                                                      []]
 
         out = StringIO()
         call_command('cognito_sync', clear=True, verbosity=2, stdout=out)
@@ -93,8 +139,9 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_does_not_clears_if_not_confirmed(self, client, users, input_):
         input_.side_effect = ['no']
-        users.return_value = [DummyUser('1', '1@example.org')]
-        client.return_value.list_users.side_effect = [[cognito_user('1', '1@example.org')], []]
+        users.return_value = [DummyUser('1', '1@example.org', True)]
+        client.return_value.list_users.side_effect = [[cognito_user('1', '1@example.org', True)],
+                                                      []]
 
         out = StringIO()
         call_command('cognito_sync', clear=True, verbosity=2, stdout=out)
@@ -107,9 +154,11 @@ class CognitoSyncCommandTest(TestCase):
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_runs_dry(self, client, users):
-        users.return_value = [DummyUser('1', '1@example.org'), DummyUser('2', '2@example.org')]
+        users.return_value = [
+            DummyUser('1', '1@example.org', True), DummyUser('2', '2@example.org', True)
+        ]
         client.return_value.list_users.return_value = [
-            cognito_user('1', '10@example.org'), cognito_user('3', '3@example.org')
+            cognito_user('1', '10@example.org', True), cognito_user('3', '3@example.org', True)
         ]
 
         out = StringIO()
