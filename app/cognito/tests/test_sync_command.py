@@ -34,7 +34,7 @@ class CognitoSyncCommandTest(TestCase):
 
     @patch('cognito.management.commands.cognito_sync.get_local_users')
     @patch('cognito.management.commands.cognito_sync.Client')
-    def test_command_removes(self, client, users):
+    def test_command_deletes(self, client, users):
         users.return_value = []
         client.return_value.list_users.return_value = [cognito_user('1', '1@example.org')]
 

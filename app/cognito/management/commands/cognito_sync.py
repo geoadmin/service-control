@@ -46,8 +46,8 @@ class Handler(CommandHandler):
             if not created:
                 self.print_error('Could not create %s', user.username)
 
-    def remove_user(self, username: str) -> None:
-        """ Remove a remote user from cognito. """
+    def delete_user(self, username: str) -> None:
+        """ Delete a remote user from cognito. """
 
         self.counts['deleted'] += 1
         self.print(f'deleting user {username}')
@@ -66,7 +66,7 @@ class Handler(CommandHandler):
             if not self.dry_run:
                 updated = self.client.update_user(local_user.username, local_user.email)
                 if not updated:
-                    self.print_error('Could not delete %s', local_user.username)
+                    self.print_error('Could not update %s', local_user.username)
 
     def sync_users(self) -> None:
         """ Synchronizes local and cognito users. """
@@ -81,7 +81,7 @@ class Handler(CommandHandler):
             self.add_user(local_users[username])
 
         for username in remote_usernames.difference(local_usernames):
-            self.remove_user(username)
+            self.delete_user(username)
 
         for username in local_usernames.intersection(remote_usernames):
             self.update_user(local_users[username], remote_users[username])
