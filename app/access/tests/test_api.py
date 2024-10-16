@@ -40,7 +40,7 @@ class ApiTestCase(TestCase):
     def test_get_user_returns_existing_user(self):
 
         client = TestClient(router)
-        response = client.get(f"users/dude")
+        response = client.get("users/dude")
 
         assert response.status_code == 200
         assert response.data == {
