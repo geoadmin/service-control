@@ -7,44 +7,28 @@ from cognito.utils.client import user_attributes_to_dict
 from django.test import TestCase
 
 
-def cognito_user(username, managed):
+def cognito_user(username, managed, for_):
+    attributes_key = 'Attributes' if for_ == 'list_users' else 'UserAttributes'
+    attributes = [{'Name': 'email', 'Value': 'test@example.org'}]
     if managed:
-        return {
-            'Username': username,
-            'Attributes': [{
-                'Name': 'email', 'Value': 'test@example.org'
-            }, {
-                'Name': 'custom:managed', 'Value': 'True'
-            }]
-        }
-    return {'Username': username, 'Attributes': [{'Name': 'email', 'Value': 'test@example.org'}]}
+        attributes.append({'Name': 'custom:managed', 'Value': 'True'})
+    return {'Username': username, attributes_key: attributes}
 
 
 class ClientTestCase(TestCase):
 
     def test_user_attributes_to_dict(self):
-        attributes = user_attributes_to_dict({
-            'UserAttributes': [{
-                'Name': 'email', 'Value': 'test@example.org'
-            }, {
-                'Name': 'custom:managed', 'Value': 'True'
-            }]
-        })
-        self.assertEqual(attributes, {'email': 'test@example.org', 'custom:managed': 'True'})
-
-        attributes = user_attributes_to_dict({
-            'Attributes': [{
-                'Name': 'email', 'Value': 'test@example.org'
-            }, {
-                'Name': 'custom:managed', 'Value': 'True'
-            }]
-        })
+        attributes = user_attributes_to_dict([{
+            'Name': 'email', 'Value': 'test@example.org'
+        }, {
+            'Name': 'custom:managed', 'Value': 'True'
+        }])
         self.assertEqual(attributes, {'email': 'test@example.org', 'custom:managed': 'True'})
 
     @patch('cognito.utils.client.client')
     def test_list_users_returns_only_managed(self, boto3):
-        managed = {'Username': '1234', 'Attributes': [{'Name': 'custom:managed', 'Value': 'True'}]}
-        unmanaged = {'Username': '5678'}
+        managed = cognito_user('1234', True, 'list_users')
+        unmanaged = cognito_user('1234', False, 'list_users')
         boto3.return_value.list_users.return_value = {'Users': [managed, unmanaged]}
 
         client = Client()
@@ -54,7 +38,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_list_users_pagination(self, boto3):
-        users = [cognito_user(str(count), True) for count in range(1, 131)]
+        users = [cognito_user(str(count), True, 'list_users') for count in range(1, 131)]
         response_1 = {'Users': users[0:60], 'PaginationToken': '1'}
         response_2 = {'Users': users[60:120], 'PaginationToken': '2'}
         response_3 = {'Users': users[120:130]}
@@ -76,7 +60,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_get_user_returns_managed(self, boto3):
-        response = cognito_user('1234', True)
+        response = cognito_user('1234', True, 'get_user')
         boto3.return_value.admin_get_user.return_value = response
 
         client = Client()
@@ -89,7 +73,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_get_user_does_not_return_unmanaged(self, boto3):
-        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False)
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False, 'get_user')
 
         client = Client()
         user = client.get_user('1234')
@@ -101,11 +85,12 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_get_user_returns_unmanaged(self, boto3):
-        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False)
+        response = cognito_user('1234', False, 'get_user')
+        boto3.return_value.admin_get_user.return_value = response
 
         client = Client()
         user = client.get_user('1234', return_unmanaged=True)
-        self.assertEqual(user, cognito_user('1234', False))
+        self.assertEqual(user, response)
         self.assertIn(
             call().admin_get_user(UserPoolId=client.user_pool_id, Username='1234'),
             boto3.mock_calls
@@ -134,7 +119,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_create_user_does_not_create_if_managed_exists(self, boto3):
-        boto3.return_value.admin_get_user.return_value = cognito_user('1234', True)
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', True, 'get_user')
 
         client = Client()
         created = client.create_user('1234', 'test@example.org')
@@ -155,7 +140,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_create_user_does_not_create_if_unmanaged_exists(self, boto3):
-        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False)
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False, 'get_user')
 
         client = Client()
         created = client.create_user('1234', 'test@example.org')
@@ -176,7 +161,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_delete_user_deletes_managed(self, boto3):
-        boto3.return_value.admin_get_user.return_value = cognito_user('1234', True)
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', True, 'get_user')
 
         client = Client()
         deleted = client.delete_user('1234')
@@ -188,7 +173,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_delete_user_does_not_delete_unmanaged(self, boto3):
-        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False)
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False, 'get_user')
 
         client = Client()
         deleted = client.delete_user('1234')
@@ -200,7 +185,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_update_user_updates_managed(self, boto3):
-        boto3.return_value.admin_get_user.return_value = cognito_user('1234', True)
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', True, 'get_user')
 
         client = Client()
         updated = client.update_user('1234', 'test@example.org')
@@ -220,7 +205,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.client.client')
     def test_update_user_does_not_update_unmanaged(self, boto3):
-        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False)
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False, 'get_user')
 
         client = Client()
         updated = client.update_user('1234', 'test@example.org')
