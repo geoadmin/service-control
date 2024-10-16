@@ -3,6 +3,7 @@ from typing import Any
 from cognito.utils.client import Client
 from cognito.utils.client import user_attributes_to_dict
 from cognito.utils.user import User
+from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
 from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
@@ -35,6 +36,38 @@ class Handler(CommandHandler):
                 if not deleted:
                     self.print_error('Could not delete %s', username)
 
+    def add_user(self, user: User) -> None:
+        """ Add a local user to cognito. """
+
+        self.counts['added'] += 1
+        self.print(f'adding user {user.username}')
+        if not self.dry_run:
+            created = self.client.create_user(user.username, user.email)
+            if not created:
+                self.print_error('Could not create %s', user.username)
+
+    def remove_user(self, username: str) -> None:
+        """ Remove a remote user from cognito. """
+
+        self.counts['deleted'] += 1
+        self.print(f'deleting user {username}')
+        if not self.dry_run:
+            deleted = self.client.delete_user(username)
+            if not deleted:
+                self.print_error('Could not delete %s', username)
+
+    def update_user(self, local_user: User, remote_user: UserTypeTypeDef) -> None:
+        """ Update a remote user in cognito. """
+
+        remote_attributes = user_attributes_to_dict(remote_user)
+        if local_user.email != remote_attributes.get('email'):
+            self.counts['updated'] += 1
+            self.print(f'updating user {local_user.username}')
+            if not self.dry_run:
+                updated = self.client.update_user(local_user.username, local_user.email)
+                if not updated:
+                    self.print_error('Could not delete %s', local_user.username)
+
     def sync_users(self) -> None:
         """ Synchronizes local and cognito users. """
 
@@ -44,34 +77,14 @@ class Handler(CommandHandler):
         remote_users = {user['Username']: user for user in self.client.list_users()}
         remote_usernames = set(remote_users.keys())
 
-        # Add local only user
         for username in local_usernames.difference(remote_usernames):
-            self.counts['added'] += 1
-            self.print(f'adding user {username}')
-            if not self.dry_run:
-                created = self.client.create_user(username, local_users[username].email)
-                if not created:
-                    self.print_error('Could not create %s', username)
+            self.add_user(local_users[username])
 
-        # Remove remote only user
         for username in remote_usernames.difference(local_usernames):
-            self.counts['deleted'] += 1
-            self.print(f'deleting user {username}')
-            if not self.dry_run:
-                deleted = self.client.delete_user(username)
-                if not deleted:
-                    self.print_error('Could not delete %s', username)
+            self.remove_user(username)
 
-        # Update common users
         for username in local_usernames.intersection(remote_usernames):
-            remote_attributes = user_attributes_to_dict(remote_users[username])
-            if local_users[username].email != remote_attributes.get('email'):
-                self.counts['updated'] += 1
-                self.print(f'updating user {username}')
-                if not self.dry_run:
-                    updated = self.client.update_user(username, local_users[username].email)
-                    if not updated:
-                        self.print_error('Could not delete %s', username)
+            self.update_user(local_users[username], remote_users[username])
 
     def run(self) -> None:
         """ Main entry point of command. """
