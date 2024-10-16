@@ -55,6 +55,29 @@ You may want to do an initial sync of your database by applying the most recent 
 app/manage.py migrate
 ```
 
+## Cognito
+
+This project uses Amazon Cognito user identity and access management. It uses a custom user attribute
+`custom:managed` to mark users managed by this service.
+
+To synchronize all local users with cognito, run:
+
+```bash
+app/manage.py cognito_sync
+```
+
+### Local Cognito
+
+For local testing the connection to cognito, [cognito-local](https://github.com/jagregory/cognito-local) is used.
+`cognito-local` stores all of its data as simple JSON files in its volume (`.volumes/cognito/db/`).
+
+You can also use the AWS CLI together with `cognito-local` by specifying the local endpoint.
+Use this to define the `custom:managed` flag to the local pool:
+
+```bash
+aws --endpoint http://localhost:9229 cognito-idp add-custom-attributes --user-pool-id $COGNITO_POOL_ID --custom-attributes '[{"Name": "managed"}]'
+```
+
 ## Local Development
 
 ### vs code Integration
