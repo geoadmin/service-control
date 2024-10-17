@@ -1,5 +1,5 @@
-from django.test import Client
 from unittest import TestCase
+from django.test import Client
 
 
 class CheckerUrlTestCase(TestCase):
