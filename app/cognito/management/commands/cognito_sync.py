@@ -9,10 +9,20 @@ from utils.command import CustomBaseCommand
 
 from django.core.management.base import CommandParser
 
+class DummyUser:
+
+    def __init__(self, username, email):
+        self.username = username
+        self.email = email
+
 
 def get_local_users() -> list[User]:
     # TODO: remove me!
-    return []
+    return [
+        DummyUser('hans', 'hans@example.org'),
+        DummyUser('peter', 'peter@example.org'),
+        DummyUser('anna', 'anna@example.org'),
+    ]
 
 
 class Handler(CommandHandler):
