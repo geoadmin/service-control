@@ -1,6 +1,5 @@
-from django.urls import reverse
-from unittest import TestCase
 from django.test import Client
+from unittest import TestCase
 
 
 class CheckerUrlTestCase(TestCase):
@@ -8,7 +7,9 @@ class CheckerUrlTestCase(TestCase):
     def test_checker_url(self):
         client = Client()
 
-        url = reverse('checker')
+        # intentionally not using reverse here as we want to
+        # make sure the URL really is /checker
+        url = '/checker'
 
         response = client.get(url)
         assert response.status_code == 200
@@ -16,5 +17,5 @@ class CheckerUrlTestCase(TestCase):
 
         assert 'success' in content
         assert 'message' in content
-        assert content['success'] == True
+        assert content['success'] is True
         assert content['message'] == "OK"
