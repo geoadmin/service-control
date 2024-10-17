@@ -15,11 +15,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.http import JsonResponse
+from django.http.request import HttpRequest
 from django.urls import path
+from django.urls import re_path
 
-from .api import root
+from .api import api
+
+
+def checker(request: HttpRequest) -> dict[str, bool | str]:
+    return JsonResponse({"success": True, "message": "OK"})
+
 
 urlpatterns = [
-    path('', root.urls),
+    re_path('checker/?', checker, name='checker'),
+    path('api/', api.urls),
     path('admin/', admin.site.urls),
 ]
