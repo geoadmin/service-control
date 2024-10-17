@@ -1,6 +1,5 @@
 from typing import Iterable
 
-from django.core.validators import validate_email
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import pgettext_lazy as _
@@ -16,14 +15,9 @@ class User(models.Model):
     username = models.CharField(_(_context, "User name"), primary_key=True)
     first_name = models.CharField(_(_context, "First name"))
     last_name = models.CharField(_(_context, "Last name"))
-    email = models.CharField(_(_context, "Email"))
+    email = models.EmailField(_(_context, "Email"))
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
-
-    def clean(self) -> None:
-        """Raises an exception if the model does not match additional custom validation criteria."""
-        validate_email(self.email)
-        super().clean()
 
     def save(
         self,
