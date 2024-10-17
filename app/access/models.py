@@ -12,7 +12,7 @@ class User(models.Model):
     def __str__(self) -> str:
         return str(self.first_name) + str(self.last_name)
 
-    username = models.CharField(_(_context, "User name"), primary_key=True)
+    username = models.CharField(_(_context, "User name"), unique=True)
     first_name = models.CharField(_(_context, "First name"))
     last_name = models.CharField(_(_context, "Last name"))
     email = models.EmailField(_(_context, "Email"))
