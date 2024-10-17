@@ -27,6 +27,23 @@ class TestUser:
         assert actual.email == "dude@bowling.com"
         assert actual.provider == provider
 
+    def test_user_raises_exception_for_user_with_existing_user_name(self):
+        User.objects.create(
+            username="dude",
+            first_name="Jeffrey",
+            last_name="Lebowski",
+            email="dude@bowling.com",
+            provider=Provider.objects.create()
+        )
+        with pytest.raises(ValidationError):
+            User.objects.create(
+                username="dude",
+                first_name="XXX",
+                last_name="YYY",
+                email="xxx@yyy.com",
+                provider=Provider.objects.create()
+            )
+
     def test_user_with_invalid_email_raises_exception_when_creating_db_record(self):
         provider = Provider.objects.create()
         model_fields = {
