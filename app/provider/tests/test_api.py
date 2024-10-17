@@ -90,7 +90,7 @@ class ApiTestCase(TestCase):
         provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{provider_id}")
+        response = client.get(f"/providers/{provider_id}")
 
         assert response.status_code == 200
         assert response.data == {
@@ -118,7 +118,7 @@ class ApiTestCase(TestCase):
         provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{provider_id}?lang=de")
+        response = client.get(f"/providers/{provider_id}?lang=de")
 
         assert response.status_code == 200
         assert response.data == {
@@ -144,7 +144,7 @@ class ApiTestCase(TestCase):
     def test_get_provider_returns_404_for_nonexisting_provider(self):
 
         client = TestClient(router)
-        response = client.get("/2")
+        response = client.get("/providers/2")
 
         assert response.status_code == 404
         assert response.data == {"detail": "Not Found"}
@@ -159,7 +159,7 @@ class ApiTestCase(TestCase):
         provider.save()
 
         client = TestClient(router)
-        response = client.get(f"/{provider.id}")
+        response = client.get(f"/providers/{provider.id}")
 
         assert response.status_code == 200
         assert response.data == {
@@ -183,7 +183,7 @@ class ApiTestCase(TestCase):
         provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{provider_id}", headers={"Accept-Language": "de"})
+        response = client.get(f"/providers/{provider_id}", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
@@ -211,7 +211,9 @@ class ApiTestCase(TestCase):
         provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{provider_id}?lang=fr", headers={"Accept-Language": "de"})
+        response = client.get(
+            f"/providers/{provider_id}?lang=fr", headers={"Accept-Language": "de"}
+        )
 
         assert response.status_code == 200
         assert response.data == {
@@ -239,7 +241,7 @@ class ApiTestCase(TestCase):
         provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{provider_id}", headers={"Accept-Language": ""})
+        response = client.get(f"/providers/{provider_id}", headers={"Accept-Language": ""})
 
         assert response.status_code == 200
         assert response.data == {
@@ -267,7 +269,9 @@ class ApiTestCase(TestCase):
         provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{provider_id}", headers={"Accept-Language": "cn, *, de-DE, en"})
+        response = client.get(
+            f"/providers/{provider_id}", headers={"Accept-Language": "cn, *, de-DE, en"}
+        )
 
         assert response.status_code == 200
         assert response.data == {
@@ -296,7 +300,9 @@ class ApiTestCase(TestCase):
         provider_id = Provider.objects.last().id
 
         client = TestClient(router)
-        response = client.get(f"/{provider_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"})
+        response = client.get(
+            f"/providers/{provider_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
+        )
 
         assert response.status_code == 200
         assert response.data == {
@@ -322,7 +328,7 @@ class ApiTestCase(TestCase):
     def test_get_providers_returns_single_provider_with_given_language(self):
 
         client = TestClient(router)
-        response = client.get("/?lang=fr")
+        response = client.get("/providers?lang=fr")
 
         assert response.status_code == 200
         assert response.data == {
@@ -357,7 +363,7 @@ class ApiTestCase(TestCase):
         provider.save()
 
         client = TestClient(router)
-        response = client.get("/")
+        response = client.get("/providers")
 
         assert response.status_code == 200
         assert response.data == {
@@ -381,7 +387,7 @@ class ApiTestCase(TestCase):
     def test_get_providers_returns_provider_with_language_from_header(self):
 
         client = TestClient(router)
-        response = client.get("/", headers={"Accept-Language": "de"})
+        response = client.get("/providers", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
         assert response.data == {
@@ -423,7 +429,7 @@ class ApiTestCase(TestCase):
         Provider.objects.create(**provider)
 
         client = TestClient(router)
-        response = client.get("/?lang=fr")
+        response = client.get("/providers?lang=fr")
 
         assert response.status_code == 200
         assert response.data == {
