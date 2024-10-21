@@ -1,11 +1,13 @@
-from django.test import Client
+from config.api import api_root
+from ninja.testing import TestClient
+
 from django.test import TestCase
 
 
 class CheckerUrlTestCase(TestCase):
 
     def test_checker_url(self):
-        client = Client()
+        client = TestClient(api_root)
 
         # intentionally not using reverse here as we want to
         # make sure the URL really is /checker
