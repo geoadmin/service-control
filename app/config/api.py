@@ -11,9 +11,9 @@ api.add_router("", provider_router)
 api.add_router("", distributions_router)
 api.add_router("", access_router)
 
-api_root = NinjaAPI(urls_namespace="root")
+root = NinjaAPI(urls_namespace="root")
 
 
-@api_root.get("/checker")
+@root.get("/checker")
 def checker(request: HttpRequest) -> dict[str, bool | str]:
     return {"success": True, "message": "OK"}

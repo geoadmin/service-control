@@ -18,10 +18,10 @@ from django.contrib import admin
 from django.urls import path
 
 from .api import api
-from .api import api_root
+from .api import root
 
 urlpatterns = [
-    path('', api_root.urls),
+    path('', root.urls),
     path('api/', api.urls),
     path('admin/', admin.site.urls),
 ]
