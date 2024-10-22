@@ -41,8 +41,7 @@ class ApiTestCase(TestCase):
 
     def test_get_user_returns_existing_user(self):
 
-        client = TestClient(router)
-        response = client.get("users/dude")
+        response = self.client.get("users/dude")
 
         assert response.status_code == 200
         assert response.data == {
@@ -55,16 +54,14 @@ class ApiTestCase(TestCase):
 
     def test_get_user_returns_404_if_nonexisting(self):
 
-        client = TestClient(router)
-        response = client.get("users/nihilist")
+        response = self.client.get("users/nihilist")
 
         assert response.status_code == 404
         assert response.data == {"detail": "Not Found"}
 
     def test_get_users_returns_single_user(self):
 
-        client = TestClient(router)
-        response = client.get("users")
+        response = self.client.get("users")
 
         assert response.status_code == 200
         assert response.data == {
@@ -88,8 +85,7 @@ class ApiTestCase(TestCase):
         }
         User.objects.create(**model_fields)
 
-        client = TestClient(router)
-        response = client.get("users")
+        response = self.client.get("users")
 
         assert response.status_code == 200
         assert response.data == {
