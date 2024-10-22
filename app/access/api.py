@@ -47,12 +47,13 @@ def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     return {"items": responses}
 
 
-@router.post("users", response=UserSchema)
+@router.post("users", response={201: UserSchema})
 def create_user(request: HttpRequest, user_in: UserSchema) -> UserSchema:
     """Create the given user and return it.
 
     Return HTTP status code
 
+        - 201 (Created) if the User was created as expected
         - 404 (Not Found) if there is no provider with the given provider ID
         - 409 (Conflict) if there is already a record with the same username
         - 422 (Unprocessable Content) if there is any other invalid value
@@ -69,4 +70,5 @@ def create_user(request: HttpRequest, user_in: UserSchema) -> UserSchema:
         )
     except ValidationError as error:
         raise validation_error_to_http_error(error) from error
+
     return user_to_response(user_out)
