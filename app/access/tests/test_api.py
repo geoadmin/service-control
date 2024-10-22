@@ -21,6 +21,8 @@ class ApiTestCase(TestCase):
         }
         User.objects.create(**model_fields)
 
+        self.client = TestClient(router)
+
     def test_user_to_response_maps_fields_correctly(self):
 
         model = User.objects.last()
@@ -107,4 +109,83 @@ class ApiTestCase(TestCase):
                     "provider_id": Provider.objects.last().id,
                 },
             ]
+        }
+
+    def test_post_users_creates_new_user_in_db_and_returns_it(self):
+
+        payload = {
+            "username": "donny",
+            "first_name": "Theodore Donald",
+            "last_name": "Kerabatsos",
+            "email": "donny@bowling.com",
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.post("users", json=payload)
+
+        assert response.status_code == 200
+        assert response.data == payload
+
+    def test_post_users_returns_404_if_provider_id_does_not_exist(self):
+
+        non_existing_provider_id = Provider.objects.last().id + 1
+        payload = {
+            "username": "donny",
+            "first_name": "Theodore Donald",
+            "last_name": "Kerabatsos",
+            "email": "donny@bowling.com",
+            "provider_id": non_existing_provider_id,
+        }
+
+        response = self.client.post("users", json=payload)
+
+        assert response.status_code == 404
+
+    def test_post_users_returns_422_if_email_format_invalid(self):
+
+        invalid_email = "donny_at_bowling_dot_com"
+        payload = {
+            "username": "donny",
+            "first_name": "Theodore Donald",
+            "last_name": "Kerabatsos",
+            "email": invalid_email,
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.post("users", json=payload)
+
+        assert response.status_code == 422
+        assert response.data == {'detail': "['Enter a valid email address.']"}
+
+    def test_post_users_returns_422_if_user_exists_already(self):
+
+        payload = {
+            "username": "dude",
+            "first_name": "Theodore Donald",
+            "last_name": "Kerabatsos",
+            "email": "donny@bowling.com",
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.post("users", json=payload)
+
+        assert response.status_code == 409
+        assert response.data == {'detail': "['User with this User name already exists.']"}
+
+    def test_post_users_returns_422_and_reports_all_errors_if_multiple_things_amiss(self):
+
+        invalid_email = "donny_at_bowling_dot_com"
+        payload = {
+            "username": "dude",
+            "first_name": "Theodore Donald",
+            "last_name": "Kerabatsos",
+            "email": invalid_email,
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.post("users", json=payload)
+
+        assert response.status_code == 409
+        assert response.data == {
+            'detail': "['Enter a valid email address.', 'User with this User name already exists.']"
         }
