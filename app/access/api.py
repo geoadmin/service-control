@@ -1,5 +1,8 @@
 from ninja import Router
+from provider.models import Provider
+from utils.exceptions import validation_error_to_http_error
 
+from django.core.exceptions import ValidationError
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
@@ -42,3 +45,28 @@ def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     models = User.objects.all()
     responses = [user_to_response(model) for model in models]
     return {"items": responses}
+
+
+@router.post("users", response=UserSchema)
+def create_user(request: HttpRequest, user_in: UserSchema) -> UserSchema:
+    """Create the given user and return it.
+
+    Return HTTP status code
+
+        - 404 (Not Found) if there is no provider with the given provider ID
+        - 409 (Conflict) if there is already a record with the same username
+        - 422 (Unprocessable Content) if there is any other invalid value
+    """
+    provider = get_object_or_404(Provider, id=user_in.provider_id)
+
+    try:
+        user_out = User.objects.create(
+            username=user_in.username,
+            first_name=user_in.first_name,
+            last_name=user_in.last_name,
+            email=user_in.email,
+            provider=provider
+        )
+    except ValidationError as error:
+        raise validation_error_to_http_error(error) from error
+    return user_to_response(user_out)
