@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 from typing import Any
 
+from access.models import User
 from cognito.utils.client import Client
 from cognito.utils.client import user_attributes_to_dict
-from cognito.utils.user import User
 from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
@@ -11,11 +11,6 @@ from django.core.management.base import CommandParser
 
 if TYPE_CHECKING:
     from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
-
-
-def get_local_users() -> list[User]:
-    # TODO: remove me!
-    return []
 
 
 class Handler(CommandHandler):
@@ -75,7 +70,7 @@ class Handler(CommandHandler):
         """ Synchronizes local and cognito users. """
 
         # Get all remote and local users
-        local_users = {user.username: user for user in get_local_users()}
+        local_users = {user.username: user for user in User.objects.all()}
         local_usernames = set(local_users.keys())
         remote_users = {user['Username']: user for user in self.client.list_users()}
         remote_usernames = set(remote_users.keys())

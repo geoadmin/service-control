@@ -1,14 +1,9 @@
 from logging import getLogger
 
+from access.models import User
 from cognito.utils.client import Client
 
 logger = getLogger(__name__)
-
-
-# TODO: Replace me with the actual user model
-class User:
-    username: str
-    email: str
 
 
 def create_user(user: User) -> bool:
