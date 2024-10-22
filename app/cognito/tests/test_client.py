@@ -11,19 +11,20 @@ def cognito_user(username, managed, for_):
     attributes_key = 'Attributes' if for_ == 'list_users' else 'UserAttributes'
     attributes = [{'Name': 'email', 'Value': 'test@example.org'}]
     if managed:
-        attributes.append({'Name': 'custom:managed', 'Value': 'True'})
+        attributes.append({'Name': 'custom:managed', 'Value': 'true'})
     return {'Username': username, attributes_key: attributes}
 
 
 class ClientTestCase(TestCase):
 
     def test_user_attributes_to_dict(self):
-        attributes = user_attributes_to_dict([{
+        attributes = [{
             'Name': 'email', 'Value': 'test@example.org'
         }, {
-            'Name': 'custom:managed', 'Value': 'True'
-        }])
-        self.assertEqual(attributes, {'email': 'test@example.org', 'custom:managed': 'True'})
+            'Name': 'custom:managed', 'Value': 'true'
+        }]
+        attributes = user_attributes_to_dict(attributes)
+        self.assertEqual(attributes, {'email': 'test@example.org', 'custom:managed': 'true'})
 
     @patch('cognito.utils.client.client')
     def test_list_users_returns_only_managed(self, boto3):
@@ -110,7 +111,7 @@ class ClientTestCase(TestCase):
                 UserAttributes=[{
                     'Name': 'email', 'Value': 'test@example.org'
                 }, {
-                    'Name': 'custom:managed', 'Value': 'True'
+                    'Name': client.flag_name, 'Value': 'true'
                 }],
                 DesiredDeliveryMediums=['EMAIL']
             ),
@@ -131,7 +132,7 @@ class ClientTestCase(TestCase):
                 UserAttributes=[{
                     'Name': 'email', 'Value': 'test@example.org'
                 }, {
-                    'Name': 'custom:managed', 'Value': 'True'
+                    'Name': client.flag_name, 'Value': 'true'
                 }],
                 DesiredDeliveryMediums=['EMAIL']
             ),
@@ -152,7 +153,7 @@ class ClientTestCase(TestCase):
                 UserAttributes=[{
                     'Name': 'email', 'Value': 'test@example.org'
                 }, {
-                    'Name': 'custom:managed', 'Value': 'True'
+                    'Name': client.flag_name, 'Value': 'true'
                 }],
                 DesiredDeliveryMediums=['EMAIL']
             ),
@@ -196,8 +197,6 @@ class ClientTestCase(TestCase):
                 Username='1234',
                 UserAttributes=[{
                     'Name': 'email', 'Value': 'test@example.org'
-                }, {
-                    'Name': 'custom:managed', 'Value': 'True'
                 }]
             ),
             boto3.mock_calls
@@ -217,7 +216,7 @@ class ClientTestCase(TestCase):
                 UserAttributes=[{
                     'Name': 'email', 'Value': 'test@example.org'
                 }, {
-                    'Name': 'custom:managed', 'Value': 'True'
+                    'Name': client.flag_name, 'Value': 'true'
                 }]
             ),
             boto3.mock_calls

@@ -1,12 +1,16 @@
+from typing import TYPE_CHECKING
+
 from boto3 import client
-from mypy_boto3_cognito_idp.type_defs import AdminGetUserResponseTypeDef
-from mypy_boto3_cognito_idp.type_defs import AttributeTypeTypeDef
-from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
 
 from django.conf import settings
 
+if TYPE_CHECKING:
+    from mypy_boto3_cognito_idp.type_defs import AdminGetUserResponseTypeDef
+    from mypy_boto3_cognito_idp.type_defs import AttributeTypeTypeDef
+    from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
 
-def user_attributes_to_dict(attributes: list[AttributeTypeTypeDef]) -> dict[str, str]:
+
+def user_attributes_to_dict(attributes: list['AttributeTypeTypeDef']) -> dict[str, str]:
     """ Converts the attributes from a cognito user to a dict. """
 
     return {attr['Name']: attr['Value'] for attr in attributes}
@@ -21,9 +25,10 @@ class Client:
     def __init__(self) -> None:
         self.endpoint_url = settings.COGNITO_ENDPOINT_URL
         self.user_pool_id = settings.COGNITO_POOL_ID
+        self.flag_name = f'custom:{settings.COGNITO_FLAG_NAME}'
         self.client = client("cognito-idp", endpoint_url=self.endpoint_url)
 
-    def list_users(self) -> list[UserTypeTypeDef]:
+    def list_users(self) -> list['UserTypeTypeDef']:
         """ Get a list of managed users. """
 
         response = self.client.list_users(UserPoolId=self.user_pool_id, Limit=60)
@@ -37,12 +42,14 @@ class Client:
 
         return [
             user for user in users
-            if user_attributes_to_dict(user['Attributes']).get('custom:managed') == 'True'
+            if user_attributes_to_dict(user['Attributes']).get(self.flag_name) == 'true'
         ]
 
     def get_user(
-        self, username: str, return_unmanaged: bool = False
-    ) -> AdminGetUserResponseTypeDef | None:
+        self,
+        username: str,
+        return_unmanaged: bool = False
+    ) -> 'AdminGetUserResponseTypeDef | None':
         """ Get the user with the given username.
 
         Returns None if the user does not exist or doesn't have the managed flag and
@@ -56,7 +63,7 @@ class Client:
             return None
         if not return_unmanaged:
             attributes = user_attributes_to_dict(response['UserAttributes'])
-            if attributes.get('custom:managed') != 'True':
+            if attributes.get(self.flag_name) != 'true':
                 return None
 
         return response
@@ -76,7 +83,7 @@ class Client:
                 UserAttributes=[{
                     "Name": "email", "Value": email
                 }, {
-                    "Name": "custom:managed", "Value": "True"
+                    "Name": self.flag_name, "Value": "true"
                 }],
                 DesiredDeliveryMediums=['EMAIL']
             )
@@ -110,8 +117,6 @@ class Client:
                 Username=username,
                 UserAttributes=[{
                     "Name": "email", "Value": email
-                }, {
-                    "Name": "custom:managed", "Value": "True"
                 }]
             )
             return True

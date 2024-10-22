@@ -1,13 +1,16 @@
+from typing import TYPE_CHECKING
 from typing import Any
 
 from cognito.utils.client import Client
 from cognito.utils.client import user_attributes_to_dict
 from cognito.utils.user import User
-from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
 from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
 from django.core.management.base import CommandParser
+
+if TYPE_CHECKING:
+    from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
 
 
 def get_local_users() -> list[User]:
@@ -56,7 +59,7 @@ class Handler(CommandHandler):
             if not deleted:
                 self.print_error('Could not delete %s', username)
 
-    def update_user(self, local_user: User, remote_user: UserTypeTypeDef) -> None:
+    def update_user(self, local_user: User, remote_user: 'UserTypeTypeDef') -> None:
         """ Update a remote user in cognito. """
 
         remote_attributes = user_attributes_to_dict(remote_user['Attributes'])
