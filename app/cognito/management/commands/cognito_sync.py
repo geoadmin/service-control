@@ -32,7 +32,9 @@ class Handler(CommandHandler):
             if not self.dry_run:
                 deleted = self.client.delete_user(username)
                 if not deleted:
-                    self.print_error('Could not delete %s', username)
+                    self.print_error(
+                        'Could not delete %s, might not exist or might be unmanged', username
+                    )
 
     def add_user(self, user: User) -> None:
         """ Add a local user to cognito. """
@@ -42,7 +44,9 @@ class Handler(CommandHandler):
         if not self.dry_run:
             created = self.client.create_user(user.username, user.email)
             if not created:
-                self.print_error('Could not create %s', user.username)
+                self.print_error(
+                    'Could not create %s, might already exist as unmanaged user', user.username
+                )
 
     def delete_user(self, username: str) -> None:
         """ Delete a remote user from cognito. """
@@ -52,7 +56,9 @@ class Handler(CommandHandler):
         if not self.dry_run:
             deleted = self.client.delete_user(username)
             if not deleted:
-                self.print_error('Could not delete %s', username)
+                self.print_error(
+                    'Could not delete %s, might not exist or might be unmanaged', username
+                )
 
     def update_user(self, local_user: User, remote_user: 'UserTypeTypeDef') -> None:
         """ Update a remote user in cognito. """
@@ -64,7 +70,10 @@ class Handler(CommandHandler):
             if not self.dry_run:
                 updated = self.client.update_user(local_user.username, local_user.email)
                 if not updated:
-                    self.print_error('Could not update %s', local_user.username)
+                    self.print_error(
+                        'Could not update %s, might not exist or might be unmanaged',
+                        local_user.username
+                    )
 
     def sync_users(self) -> None:
         """ Synchronizes local and cognito users. """
@@ -89,7 +98,7 @@ class Handler(CommandHandler):
 
         # Clear data
         if self.clear:
-            self.print_warning('this action will delete all managed users from cognito', level=0)
+            self.print_warning('This action will delete all managed users from cognito', level=0)
             confirm = input('are you sure you want to proceed? [yes/no]: ')
             if confirm.lower() != 'yes':
                 self.print_warning('operation cancelled', level=0)
@@ -97,7 +106,6 @@ class Handler(CommandHandler):
 
             self.clear_users()
 
-        # Sync data
         self.sync_users()
 
         # Print counts

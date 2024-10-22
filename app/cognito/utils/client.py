@@ -19,7 +19,7 @@ def user_attributes_to_dict(attributes: list['AttributeTypeTypeDef']) -> dict[st
 class Client:
     """ A low level client for managing cognito users.
 
-    Only manages users which have managed flag defined.
+    Only manages users which have the managed flag defined.
     """
 
     def __init__(self) -> None:

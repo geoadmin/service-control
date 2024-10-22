@@ -93,7 +93,7 @@ class CognitoSyncCommandTest(TestCase):
         out = StringIO()
         call_command('cognito_sync', clear=True, verbosity=2, stdout=out)
 
-        self.assertIn('this action will delete all managed users from cognito', out.getvalue())
+        self.assertIn('This action will delete all managed users from cognito', out.getvalue())
         self.assertIn('deleting user 1', out.getvalue())
         self.assertIn('1 user(s) deleted', out.getvalue())
         self.assertIn('adding user 1', out.getvalue())
@@ -111,7 +111,7 @@ class CognitoSyncCommandTest(TestCase):
         out = StringIO()
         call_command('cognito_sync', clear=True, verbosity=2, stdout=out)
 
-        self.assertIn('this action will delete all managed users from cognito', out.getvalue())
+        self.assertIn('This action will delete all managed users from cognito', out.getvalue())
         self.assertIn('operation cancelled', out.getvalue())
         self.assertNotIn(call().delete_user('1'), client.mock_calls)
         self.assertNotIn(call().create_user('1', '1@example.org'), client.mock_calls)
