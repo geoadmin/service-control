@@ -123,7 +123,7 @@ class ApiTestCase(TestCase):
 
         response = self.client.post("users", json=payload)
 
-        assert response.status_code == 200
+        assert response.status_code == 201
         assert response.data == payload
 
     def test_post_users_returns_404_if_provider_id_does_not_exist(self):
