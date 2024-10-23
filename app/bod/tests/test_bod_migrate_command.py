@@ -13,8 +13,6 @@ from django.test import TestCase
 
 class BodMigrateCommandTest(TestCase):
 
-    databases = {'default', 'bod'}
-
     def setUp(self):
         BodContactOrganisation.objects.create(
             pk_contactorganisation_id=17,

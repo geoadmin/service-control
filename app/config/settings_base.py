@@ -101,9 +101,6 @@ DATABASES = {
         'OPTIONS': {
             'options': '-c search_path=public'
         },
-        'TEST': {
-            'NAME': 'test_bod',
-        }
     }
 }
 
