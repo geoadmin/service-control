@@ -23,6 +23,14 @@ class Attribution(models.Model):
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
 
+    _legacy_id = models.IntegerField(
+        _(_context, "Legacy ID"),
+        null=True,
+        blank=True,
+        db_index=False,
+        help_text="This field is used to track objects imported from the BOD"
+    )
+
 
 class Dataset(models.Model):
 

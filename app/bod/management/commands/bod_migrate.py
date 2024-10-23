@@ -89,7 +89,7 @@ class Handler(CommandHandler):
             self.update_provider(provider, organization, is_new_model)
             provider.save()
 
-            attribution = self.import_attribution(provider, organization)
+            attribution = self.import_attribution(provider, organization, legacy_id)
 
             self.import_datasets(provider, attribution, legacy_id)
 
@@ -130,7 +130,7 @@ class Handler(CommandHandler):
             self.increment_counter('provider', 'updated')
 
     def import_attribution(
-        self, provider: Provider, organization: BodContactOrganisation
+        self, provider: Provider, organization: BodContactOrganisation, legacy_id: int
     ) -> Attribution:
         """ Import the attribution of a provider from the old contact organizations table.
 
@@ -141,18 +141,23 @@ class Handler(CommandHandler):
         """
 
         # Get or create attribution
-        attribution, is_new_model = provider.attribution_set.get_or_create()
+        attribution, is_new_model = provider.attribution_set.get_or_create(_legacy_id=legacy_id)
+
         if is_new_model:
             self.increment_counter('attribution', 'added')
             self.print(f"Added attribution '{organization.attribution}'")
 
-        # Remove additional attributions
-        removed, _ = provider.attribution_set.exclude(id=attribution.id).delete()
-        self.increment_counter('attribution', 'removed', removed)
-
         self.update_attribution(attribution, organization, is_new_model)
 
         attribution.save()
+
+        # Remove orphaned attributions
+        orphans = Attribution.objects.filter(_legacy_id__isnull=False,
+                                             provider=provider).exclude(_legacy_id=legacy_id)
+        _, removed = orphans.delete()
+        for model, count in removed.items():
+            model_class = model.split('.')[-1].lower()
+            self.increment_counter(model_class, 'removed', count)
 
         return attribution
 

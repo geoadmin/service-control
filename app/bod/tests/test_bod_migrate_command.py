@@ -93,7 +93,8 @@ class BodMigrateCommandTest(TestCase):
             description_de="BAFU",
             description_fr="",
             description_en="",
-            provider=provider
+            provider=provider,
+            _legacy_id=17
         )
         dataset = Dataset.objects.create(
             slug="XXX", provider=provider, attribution=attribution, _legacy_id=170
@@ -158,7 +159,8 @@ class BodMigrateCommandTest(TestCase):
             description_de="XXX",
             description_fr="XXX",
             description_en="XXX",
-            provider=provider
+            provider=provider,
+            _legacy_id=16
         )
         Dataset.objects.create(
             slug="XXX", provider=provider, attribution=attribution, _legacy_id=160
