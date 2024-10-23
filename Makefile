@@ -40,6 +40,7 @@ PYLINT := $(PIPENV_RUN) pylint
 MYPY := $(PIPENV_RUN) mypy
 PSQL := PGPASSWORD=postgres psql -h localhost -p 15433 -U postgres
 PGRESTORE := PGPASSWORD=postgres pg_restore -h localhost -p 15433 -U postgres
+BANDIT := $(PIPENV_RUN) bandit
 
 # Find all python files that are not inside a hidden directory (directory starting with .)
 PYTHON_FILES := $(shell find $(APP_SRC_DIR) -type f -name "*.py" -print)
@@ -163,6 +164,10 @@ import-bod: ## Import the bod locally
 	$(PSQL) -c 'DROP DATABASE IF EXISTS bod_master;'
 	$(PSQL) -c 'CREATE DATABASE bod_master;'
 	$(PGRESTORE) -d bod_master $(file) --v
+
+.PHONY: security-check
+security-check: ## Run bandit security checker locally
+	$(BANDIT) --recursive --ini .bandit app
 
 .PHONY: help
 help: ## Display this help
