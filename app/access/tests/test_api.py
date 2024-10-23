@@ -153,7 +153,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 422
         assert response.data == {'detail': "['Enter a valid email address.']"}
 
-    def test_post_users_returns_422_if_user_exists_already(self):
+    def test_post_users_returns_409_if_user_exists_already(self):
 
         payload = {
             "username": "dude",
@@ -168,7 +168,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 409
         assert response.data == {'detail': "['User with this User name already exists.']"}
 
-    def test_post_users_returns_422_and_reports_all_errors_if_multiple_things_amiss(self):
+    def test_post_users_returns_409_and_reports_all_errors_if_multiple_things_amiss(self):
 
         invalid_email = "donny_at_bowling_dot_com"
         payload = {
