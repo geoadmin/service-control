@@ -2,10 +2,9 @@ services:
   db:
     image: postgres:16
     environment:
-      - POSTGRES_USER=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PW}
-      - POSTGRES_DB=${DB_USER}
-      - POSTGRES_DATABASE=${DB_NAME}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - source: ${PWD}/.volumes/postgresql
         target: /var/lib/postgresql
@@ -32,3 +31,17 @@ services:
         echo '{}' > /app/.cognito/db/${COGNITO_POOL_ID}.json
         node /app/start.js;
       "
+  bod:
+    image: postgis/postgis:13-3.4
+    environment:
+      - POSTGRES_USER=${BOD_USER}
+      - POSTGRES_PASSWORD=${BOD_PW}
+      - POSTGRES_DB=${BOD_NAME}
+    volumes:
+      - source: ${PWD}/.volumes/postgis
+        target: /var/lib/postgresql
+        type: bind
+        bind:
+          create_host_path: true
+    ports:
+      - "${BOD_PORT}:5432"

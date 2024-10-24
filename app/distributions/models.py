@@ -23,6 +23,14 @@ class Attribution(models.Model):
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
 
+    _legacy_id = models.IntegerField(
+        _(_context, "Legacy ID"),
+        null=True,
+        blank=True,
+        db_index=False,
+        help_text="This field is used to track objects imported from the BOD"
+    )
+
 
 class Dataset(models.Model):
 
@@ -32,9 +40,17 @@ class Dataset(models.Model):
         return str(self.slug)
 
 
-    slug = models.SlugField(_(_context, "Slug"))
+    slug = models.SlugField(_(_context, "Slug"), max_length=100)
     created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
     updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
     attribution = models.ForeignKey(Attribution, on_delete=models.CASCADE)
+
+    _legacy_id = models.IntegerField(
+        _(_context, "Legacy ID"),
+        null=True,
+        blank=True,
+        db_index=False,
+        help_text="This field is used to track objects imported from the BOD"
+    )

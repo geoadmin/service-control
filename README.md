@@ -77,6 +77,42 @@ You can also use the AWS CLI together with `cognito-local` by specifying the loc
 aws --endpoint $COGNITO_ENDPOINT_URL cognito-idp list-users --user-pool-id $COGNITO_POOL_ID
 ```
 
+## Importing Data from the BOD
+
+The "Betriebsobjekte Datenbank" (BOD) is a central database for running and configuring the map
+viewer and some of its services. It contains metadata and translations on the individual layers
+and configurations for display and serving the data through our services such as Web Map Service
+(WMS), Web Map Tiling Service (WMTS) and our current api (mf-chsdi3/api3).
+
+You can import a BOD dump and migrate its data:
+
+```bash
+make setup-bod
+make import-bod file=dump.sql
+app/manage.py bod_migrate
+```
+
+To generate more BOD models, run:
+
+```bash
+app/manage.py inspectdb --database=bod
+```
+
+The BOD models are unmanaged, meaning Django does not manage any migrations for these models.
+However, migrations are still needed during tests to set up the test BOD. To achieve this, it is
+necessary to create migrations for the models and dynamically adjust the `managed` flag based on
+whether the tests or the server is running (`django.conf.settings.TESTING`). Since these migrations
+are only for testing purposes, the previous migration file can be removed and recreated:
+
+
+```bash
+rm app/bod/migrations/0001_initial.py
+app/manage.py makemigrations bod
+```
+
+Afterward, the `managed` flag needs to be set to `django.conf.settings.TESTING` in both the models
+and the migrations.
+
 ## Local Development
 
 ### vs code Integration
