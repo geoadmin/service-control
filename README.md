@@ -57,8 +57,8 @@ app/manage.py migrate
 
 ## Cognito
 
-This project uses Amazon Cognito user identity and access management. It uses a custom user attribute
-(`custom:managed_by_service`) to mark users managed_by_service by this service.
+This project uses Amazon Cognito user identity and access management. It uses a custom user attribute to
+mark users managed_by_service by this service.
 
 To synchronize all local users with cognito, run:
 
@@ -71,11 +71,10 @@ app/manage.py cognito_sync
 For local testing the connection to cognito, [cognito-local](https://github.com/jagregory/cognito-local) is used.
 `cognito-local` stores all of its data as simple JSON files in its volume (`.volumes/cognito/db/`).
 
-You can also use the AWS CLI together with `cognito-local` by specifying the local endpoint.
-Use this to define the custom user attribute flag to the local pool:
+You can also use the AWS CLI together with `cognito-local` by specifying the local endpoint, for example:
 
 ```bash
-aws --endpoint http://localhost:9229 cognito-idp add-custom-attributes --user-pool-id $COGNITO_POOL_ID --custom-attributes '[{"Name": "managed_by_service", " AttributeDataType": "Boolean"}]'
+aws --endpoint $COGNITO_ENDPOINT_URL cognito-idp list-users --user-pool-id $COGNITO_POOL_ID
 ```
 
 ## Local Development

@@ -134,4 +134,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Cognito
 COGNITO_ENDPOINT_URL = env.str('COGNITO_ENDPOINT_URL', 'http://localhost:9229')
 COGNITO_POOL_ID = env.str('COGNITO_POOL_ID', 'local')
-COGNITO_FLAG_NAME = env.str('COGNITO_FLAG_NAME', 'managed_by_service')
+COGNITO_FLAG_NAME = env.str('COGNITO_FLAG_NAME', 'dev:custom:managed_by_service')

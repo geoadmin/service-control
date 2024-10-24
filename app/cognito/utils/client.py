@@ -25,7 +25,7 @@ class Client:
     def __init__(self) -> None:
         self.endpoint_url = settings.COGNITO_ENDPOINT_URL
         self.user_pool_id = settings.COGNITO_POOL_ID
-        self.flag_name = f'custom:{settings.COGNITO_FLAG_NAME}'
+        self.managed_flag_name = settings.COGNITO_FLAG_NAME
         self.client = client("cognito-idp", endpoint_url=self.endpoint_url)
 
     def list_users(self) -> list['UserTypeTypeDef']:
@@ -42,7 +42,7 @@ class Client:
 
         return [
             user for user in users
-            if user_attributes_to_dict(user['Attributes']).get(self.flag_name) == 'true'
+            if user_attributes_to_dict(user['Attributes']).get(self.managed_flag_name) == 'true'
         ]
 
     def get_user(
@@ -63,7 +63,7 @@ class Client:
             return None
         if not return_unmanaged:
             attributes = user_attributes_to_dict(response['UserAttributes'])
-            if attributes.get(self.flag_name) != 'true':
+            if attributes.get(self.managed_flag_name) != 'true':
                 return None
 
         return response
@@ -83,7 +83,7 @@ class Client:
                 UserAttributes=[{
                     "Name": "email", "Value": email
                 }, {
-                    "Name": self.flag_name, "Value": "true"
+                    "Name": self.managed_flag_name, "Value": "true"
                 }],
                 DesiredDeliveryMediums=['EMAIL']
             )
