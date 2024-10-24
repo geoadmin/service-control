@@ -1,8 +1,6 @@
 from ninja import Router
 from provider.models import Provider
-from utils.exceptions import validation_error_to_http_error
 
-from django.core.exceptions import ValidationError
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
@@ -60,15 +58,11 @@ def create_user(request: HttpRequest, user_in: UserSchema) -> UserSchema:
     """
     provider = get_object_or_404(Provider, id=user_in.provider_id)
 
-    try:
-        user_out = User.objects.create(
-            username=user_in.username,
-            first_name=user_in.first_name,
-            last_name=user_in.last_name,
-            email=user_in.email,
-            provider=provider
-        )
-    except ValidationError as error:
-        raise validation_error_to_http_error(error) from error
-
+    user_out = User.objects.create(
+        username=user_in.username,
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
+        email=user_in.email,
+        provider=provider
+    )
     return user_to_response(user_out)
