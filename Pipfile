@@ -30,6 +30,7 @@ mypy = "*"
 types-gevent = "*"
 django-stubs = "~=5.0.4"
 debugpy = "*"
+bandit = "*"
 
 [requires]
 python_version = "3.12"

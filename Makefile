@@ -38,6 +38,7 @@ YAPF := $(PIPENV_RUN) yapf
 ISORT := $(PIPENV_RUN) isort
 PYLINT := $(PIPENV_RUN) pylint
 MYPY := $(PIPENV_RUN) mypy
+BANDIT := $(PIPENV_RUN) bandit
 
 # Find all python files that are not inside a hidden directory (directory starting with .)
 PYTHON_FILES := $(shell find $(APP_SRC_DIR) -type f -name "*.py" -print)
@@ -148,6 +149,10 @@ start-local-db: ## Run the local db as docker container
 .PHONY: test
 test: ## Run tests locally
 	$(TEST)
+
+.PHONY: security-check
+security-check: ## Run bandit security checker locally
+	$(BANDIT) --recursive --ini .bandit app
 
 .PHONY: help
 help: ## Display this help
