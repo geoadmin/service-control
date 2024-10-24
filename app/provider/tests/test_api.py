@@ -147,7 +147,7 @@ class ApiTestCase(TestCase):
         response = client.get("/providers/2")
 
         assert response.status_code == 404
-        assert response.data == {"detail": "Not Found"}
+        assert response.data == {"detail": "Not Found: No Provider matches the given query."}
 
     def test_get_provider_skips_translations_that_are_not_available(self):
 

@@ -166,7 +166,7 @@ class ApiTestCase(TestCase):
         response = client.get("attributions/1")
 
         assert response.status_code == 404
-        assert response.data == {"detail": "Not Found"}
+        assert response.data == {"detail": "Not Found: No Attribution matches the given query."}
 
     def test_get_attribution_skips_translations_that_are_not_available(self):
 
