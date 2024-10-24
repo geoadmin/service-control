@@ -12,7 +12,7 @@ def cognito_user(username, managed, for_):
     attributes_key = 'Attributes' if for_ == 'list_users' else 'UserAttributes'
     attributes = [{'Name': 'email', 'Value': 'test@example.org'}]
     if managed:
-        attributes.append({'Name': settings.COGNITO_FLAG_NAME, 'Value': 'true'})
+        attributes.append({'Name': settings.COGNITO_MANAGED_FLAG_NAME, 'Value': 'true'})
     return {'Username': username, attributes_key: attributes}
 
 
@@ -25,11 +25,7 @@ class ClientTestCase(TestCase):
             'Name': 'flag', 'Value': 'true'
         }]
         attributes = user_attributes_to_dict(attributes)
-        self.assertEqual(
-            attributes, {
-                'email': 'test@example.org', 'flag': 'true'
-            }
-        )
+        self.assertEqual(attributes, {'email': 'test@example.org', 'flag': 'true'})
 
     @patch('cognito.utils.client.client')
     def test_list_users_returns_only_managed(self, boto3):

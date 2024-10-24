@@ -25,7 +25,7 @@ class Client:
     def __init__(self) -> None:
         self.endpoint_url = settings.COGNITO_ENDPOINT_URL
         self.user_pool_id = settings.COGNITO_POOL_ID
-        self.managed_flag_name = settings.COGNITO_FLAG_NAME
+        self.managed_flag_name = settings.COGNITO_MANAGED_FLAG_NAME
         self.client = client("cognito-idp", endpoint_url=self.endpoint_url)
 
     def list_users(self) -> list['UserTypeTypeDef']:
