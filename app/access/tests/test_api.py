@@ -136,6 +136,7 @@ class ApiTestCase(TestCase):
         response = self.client.post("users", json=payload)
 
         assert response.status_code == 404
+        assert response.data == {"detail": "Not Found: No Provider matches the given query."}
 
     def test_post_users_returns_422_if_email_format_invalid(self):
 
