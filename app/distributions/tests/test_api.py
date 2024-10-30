@@ -6,9 +6,9 @@ from distributions.api import router
 from distributions.models import Attribution
 from distributions.models import Dataset
 from distributions.schemas import AttributionSchema
-from ninja.testing import TestClient
 from provider.models import Provider
 from schemas import TranslationsSchema
+from utils.testing import TestClient
 
 from django.test import TestCase
 
@@ -166,7 +166,7 @@ class ApiTestCase(TestCase):
         response = client.get("attributions/1")
 
         assert response.status_code == 404
-        assert response.data == {"detail": "Not Found"}
+        assert response.data == {"code": 404, "description": "Resource not found"}
 
     def test_get_attribution_skips_translations_that_are_not_available(self):
 

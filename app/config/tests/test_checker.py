@@ -1,5 +1,5 @@
 from config.api import root
-from ninja.testing import TestClient
+from utils.testing import TestClient
 
 from django.test import TestCase
 
