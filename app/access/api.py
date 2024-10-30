@@ -1,6 +1,9 @@
+from cognito.utils.user import create_cognito_user
 from ninja import Router
+from ninja.errors import HttpError
 from provider.models import Provider
 
+from django.db import transaction
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
@@ -46,7 +49,7 @@ def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
 
 
 @router.post("users", response={201: UserSchema})
-def create_user(request: HttpRequest, user_in: UserSchema) -> UserSchema:
+def create(request: HttpRequest, user_in: UserSchema) -> UserSchema:
     """Create the given user and return it.
 
     Return HTTP status code
@@ -55,14 +58,20 @@ def create_user(request: HttpRequest, user_in: UserSchema) -> UserSchema:
         - 404 (Not Found) if there is no provider with the given provider ID
         - 409 (Conflict) if there is already a record with the same username
         - 422 (Unprocessable Content) if there is any other invalid value
+        - 500 (Internal Server Error) if there is inconsistency with cognito
+        - 503 (Service Unavailable) if cognito cannot be reached
     """
     provider = get_object_or_404(Provider, id=user_in.provider_id)
 
-    user_out = User.objects.create(
-        username=user_in.username,
-        first_name=user_in.first_name,
-        last_name=user_in.last_name,
-        email=user_in.email,
-        provider=provider
-    )
+    with transaction.atomic():
+        user_out = User.objects.create(
+            username=user_in.username,
+            first_name=user_in.first_name,
+            last_name=user_in.last_name,
+            email=user_in.email,
+            provider=provider
+        )
+        created = create_cognito_user(user_out)
+        if not created:
+            raise HttpError(500, "Internal Server Error")
     return user_to_response(user_out)

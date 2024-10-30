@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from access.api import router as access_router
+from botocore.exceptions import EndpointConnectionError
 from distributions.api import router as distributions_router
 from ninja import NinjaAPI
 from ninja.errors import AuthenticationError
@@ -104,6 +105,19 @@ def handle_ninja_validation_error(
             "code": 422, "description": messages
         },
         status=422,
+    )
+
+
+@api.exception_handler(EndpointConnectionError)
+def handle_cognito_connection_error(
+    request: HttpRequest, exception: EndpointConnectionError
+) -> HttpResponse:
+    return api.create_response(
+        request,
+        {
+            "code": 503, "description": "Service Unavailable"
+        },
+        status=503,
     )
 
 

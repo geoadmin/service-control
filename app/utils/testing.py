@@ -1,4 +1,6 @@
+from botocore.exceptions import EndpointConnectionError
 from config.api import handle_404_not_found
+from config.api import handle_cognito_connection_error
 from config.api import handle_django_validation_error
 from config.api import handle_exception
 from config.api import handle_http_error
@@ -49,6 +51,7 @@ class TestClient(BaseTestClient):
             (ValidationError, handle_django_validation_error),
             (AuthenticationError, handle_unauthorized),
             (Exception, handle_exception),
+            (EndpointConnectionError, handle_cognito_connection_error)
         ):
             # ignore that add_exception_handler expects the handler to also accept type[ExceptionXY]
             # as this is documented otherwise in the ninja docs

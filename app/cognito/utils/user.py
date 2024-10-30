@@ -6,7 +6,7 @@ from cognito.utils.client import Client
 logger = getLogger(__name__)
 
 
-def create_user(user: User) -> bool:
+def create_cognito_user(user: User) -> bool:
     """ Add the given user to cognito.
 
     Returns True, if the user has been created.
@@ -17,7 +17,7 @@ def create_user(user: User) -> bool:
     if created:
         logger.info("User %s created", user.username)
     else:
-        logger.warning("User %s already exists, not created", user.username)
+        logger.critical("User %s already exists, not created", user.username)
 
     return created
 

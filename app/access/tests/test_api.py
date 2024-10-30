@@ -1,7 +1,10 @@
+from unittest.mock import patch
+
 from access.api import router
 from access.api import user_to_response
 from access.models import User
 from access.schemas import UserSchema
+from botocore.exceptions import EndpointConnectionError
 from provider.models import Provider
 from utils.testing import TestClient
 
@@ -107,7 +110,9 @@ class ApiTestCase(TestCase):
             ]
         }
 
-    def test_post_users_creates_new_user_in_db_and_returns_it(self):
+    @patch('access.api.create_cognito_user')
+    def test_post_users_creates_new_user_in_db_and_returns_it(self, create_cognito_user):
+        create_cognito_user.return_value = True
 
         payload = {
             "username": "donny",
@@ -121,8 +126,11 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 201
         assert response.data == payload
+        assert create_cognito_user.called
 
-    def test_post_users_returns_404_if_provider_id_does_not_exist(self):
+    @patch('access.api.create_cognito_user')
+    def test_post_users_returns_404_if_provider_id_does_not_exist(self, create_cognito_user):
+        create_cognito_user.return_value = False
 
         non_existing_provider_id = Provider.objects.last().id + 1
         payload = {
@@ -137,8 +145,11 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 404
         assert response.data == {"code": 404, "description": "Resource not found"}
+        assert not create_cognito_user.called
 
-    def test_post_users_returns_422_if_email_format_invalid(self):
+    @patch('access.api.create_cognito_user')
+    def test_post_users_returns_422_if_email_format_invalid(self, create_cognito_user):
+        create_cognito_user.return_value = False
 
         invalid_email = "donny_at_bowling_dot_com"
         payload = {
@@ -153,8 +164,11 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 422
         assert response.data == {'code': 422, 'description': ["Enter a valid email address."]}
+        assert not create_cognito_user.called
 
-    def test_post_users_returns_409_if_user_exists_already(self):
+    @patch('access.api.create_cognito_user')
+    def test_post_users_returns_409_if_user_exists_already(self, create_cognito_user):
+        create_cognito_user.return_value = False
 
         payload = {
             "username": "dude",
@@ -170,8 +184,13 @@ class ApiTestCase(TestCase):
         assert response.data == {
             'code': 409, 'description': ["User with this User name already exists."]
         }
+        assert not create_cognito_user.called
 
-    def test_post_users_returns_409_and_reports_all_errors_if_multiple_things_amiss(self):
+    @patch('access.api.create_cognito_user')
+    def test_post_users_returns_409_and_reports_all_errors_if_multiple_things_amiss(
+        self, create_cognito_user
+    ):
+        create_cognito_user.return_value = False
 
         invalid_email = "donny_at_bowling_dot_com"
         payload = {
@@ -191,3 +210,42 @@ class ApiTestCase(TestCase):
                 "Enter a valid email address.", "User with this User name already exists."
             ]
         }
+        assert not create_cognito_user.called
+
+    @patch('access.api.create_cognito_user')
+    def test_post_users_returns_500_if_cognito_inconsistent(self, create_cognito_user):
+        create_cognito_user.return_value = False
+
+        payload = {
+            "username": "donny",
+            "first_name": "Theodore Donald",
+            "last_name": "Kerabatsos",
+            "email": "donny@bowling.com",
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.post("users", json=payload)
+
+        assert response.status_code == 500
+        assert response.data == {'code': 500, 'description': 'Internal Server Error'}
+        assert User.objects.count() == 1
+        assert create_cognito_user.called
+
+    @patch('access.api.create_cognito_user')
+    def test_post_users_returns_503_if_cognito_down(self, create_cognito_user):
+        create_cognito_user.side_effect = EndpointConnectionError(endpoint_url='http://localhost')
+
+        payload = {
+            "username": "donny",
+            "first_name": "Theodore Donald",
+            "last_name": "Kerabatsos",
+            "email": "donny@bowling.com",
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.post("users", json=payload)
+
+        assert response.status_code == 503
+        assert response.data == {'code': 503, 'description': 'Service Unavailable'}
+        assert User.objects.count() == 1
+        assert create_cognito_user.called
