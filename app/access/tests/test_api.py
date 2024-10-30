@@ -2,9 +2,11 @@ from access.api import router
 from access.api import user_to_response
 from access.models import User
 from access.schemas import UserSchema
+from config.api import validation_error_to_response
 from ninja.testing import TestClient
 from provider.models import Provider
 
+from django.forms import ValidationError
 from django.test import TestCase
 
 
@@ -22,6 +24,18 @@ class ApiTestCase(TestCase):
         User.objects.create(**model_fields)
 
         self.client = TestClient(router)
+
+        # In order to be able to test exception handling, we need to attach the
+        # exception handlers ourselves. To that end, first trigger a recreation
+        # of the api instance on the TestClient by calling the urls property.
+        # Then attach the exception handlers manually.
+        #
+        # Inspired from this GitHub discussion on django-ninja:
+        # https://github.com/vitalik/django-ninja/discussions/1211
+        _ = self.client.urls
+        exception_handlers = ((ValidationError, validation_error_to_response))
+        for exception, handler in exception_handlers:
+            self.client.router_or_app.api.add_exception_handler(exception, handler)
 
     def test_user_to_response_maps_fields_correctly(self):
 

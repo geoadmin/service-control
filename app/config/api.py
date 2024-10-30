@@ -17,10 +17,11 @@ api.add_router("", access_router)
 
 
 @api.exception_handler(ValidationError)
-def validation_error(request: HttpRequest, exception: ValidationError) -> HttpResponse:
-    conflict_http_code = 409
-    if contains_error_code(exception, conflict_http_code):
-        status = conflict_http_code
+def validation_error_to_response(request: HttpRequest, exception: ValidationError) -> HttpResponse:
+    """Convert the given validation error  to a response with corresponding status."""
+    error_code_unique_constraint_violated = "unique"
+    if contains_error_code(exception, error_code_unique_constraint_violated):
+        status = 409
     else:
         status = 422
 
