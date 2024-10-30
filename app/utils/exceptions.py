@@ -7,12 +7,17 @@ def contains_error_code(exception: ValidationError, code: str) -> bool:
         if exception.code == code:
             return True
 
+    # Iterating over the messages does not work here because the messages do not
+    # contain the error codes of the validation.
     if hasattr(exception, "error_dict"):
         for errors_field in exception.error_dict.values():
             for error in errors_field:
                 if error.code == code:
                     return True
-
+    elif hasattr(exception, "error_list"):
+        for error in exception.error_list:
+            if error.code == code:
+                return True
     return False
 
 
