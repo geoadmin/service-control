@@ -6,6 +6,7 @@ from utils.exceptions import contains_error_code
 from utils.exceptions import extract_error_messages
 
 from django.core.exceptions import ValidationError
+from django.http import Http404
 from django.http import HttpRequest
 from django.http import HttpResponse
 
@@ -30,6 +31,30 @@ def validation_error_to_response(request: HttpRequest, exception: ValidationErro
         request,
         {"detail": messages},
         status=status,
+    )
+
+
+@api.exception_handler(Http404)
+def http404_to_response(request: HttpRequest, exception: Http404) -> HttpResponse:
+    """Convert the given exception to a Not Found response with the actual exception message.
+
+    Without this, we would only see "Not found" in the response even if the
+    original exception message is more detailed like "No User matches the given query.".
+    """
+    return api.create_response(
+        request,
+        {"detail": str(exception)},
+        status=404,
+    )
+
+
+@api.exception_handler(Exception)
+def exception_to_response(request: HttpRequest, exception: Exception) -> HttpResponse:
+    """Convert the given exception to a generic internal server error."""
+    return api.create_response(
+        request,
+        {"detail": str(exception)},
+        status=500,
     )
 
 

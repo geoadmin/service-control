@@ -2,11 +2,14 @@ from access.api import router
 from access.api import user_to_response
 from access.models import User
 from access.schemas import UserSchema
+from config.api import exception_to_response
+from config.api import http404_to_response
 from config.api import validation_error_to_response
 from ninja.testing import TestClient
 from provider.models import Provider
 
 from django.forms import ValidationError
+from django.http import Http404
 from django.test import TestCase
 
 
@@ -33,7 +36,8 @@ class ApiTestCase(TestCase):
         # Inspired from this GitHub discussion on django-ninja:
         # https://github.com/vitalik/django-ninja/discussions/1211
         _ = self.client.urls
-        exception_handlers = ((ValidationError, validation_error_to_response))
+        exception_handlers = ((ValidationError, validation_error_to_response),
+                              (Exception, exception_to_response), (Http404, http404_to_response))
         for exception, handler in exception_handlers:
             self.client.router_or_app.api.add_exception_handler(exception, handler)
 
@@ -71,7 +75,7 @@ class ApiTestCase(TestCase):
         response = self.client.get("users/nihilist")
 
         assert response.status_code == 404
-        assert response.data == {"detail": "Not Found"}
+        assert response.data == {"detail": "No User matches the given query."}
 
     def test_get_users_returns_single_user(self):
 
@@ -150,7 +154,7 @@ class ApiTestCase(TestCase):
         response = self.client.post("users", json=payload)
 
         assert response.status_code == 404
-        assert response.data == {"detail": "Not Found: No Provider matches the given query."}
+        assert response.data == {"detail": "No Provider matches the given query."}
 
     def test_post_users_returns_422_if_email_format_invalid(self):
 
@@ -166,7 +170,7 @@ class ApiTestCase(TestCase):
         response = self.client.post("users", json=payload)
 
         assert response.status_code == 422
-        assert response.data == {'detail': "['Enter a valid email address.']"}
+        assert response.data == {'detail': ["Enter a valid email address."]}
 
     def test_post_users_returns_409_if_user_exists_already(self):
 
@@ -181,7 +185,7 @@ class ApiTestCase(TestCase):
         response = self.client.post("users", json=payload)
 
         assert response.status_code == 409
-        assert response.data == {'detail': "['User with this User name already exists.']"}
+        assert response.data == {'detail': ["User with this User name already exists."]}
 
     def test_post_users_returns_409_and_reports_all_errors_if_multiple_things_amiss(self):
 
@@ -198,5 +202,5 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 409
         assert response.data == {
-            'detail': "['Enter a valid email address.', 'User with this User name already exists.']"
+            'detail': ["Enter a valid email address.", "User with this User name already exists."]
         }
