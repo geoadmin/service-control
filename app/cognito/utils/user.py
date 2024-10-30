@@ -22,7 +22,7 @@ def create_cognito_user(user: User) -> bool:
     return created
 
 
-def delete_user(user: User) -> bool:
+def delete_cognito_user(user: User) -> bool:
     """ Delete the given user from cognito.
 
     Returns True, if the user has been deleted.
@@ -33,7 +33,7 @@ def delete_user(user: User) -> bool:
     if deleted:
         logger.info("User %s deleted", user.username)
     else:
-        logger.warning("User %s does not exist, not deleted", user.username)
+        logger.critical("User %s does not exist, not deleted", user.username)
     return deleted
 
 

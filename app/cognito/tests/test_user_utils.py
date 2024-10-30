@@ -2,7 +2,7 @@ from unittest.mock import call
 from unittest.mock import patch
 
 from cognito.utils.user import create_cognito_user
-from cognito.utils.user import delete_user
+from cognito.utils.user import delete_cognito_user
 from cognito.utils.user import update_user
 
 from django.test import TestCase
@@ -44,7 +44,7 @@ class ClientTestCase(TestCase):
     def test_delete_user_deletes_user(self, logger, client):
         client.return_value.delete_user.return_value = True
 
-        deleted = delete_user(DummyUser('123', 'test@example.org'))
+        deleted = delete_cognito_user(DummyUser('123', 'test@example.org'))
 
         self.assertEqual(deleted, True)
         self.assertIn(call.info('User %s deleted', '123'), logger.mock_calls)
@@ -54,10 +54,12 @@ class ClientTestCase(TestCase):
     def test_delete_user_does_not_delete_nonexisting_user(self, logger, client):
         client.return_value.delete_user.return_value = False
 
-        deleted = delete_user(DummyUser('123', 'test@example.org'))
+        deleted = delete_cognito_user(DummyUser('123', 'test@example.org'))
 
         self.assertEqual(deleted, False)
-        self.assertIn(call.warning('User %s does not exist, not deleted', '123'), logger.mock_calls)
+        self.assertIn(
+            call.critical('User %s does not exist, not deleted', '123'), logger.mock_calls
+        )
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
