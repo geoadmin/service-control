@@ -19,7 +19,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
-    def test_create_user_creates_user(self, logger, client):
+    def test_create_cognito_user_creates_user(self, logger, client):
         client.return_value.create_user.return_value = True
 
         created = create_cognito_user(DummyUser('123', 'test@example.org'))
@@ -29,7 +29,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
-    def test_create_user_does_not_create_existing_user(self, logger, client):
+    def test_create_cognito_user_does_not_create_existing_user(self, logger, client):
         client.return_value.create_user.return_value = False
 
         created = create_cognito_user(DummyUser('123', 'test@example.org'))
@@ -41,7 +41,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
-    def test_delete_user_deletes_user(self, logger, client):
+    def test_delete_cognito_user_deletes_user(self, logger, client):
         client.return_value.delete_user.return_value = True
 
         deleted = delete_cognito_user(DummyUser('123', 'test@example.org'))
@@ -51,7 +51,7 @@ class ClientTestCase(TestCase):
 
     @patch('cognito.utils.user.Client')
     @patch('cognito.utils.user.logger')
-    def test_delete_user_does_not_delete_nonexisting_user(self, logger, client):
+    def test_delete_cognito_user_does_not_delete_nonexisting_user(self, logger, client):
         client.return_value.delete_user.return_value = False
 
         deleted = delete_cognito_user(DummyUser('123', 'test@example.org'))
