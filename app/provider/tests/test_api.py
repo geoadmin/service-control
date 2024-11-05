@@ -1,9 +1,9 @@
-from ninja.testing import TestClient
 from provider.api import provider_to_response
 from provider.api import router
 from provider.models import Provider
 from provider.schemas import ProviderSchema
 from schemas import TranslationsSchema
+from utils.testing import TestClient
 
 from django.test import TestCase
 
@@ -147,7 +147,7 @@ class ApiTestCase(TestCase):
         response = client.get("/providers/2")
 
         assert response.status_code == 404
-        assert response.data == {"detail": "Not Found"}
+        assert response.data == {"code": 404, "description": "Resource not found"}
 
     def test_get_provider_skips_translations_that_are_not_available(self):
 
