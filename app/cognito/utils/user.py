@@ -37,7 +37,7 @@ def delete_cognito_user(user: User) -> bool:
     return deleted
 
 
-def update_user(user: User) -> bool:
+def update_cognito_user(user: User) -> bool:
     """ Update the given user in cognito.
 
     Returns True, if the user has been updated.
