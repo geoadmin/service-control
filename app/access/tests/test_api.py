@@ -413,3 +413,108 @@ class ApiTestCase(TestCase):
         assert response.json() == {"code": 403, "description": "Forbidden"}
         assert User.objects.count() == 1
         assert not delete_cognito_user.called
+
+    @patch('access.api.update_cognito_user')
+    def test_update_user_updates_existing_user_as_expected(self, update_cognito_user):
+        update_cognito_user.return_value = True
+
+        payload = {
+            "username": "dude",
+            "first_name": "Jeff",
+            "last_name": "Bridges",
+            "email": "tron@hollywood.com",
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.put("users/dude", json=payload)
+
+        assert response.status_code == 200
+        assert response.content == b''
+        user = User.objects.filter(username="dude").first()
+        for key, value in payload.items():
+            assert getattr(user, key) == value
+        assert update_cognito_user.called
+
+    def test_update_user_returns_404_and_leaves_user_as_is_if_user_nonexistent(self):
+
+        user_before = User.objects.filter(username="dude").first()
+        payload = {
+            "username": "dude",
+            "first_name": "Jeff",
+            "last_name": "Bridges",
+            "email": "tron@hollywood.com",
+            "provider_id": Provider.objects.last().id,
+        }
+
+        nonexistent_username = "maude"
+        response = self.client.put(f"users/{nonexistent_username}", json=payload)
+
+        assert response.status_code == 404
+        assert response.data == {"code": 404, "description": "Resource not found"}
+        user_after = User.objects.filter(username="dude").first()
+        assert user_after == user_before
+
+    def test_update_user_returns_500_and_leaves_user_as_is_if_provider_nonexistent(self):
+
+        user_before = User.objects.filter(username="dude").first()
+        nonexistent_id = Provider.objects.last().id + 1234
+        payload = {
+            "username": "dude",
+            "first_name": "Jeff",
+            "last_name": "Bridges",
+            "email": "tron@hollywood.com",
+            "provider_id": nonexistent_id,
+        }
+
+        response = self.client.put("users/dude", json=payload)
+
+        assert response.status_code == 500
+        assert response.data == {"code": 500, "description": "Provider does not exist"}
+        user_after = User.objects.filter(username="dude").first()
+        assert user_after == user_before
+
+    @patch('access.api.update_cognito_user')
+    def test_update_user_returns_500_and_leaves_user_as_is_if_cognito_inconsistent(
+        self, update_cognito_user
+    ):
+        update_cognito_user.return_value = False
+
+        user_before = User.objects.filter(username="dude").first()
+        payload = {
+            "username": "dude",
+            "first_name": "Jeff",
+            "last_name": "Bridges",
+            "email": "tron@hollywood.com",
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.put("users/dude", json=payload)
+
+        assert response.status_code == 500
+        assert response.data == {"code": 500, "description": "Internal Server Error"}
+        user_after = User.objects.filter(username="dude").first()
+        assert user_after == user_before
+        assert update_cognito_user.called
+
+    @patch('access.api.update_cognito_user')
+    def test_update_user_returns_503_and_leaves_user_as_is_if_cognito_down(
+        self, update_cognito_user
+    ):
+        update_cognito_user.side_effect = EndpointConnectionError(endpoint_url='http://localhost')
+
+        user_before = User.objects.filter(username="dude").first()
+        payload = {
+            "username": "dude",
+            "first_name": "Jeff",
+            "last_name": "Bridges",
+            "email": "tron@hollywood.com",
+            "provider_id": Provider.objects.last().id,
+        }
+
+        response = self.client.put("users/dude", json=payload)
+
+        assert response.status_code == 503
+        assert response.data == {"code": 503, "description": "Service Unavailable"}
+        user_after = User.objects.filter(username="dude").first()
+        assert user_after == user_before
+        assert update_cognito_user.called
