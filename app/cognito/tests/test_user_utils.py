@@ -79,4 +79,6 @@ class ClientTestCase(TestCase):
         updated = update_cognito_user(DummyUser('123', 'test@example.org'))
 
         self.assertEqual(updated, False)
-        self.assertIn(call.warning('User %s does not exist, not updated', '123'), logger.mock_calls)
+        self.assertIn(
+            call.critical('User %s does not exist, not updated', '123'), logger.mock_calls
+        )

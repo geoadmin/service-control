@@ -48,5 +48,5 @@ def update_cognito_user(user: User) -> bool:
     if updated:
         logger.info("User %s updated", user.username)
     else:
-        logger.warning("User %s does not exist, not updated", user.username)
+        logger.critical("User %s does not exist, not updated", user.username)
     return updated
