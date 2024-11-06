@@ -5,6 +5,7 @@ from ninja.errors import AuthenticationError
 from ninja.errors import HttpError
 from ninja.errors import ValidationError as NinjaValidationError
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import Http404
 from django.http import HttpRequest
@@ -17,6 +18,11 @@ api.add_router("", router)
 @router.get("trigger-not-found")
 def trigger_not_found(request: HttpRequest) -> dict[str, bool | str]:
     raise Http404()
+
+
+@router.get("trigger-does-not-exist")
+def trigger_does_not_exist(request: HttpRequest) -> dict[str, bool | str]:
+    get_user_model().objects.get()
 
 
 @router.get("trigger-http-error")
@@ -53,6 +59,11 @@ class ErrorHandlerTestCase(TestCase):
 
     def test_handle_404_not_found(self):
         response = self.client.get('/api/trigger-not-found')
+        assert response.status_code == 404
+        assert response.json() == {'code': 404, 'description': 'Resource not found'}
+
+    def test_handle_does_not_exist(self):
+        response = self.client.get('/api/trigger-does-not-exist')
         assert response.status_code == 404
         assert response.json() == {'code': 404, 'description': 'Resource not found'}
 

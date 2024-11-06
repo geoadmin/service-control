@@ -1,15 +1,10 @@
 from http import HTTPStatus
 
-from cognito.utils.user import create_cognito_user
-from cognito.utils.user import disable_cognito_user
-from cognito.utils.user import update_cognito_user
 from ninja import Router
 from ninja.errors import HttpError
 from provider.models import Provider
 from utils.authentication import PermissionAuth
 
-from django.db import transaction
-from django.http import Http404
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -80,17 +75,13 @@ def create(request: HttpRequest, user_in: UserSchema) -> UserSchema:
     """
     provider = get_object_or_404(Provider, id=user_in.provider_id)
 
-    with transaction.atomic():
-        user_out = User.objects.create(
-            username=user_in.username,
-            first_name=user_in.first_name,
-            last_name=user_in.last_name,
-            email=user_in.email,
-            provider=provider
-        )
-        created = create_cognito_user(user_out)
-        if not created:
-            raise HttpError(500, "Internal Server Error")
+    user_out = User.objects.create(
+        username=user_in.username,
+        first_name=user_in.first_name,
+        last_name=user_in.last_name,
+        email=user_in.email,
+        provider=provider
+    )
     return user_to_response(user_out)
 
 
@@ -105,16 +96,9 @@ def delete(request: HttpRequest, username: str) -> HttpResponse:
     - 500 (Internal Server Error) if there is inconsistency with cognito
     - 503 (Service Unavailable) if cognito cannot be reached
     """
-
-    with transaction.atomic():
-        user_to_delete = User.objects.select_for_update().filter(username=username).first()
-        if not user_to_delete:
-            raise Http404("Not Found")
-        deleted = disable_cognito_user(user_to_delete)
-        if not deleted:
-            raise HttpError(500, "Internal Server Error")
-        user_to_delete.disable()
-        return HttpResponse(status=204)
+    user_to_delete = get_object_or_404(User, username=username)
+    user_to_delete.disable()
+    return HttpResponse(status=204)
 
 
 @router.put("users/{username}", auth=PermissionAuth('access.change_user'))
@@ -130,19 +114,12 @@ def update_user(
     - 500 (Internal Server Error) if there is an inconsistency with Cognito
     - 503 (Service Unavailable) if Cognito cannot be reached
     """
-    with transaction.atomic():
-        user_object = User.objects.select_for_update().filter(username=username).first()
-        if not user_object:
-            raise Http404()
+    user_object = get_object_or_404(User, username=username)
 
-        if not Provider.objects.filter(id=user_in.provider_id).exists():
-            raise HttpError(HTTPStatus.BAD_REQUEST, "Provider does not exist")
+    if not Provider.objects.filter(id=user_in.provider_id).exists():
+        raise HttpError(HTTPStatus.BAD_REQUEST, "Provider does not exist")
 
-        for attr, value in user_in.dict(exclude_unset=True).items():
-            setattr(user_object, attr, value)
-        user_object.save()
-
-        updated = update_cognito_user(user_object)
-        if not updated:
-            raise HttpError(HTTPStatus.INTERNAL_SERVER_ERROR, "Internal Server Error")
-        return user_to_response(user_object)
+    for attr, value in user_in.dict(exclude_unset=True).items():
+        setattr(user_object, attr, value)
+    user_object.save()
+    return user_to_response(user_object)

@@ -11,6 +11,7 @@ from provider.api import router as provider_router
 from utils.exceptions import contains_error_code
 from utils.exceptions import extract_error_messages
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.http import Http404
 from django.http import HttpRequest
@@ -47,6 +48,7 @@ def handle_django_validation_error(
 
 
 @api.exception_handler(Http404)
+@api.exception_handler(ObjectDoesNotExist)
 def handle_404_not_found(request: HttpRequest, exception: Http404) -> HttpResponse:
     return api.create_response(
         request,
