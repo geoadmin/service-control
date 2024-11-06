@@ -134,7 +134,7 @@ def update_user(request: HttpRequest, username: str, user_in: UserSchema) -> Htt
             raise Http404()
 
         if not Provider.objects.filter(id=user_in.provider_id).exists():
-            raise HttpError(HTTPStatus.INTERNAL_SERVER_ERROR, "Provider does not exist")
+            raise HttpError(HTTPStatus.NOT_FOUND, "Provider does not exist")
 
         for attr, value in user_in.dict(exclude_unset=True).items():
             setattr(user_object, attr, value)

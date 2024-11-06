@@ -454,7 +454,7 @@ class ApiTestCase(TestCase):
         user_after = User.objects.filter(username="dude").first()
         assert user_after == user_before
 
-    def test_update_user_returns_500_and_leaves_user_as_is_if_provider_nonexistent(self):
+    def test_update_user_returns_404_and_leaves_user_as_is_if_provider_nonexistent(self):
 
         user_before = User.objects.filter(username="dude").first()
         nonexistent_id = Provider.objects.last().id + 1234
@@ -468,8 +468,8 @@ class ApiTestCase(TestCase):
 
         response = self.client.put("users/dude", json=payload)
 
-        assert response.status_code == 500
-        assert response.data == {"code": 500, "description": "Provider does not exist"}
+        assert response.status_code == 404
+        assert response.data == {"code": 404, "description": "Provider does not exist"}
         user_after = User.objects.filter(username="dude").first()
         assert user_after == user_before
 
