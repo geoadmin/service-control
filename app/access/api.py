@@ -123,9 +123,9 @@ def update_user(request: HttpRequest, username: str, user_in: UserSchema) -> Htt
 
     Return HTTP status code
     - 200 (OK) if the user has been updated successfully
-    - 404 (Not Found) if there is no user with the given username
+    - 404 (Not Found) if there is no user with the given username or if there is
+      no provider with the given ID
     - 500 (Internal Server Error) if there is an inconsistency with Cognito
-    - 500 (Internal Server Error) if there no provider with the given ID
     - 503 (Service Unavailable) if Cognito cannot be reached
     """
     with transaction.atomic():
