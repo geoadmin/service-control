@@ -249,3 +249,47 @@ class ApiTestCase(TestCase):
         assert response.data == {'code': 503, 'description': 'Service Unavailable'}
         assert User.objects.count() == 1
         assert create_cognito_user.called
+
+    @patch('access.api.delete_cognito_user')
+    def test_delete_user_deletes_user(self, delete_cognito_user):
+        delete_cognito_user.return_value = True
+
+        response = self.client.delete("users/dude")
+
+        assert response.status_code == 204
+        assert response.content == b''
+        assert User.objects.count() == 0
+        assert delete_cognito_user.called
+
+    @patch('access.api.delete_cognito_user')
+    def test_delete_user_returns_404_if_nonexisting(self, delete_cognito_user):
+        delete_cognito_user.return_value = False
+
+        response = self.client.delete("users/lebowski")
+
+        assert response.status_code == 404
+        assert response.data == {"code": 404, "description": "Resource not found"}
+        assert User.objects.count() == 1
+        assert not delete_cognito_user.called
+
+    @patch('access.api.delete_cognito_user')
+    def test_delete_user_returns_500_if_cognito_inconsistent(self, delete_cognito_user):
+        delete_cognito_user.return_value = False
+
+        response = self.client.delete("users/dude")
+
+        assert response.status_code == 500
+        assert response.data == {"code": 500, "description": "Internal Server Error"}
+        assert User.objects.count() == 1
+        assert delete_cognito_user.called
+
+    @patch('access.api.delete_cognito_user')
+    def test_delete_user_returns_503_if_cognito_down(self, delete_cognito_user):
+        delete_cognito_user.side_effect = EndpointConnectionError(endpoint_url='http://localhost')
+
+        response = self.client.delete("users/dude")
+
+        assert response.status_code == 503
+        assert response.data == {"code": 503, "description": "Service Unavailable"}
+        assert User.objects.count() == 1
+        assert delete_cognito_user.called
