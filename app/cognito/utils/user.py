@@ -50,3 +50,18 @@ def update_cognito_user(user: User) -> bool:
     else:
         logger.critical("User %s does not exist, not updated", user.username)
     return updated
+
+
+def disable_cognito_user(user: User) -> bool:
+    """ Disables the given user from cognito.
+
+    Returns True, if the user has been disabled.
+    """
+
+    client = Client()
+    deleted = client.disable_user(user.username)
+    if deleted:
+        logger.info("User %s disabled", user.username)
+    else:
+        logger.critical("User %s does not exist, not disabled", user.username)
+    return deleted
