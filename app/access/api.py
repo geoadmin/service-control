@@ -118,8 +118,10 @@ def delete(request: HttpRequest, username: str) -> HttpResponse:
 
 
 @router.put("users/{username}")
-def update_user(request: HttpRequest, username: str, user_in: UserSchema) -> HttpResponse:
-    """Update the given user with the given user data.
+def update_user(
+    request: HttpRequest, username: str, user_in: UserSchema
+) -> HttpResponse | UserSchema:
+    """Update the given user with the given user data and return it.
 
     Return HTTP status code
     - 200 (OK) if the user has been updated successfully
@@ -143,4 +145,4 @@ def update_user(request: HttpRequest, username: str, user_in: UserSchema) -> Htt
         updated = update_cognito_user(user_object)
         if not updated:
             raise HttpError(HTTPStatus.INTERNAL_SERVER_ERROR, "Internal Server Error")
-        return HttpResponse(status=HTTPStatus.OK)
+        return user_to_response(user_object)

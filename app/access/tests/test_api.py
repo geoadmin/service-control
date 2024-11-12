@@ -429,7 +429,7 @@ class ApiTestCase(TestCase):
         response = self.client.put("users/dude", json=payload)
 
         assert response.status_code == 200
-        assert response.content == b''
+        assert response.data == payload
         user = User.objects.filter(username="dude").first()
         for key, value in payload.items():
             assert getattr(user, key) == value
