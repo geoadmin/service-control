@@ -333,9 +333,9 @@ class ApiTestCase(TestCase):
         assert not create_cognito_user.called
         assert User.objects.count() == 1
 
-    @patch('access.api.delete_cognito_user')
-    def test_delete_user_deletes_user(self, delete_cognito_user):
-        delete_cognito_user.return_value = True
+    @patch('access.api.disable_cognito_user')
+    def test_delete_user_deletes_user(self, disable_cognito_user):
+        disable_cognito_user.return_value = True
 
         create_user_with_permissions('test', 'test', [('access', 'user', 'delete_user')])
         self.client.login(username='test', password='test')
@@ -345,11 +345,11 @@ class ApiTestCase(TestCase):
         assert response.status_code == 204
         assert response.content == b''
         assert User.objects.count() == 0
-        assert delete_cognito_user.called
+        assert disable_cognito_user.called
 
-    @patch('access.api.delete_cognito_user')
-    def test_delete_user_returns_404_if_nonexisting(self, delete_cognito_user):
-        delete_cognito_user.return_value = False
+    @patch('access.api.disable_cognito_user')
+    def test_delete_user_returns_404_if_nonexisting(self, disable_cognito_user):
+        disable_cognito_user.return_value = False
 
         create_user_with_permissions('test', 'test', [('access', 'user', 'delete_user')])
         self.client.login(username='test', password='test')
@@ -359,11 +359,11 @@ class ApiTestCase(TestCase):
         assert response.status_code == 404
         assert response.json() == {"code": 404, "description": "Resource not found"}
         assert User.objects.count() == 1
-        assert not delete_cognito_user.called
+        assert not disable_cognito_user.called
 
-    @patch('access.api.delete_cognito_user')
-    def test_delete_user_returns_500_if_cognito_inconsistent(self, delete_cognito_user):
-        delete_cognito_user.return_value = False
+    @patch('access.api.disable_cognito_user')
+    def test_delete_user_returns_500_if_cognito_inconsistent(self, disable_cognito_user):
+        disable_cognito_user.return_value = False
 
         create_user_with_permissions('test', 'test', [('access', 'user', 'delete_user')])
         self.client.login(username='test', password='test')
@@ -373,11 +373,11 @@ class ApiTestCase(TestCase):
         assert response.status_code == 500
         assert response.json() == {"code": 500, "description": "Internal Server Error"}
         assert User.objects.count() == 1
-        assert delete_cognito_user.called
+        assert disable_cognito_user.called
 
-    @patch('access.api.delete_cognito_user')
-    def test_delete_user_returns_503_if_cognito_down(self, delete_cognito_user):
-        delete_cognito_user.side_effect = EndpointConnectionError(endpoint_url='http://localhost')
+    @patch('access.api.disable_cognito_user')
+    def test_delete_user_returns_503_if_cognito_down(self, disable_cognito_user):
+        disable_cognito_user.side_effect = EndpointConnectionError(endpoint_url='http://localhost')
 
         create_user_with_permissions('test', 'test', [('access', 'user', 'delete_user')])
         self.client.login(username='test', password='test')
@@ -387,22 +387,22 @@ class ApiTestCase(TestCase):
         assert response.status_code == 503
         assert response.json() == {"code": 503, "description": "Service Unavailable"}
         assert User.objects.count() == 1
-        assert delete_cognito_user.called
+        assert disable_cognito_user.called
 
-    @patch('access.api.delete_cognito_user')
-    def test_delete_user_returns_401_if_not_logged_in(self, delete_cognito_user):
-        delete_cognito_user.return_value = True
+    @patch('access.api.disable_cognito_user')
+    def test_delete_user_returns_401_if_not_logged_in(self, disable_cognito_user):
+        disable_cognito_user.return_value = True
 
         response = self.client.delete("/api/users/dude", data={}, content_type='application/json')
 
         assert response.status_code == 401
         assert response.json() == {"code": 401, "description": "Unauthorized"}
         assert User.objects.count() == 1
-        assert not delete_cognito_user.called
+        assert not disable_cognito_user.called
 
-    @patch('access.api.delete_cognito_user')
-    def test_delete_user_returns_403_if_no_permission(self, delete_cognito_user):
-        delete_cognito_user.return_value = True
+    @patch('access.api.disable_cognito_user')
+    def test_delete_user_returns_403_if_no_permission(self, disable_cognito_user):
+        disable_cognito_user.return_value = True
 
         create_user_with_permissions('test', 'test', [])
         self.client.login(username='test', password='test')
@@ -412,7 +412,7 @@ class ApiTestCase(TestCase):
         assert response.status_code == 403
         assert response.json() == {"code": 403, "description": "Forbidden"}
         assert User.objects.count() == 1
-        assert not delete_cognito_user.called
+        assert not disable_cognito_user.called
 
     def test_update_user_returns_401_if_not_logged_in(self):
         response = self.client.put("/api/users/dude")

@@ -1,11 +1,14 @@
 from typing import Iterable
 
+from utils.soft_delete_model import SoftDeleteModel
+from utils.soft_delete_model import SoftDeleteModelManager
+
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import pgettext_lazy as _
 
 
-class User(models.Model):
+class User(SoftDeleteModel):
 
     _context = "User model"
 
@@ -18,6 +21,8 @@ class User(models.Model):
     email = models.EmailField(_(_context, "Email"))
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
+
+    objects = SoftDeleteModelManager()
 
     def save(
         self,
