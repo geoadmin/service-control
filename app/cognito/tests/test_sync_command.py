@@ -7,10 +7,15 @@ from provider.models import Provider
 
 from django.core.management import call_command
 from django.test import TestCase
+from django.utils import timezone
 
 
-def cognito_user(username, email):
-    return {'Username': username, 'Attributes': [{'Name': 'email', 'Value': email}]}
+def cognito_user(username, email, enabled=True):
+    return {
+        'Username': username, 'Attributes': [{
+            'Name': 'email', 'Value': email
+        }], 'Enabled': enabled
+    }
 
 
 class CognitoSyncCommandTest(TestCase):
@@ -29,13 +34,14 @@ class CognitoSyncCommandTest(TestCase):
             name_rm="Uffizi federal per l'ambient",
         )
 
-    def add_user(self, username, email):
+    def add_user(self, username, email, deleted_at=None):
         User.objects.create(
             username=username,
             first_name=username,
             last_name=username,
             email=email,
-            provider=self.provider
+            provider=self.provider,
+            deleted_at=deleted_at
         )
 
     @patch('cognito.management.commands.cognito_sync.Client')
@@ -72,6 +78,30 @@ class CognitoSyncCommandTest(TestCase):
         self.assertIn('updating user 1', out.getvalue())
         self.assertIn('1 user(s) updated', out.getvalue())
         self.assertIn(call().update_user('1', '1@example.org'), client.mock_calls)
+
+    @patch('cognito.management.commands.cognito_sync.Client')
+    def test_command_updates_disabled(self, client):
+        self.add_user('1', '1@example.org', timezone.now())
+        client.return_value.list_users.return_value = [cognito_user('1', '1@example.org')]
+
+        out = StringIO()
+        call_command('cognito_sync', verbosity=2, stdout=out)
+
+        self.assertIn('disabling user 1', out.getvalue())
+        self.assertIn('1 user(s) disabled', out.getvalue())
+        self.assertIn(call().disable_user('1'), client.mock_calls)
+
+    @patch('cognito.management.commands.cognito_sync.Client')
+    def test_command_updates_enabled(self, client):
+        self.add_user('1', '1@example.org')
+        client.return_value.list_users.return_value = [cognito_user('1', '1@example.org', False)]
+
+        out = StringIO()
+        call_command('cognito_sync', verbosity=2, stdout=out)
+
+        self.assertIn('enabling user 1', out.getvalue())
+        self.assertIn('1 user(s) enabled', out.getvalue())
+        self.assertIn(call().enable_user('1'), client.mock_calls)
 
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_does_not_updates_if_unchanged(self, client):

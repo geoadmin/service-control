@@ -1,14 +1,12 @@
 from typing import Iterable
 
-from utils.soft_delete_model import SoftDeleteModel
-from utils.soft_delete_model import SoftDeleteModelManager
-
 from django.db import models
 from django.db.models.base import ModelBase
+from django.utils import timezone
 from django.utils.translation import pgettext_lazy as _
 
 
-class User(SoftDeleteModel):
+class User(models.Model):
 
     _context = "User model"
 
@@ -19,10 +17,17 @@ class User(SoftDeleteModel):
     first_name = models.CharField(_(_context, "First name"))
     last_name = models.CharField(_(_context, "Last name"))
     email = models.EmailField(_(_context, "Email"))
+    deleted_at = models.DateTimeField(_(_context, "deleted at"), null=True, blank=True)
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
 
-    objects = SoftDeleteModelManager()
+    @staticmethod
+    def objects_api() -> models.QuerySet["User"]:
+        return User.objects.filter(deleted_at__isnull=True)
+
+    @property
+    def is_active(self) -> bool:
+        return self.deleted_at is None
 
     def save(
         self,
@@ -34,3 +39,7 @@ class User(SoftDeleteModel):
         """Validates the model before writing it to the database."""
         self.full_clean()
         super().save(force_insert, force_update, using, update_fields)
+
+    def disable(self) -> None:
+        self.deleted_at = timezone.now()
+        self.save()
