@@ -2,17 +2,17 @@ import datetime
 from unittest import mock
 
 from distributions.api import attribution_to_response
-from distributions.api import router
 from distributions.models import Attribution
 from distributions.models import Dataset
 from distributions.schemas import AttributionSchema
 from provider.models import Provider
 from schemas import TranslationsSchema
-from utils.testing import TestClient
+from utils.testing import create_user_with_permissions
 
 from django.test import TestCase
 
 
+# pylint: disable=too-many-public-methods
 class ApiTestCase(TestCase):
 
     def setUp(self):
@@ -103,14 +103,17 @@ class ApiTestCase(TestCase):
         assert actual == expected
 
     def test_get_attribution_returns_existing_attribution_with_default_language(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         attribution_id = Attribution.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"/attributions/{attribution_id}")
+        response = self.client.get(f"/api/attributions/{attribution_id}")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": attribution_id,
             "name": "FOEN",
             "name_translations": {
@@ -132,14 +135,17 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_attribution_returns_attribution_with_language_from_query(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         attribution_id = Attribution.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"attributions/{attribution_id}?lang=de")
+        response = self.client.get(f"/api/attributions/{attribution_id}?lang=de")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": attribution_id,
             "name": "BAFU",
             "name_translations": {
@@ -161,14 +167,21 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_attribution_returns_404_for_nonexisting_attribution(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
-        client = TestClient(router)
-        response = client.get("attributions/1")
+        response = self.client.get("/api/attributions/9999")
 
         assert response.status_code == 404
-        assert response.data == {"code": 404, "description": "Resource not found"}
+        assert response.json() == {"code": 404, "description": "Resource not found"}
 
     def test_get_attribution_skips_translations_that_are_not_available(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         model = Attribution.objects.last()
         model.name_it = None
@@ -177,11 +190,10 @@ class ApiTestCase(TestCase):
         model.description_rm = None
         model.save()
 
-        client = TestClient(router)
-        response = client.get(f"attributions/{model.id}")
+        response = self.client.get(f"/api/attributions/{model.id}")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": model.id,
             "name": "FOEN",
             "name_translations": {
@@ -199,14 +211,19 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_attribution_returns_attribution_with_language_from_header(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         attribution_id = Attribution.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"attributions/{attribution_id}", headers={"Accept-Language": "de"})
+        response = self.client.get(
+            f"/api/attributions/{attribution_id}", headers={"Accept-Language": "de"}
+        )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": attribution_id,
             "name": "BAFU",
             "name_translations": {
@@ -230,16 +247,19 @@ class ApiTestCase(TestCase):
     def test_get_attribution_returns_attribution_with_language_from_query_param_even_if_header_set(
         self
     ):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         attribution_id = Attribution.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(
-            f"attributions/{attribution_id}?lang=fr", headers={"Accept-Language": "de"}
+        response = self.client.get(
+            f"/api/attributions/{attribution_id}?lang=fr", headers={"Accept-Language": "de"}
         )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": attribution_id,
             "name": "OFEV",
             "name_translations": {
@@ -261,14 +281,19 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_attribution_returns_attribution_with_default_language_if_header_empty(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         attribution_id = Attribution.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"attributions/{attribution_id}", headers={"Accept-Language": ""})
+        response = self.client.get(
+            f"/api/attributions/{attribution_id}", headers={"Accept-Language": ""}
+        )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": attribution_id,
             "name": "FOEN",
             "name_translations": {
@@ -290,16 +315,19 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_attribution_returns_attribution_with_first_known_language_from_header(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         attribution_id = Attribution.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(
-            f"attributions/{attribution_id}", headers={"Accept-Language": "cn, *, de-DE, en"}
+        response = self.client.get(
+            f"/api/attributions/{attribution_id}", headers={"Accept-Language": "cn, *, de-DE, en"}
         )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": attribution_id,
             "name": "BAFU",
             "name_translations": {
@@ -323,15 +351,20 @@ class ApiTestCase(TestCase):
     def test_get_attribution_returns_attribution_with_first_language_from_header_ignoring_qfactor(
         self
     ):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
+
         attribution_id = Attribution.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(
-            f"attributions/{attribution_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
+        response = self.client.get(
+            f"/api/attributions/{attribution_id}",
+            headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
         )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": attribution_id,
             "name": "OFEV",
             "name_translations": {
@@ -352,13 +385,33 @@ class ApiTestCase(TestCase):
             "provider_id": Provider.objects.last().id,
         }
 
-    def test_get_attributions_returns_single_attribution_with_given_language(self):
+    def test_get_attribution_returns_401_if_not_logged_in(self):
+        attribution_id = Attribution.objects.last().id
+        response = self.client.get(f"/api/attributions/{attribution_id}")
 
-        client = TestClient(router)
-        response = client.get("attributions?lang=fr")
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+
+    def test_get_attribution_returns_403_if_no_permission(self):
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        attribution_id = Attribution.objects.last().id
+        response = self.client.get(f"/api/attributions/{attribution_id}")
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}
+
+    def test_get_attributions_returns_single_attribution_with_given_language(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
+
+        response = self.client.get("/api/attributions?lang=fr")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [{
                 "id": Attribution.objects.last().id,
                 "name": "OFEV",
@@ -382,6 +435,10 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_attributions_skips_translations_that_are_not_available(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         model = Attribution.objects.last()
         model.name_it = None
@@ -390,11 +447,10 @@ class ApiTestCase(TestCase):
         model.description_rm = None
         model.save()
 
-        client = TestClient(router)
-        response = client.get("attributions")
+        response = self.client.get("/api/attributions")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [{
                 "id": Attribution.objects.last().id,
                 "name": "FOEN",
@@ -414,12 +470,15 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_attributions_returns_attribution_with_language_from_header(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
-        client = TestClient(router)
-        response = client.get("attributions", headers={"Accept-Language": "de"})
+        response = self.client.get("/api/attributions", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [{
                 "id": Attribution.objects.last().id,
                 "name": "BAFU",
@@ -443,6 +502,10 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_language(self):
+        create_user_with_permissions(
+            'test', 'test', [('distributions', 'attribution', 'view_attribution')]
+        )
+        self.client.login(username='test', password='test')
 
         provider1 = Provider.objects.last()
         attribution_id_1 = Attribution.objects.last().id
@@ -463,11 +526,10 @@ class ApiTestCase(TestCase):
         }
         attribution_id_2 = Attribution.objects.create(**model_fields).id
 
-        client = TestClient(router)
-        response = client.get("attributions?lang=fr")
+        response = self.client.get("/api/attributions?lang=fr")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [
                 {
                     "id": attribution_id_1,
@@ -512,14 +574,31 @@ class ApiTestCase(TestCase):
             ]
         }
 
+    def test_get_attributions_returns_401_if_not_logged_in(self):
+        response = self.client.get("/api/providers")
+
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+
+    def test_get_attributions_returns_403_if_no_permission(self):
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        response = self.client.get("/api/providers")
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}
+
     def test_get_dataset_returns_specified_dataset(self):
+        create_user_with_permissions('test', 'test', [('distributions', 'dataset', 'view_dataset')])
+        self.client.login(username='test', password='test')
+
         dataset_id = Dataset.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"datasets/{dataset_id}")
+        response = self.client.get(f"/api/datasets/{dataset_id}")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": dataset_id,
             "slug": "ch.bafu.neophyten-haargurke",
             "created": self.time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -528,14 +607,32 @@ class ApiTestCase(TestCase):
             "attribution_id": Attribution.objects.last().id,
         }
 
-    def test_get_datasets_returns_single_dataset_as_expected(self):
+    def test_get_dataset_returns_401_if_not_logged_in(self):
+        dataset_id = Dataset.objects.last().id
+        response = self.client.get(f"/api/datasets/{dataset_id}")
 
-        client = TestClient(router)
-        response = client.get("datasets")
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+
+    def test_get_dataset_returns_403_if_no_permission(self):
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        dataset_id = Dataset.objects.last().id
+        response = self.client.get(f"/api/datasets/{dataset_id}")
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}
+
+    def test_get_datasets_returns_single_dataset_as_expected(self):
+        create_user_with_permissions('test', 'test', [('distributions', 'dataset', 'view_dataset')])
+        self.client.login(username='test', password='test')
+
+        response = self.client.get("/api/datasets")
 
         dataset = Dataset.objects.last()
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [{
                 "id": dataset.id,
                 "slug": "ch.bafu.neophyten-haargurke",
@@ -547,6 +644,8 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_datasets_returns_all_datasets_ordered_by_id(self):
+        create_user_with_permissions('test', 'test', [('distributions', 'dataset', 'view_dataset')])
+        self.client.login(username='test', password='test')
 
         provider2 = Provider.objects.create(acronym_de="Provider2")
         attribution2 = Attribution.objects.create(
@@ -562,12 +661,11 @@ class ApiTestCase(TestCase):
         with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created2)):
             dataset2 = Dataset.objects.create(**model_fields2)
 
-        client = TestClient(router)
-        response = client.get("datasets")
+        response = self.client.get("/api/datasets")
 
         dataset1 = Dataset.objects.first()
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [
                 {
                     "id": dataset1.id,
@@ -587,3 +685,18 @@ class ApiTestCase(TestCase):
                 },
             ]
         }
+
+    def test_get_datasets_returns_401_if_not_logged_in(self):
+        response = self.client.get("/api/datasets")
+
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+
+    def test_get_datasets_returns_403_if_no_permission(self):
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        response = self.client.get("/api/datasets")
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}

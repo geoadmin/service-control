@@ -1,5 +1,6 @@
 from ninja import Router
 from schemas import TranslationsSchema
+from utils.authentication import PermissionAuth
 from utils.language import LanguageCode
 from utils.language import get_language
 from utils.language import get_translation
@@ -45,7 +46,12 @@ def attribution_to_response(model: Attribution, lang: LanguageCode) -> Attributi
     return response
 
 
-@router.get("attributions/{attribution_id}", response={200: AttributionSchema}, exclude_none=True)
+@router.get(
+    "attributions/{attribution_id}",
+    response={200: AttributionSchema},
+    exclude_none=True,
+    auth=PermissionAuth('distributions.view_attribution')
+)
 def attribution(
     request: HttpRequest,
     attribution_id: int,
@@ -102,7 +108,12 @@ def attribution(
     return response
 
 
-@router.get("attributions", response={200: AttributionListSchema}, exclude_none=True)
+@router.get(
+    "attributions",
+    response={200: AttributionListSchema},
+    exclude_none=True,
+    auth=PermissionAuth('distributions.view_attribution')
+)
 def attributions(request: HttpRequest,
                  lang: LanguageCode | None = None) -> dict[str, list[AttributionSchema]]:
     """
@@ -118,7 +129,12 @@ def attributions(request: HttpRequest,
     return {"items": responses}
 
 
-@router.get("datasets/{dataset_id}", response={200: DatasetSchema}, exclude_none=True)
+@router.get(
+    "datasets/{dataset_id}",
+    response={200: DatasetSchema},
+    exclude_none=True,
+    auth=PermissionAuth('distributions.view_dataset')
+)
 def dataset(request: HttpRequest, dataset_id: int) -> Dataset:
     """
     Get the dataset with the given ID.
@@ -127,7 +143,12 @@ def dataset(request: HttpRequest, dataset_id: int) -> Dataset:
     return model
 
 
-@router.get("datasets", response={200: DatasetListSchema}, exclude_none=True)
+@router.get(
+    "datasets",
+    response={200: DatasetListSchema},
+    exclude_none=True,
+    auth=PermissionAuth('distributions.view_dataset')
+)
 def datasets(request: HttpRequest) -> dict[str, QuerySet[Dataset]]:
     """
     Get all datasets.

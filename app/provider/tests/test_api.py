@@ -1,9 +1,8 @@
 from provider.api import provider_to_response
-from provider.api import router
 from provider.models import Provider
 from provider.schemas import ProviderSchema
 from schemas import TranslationsSchema
-from utils.testing import TestClient
+from utils.testing import create_user_with_permissions
 
 from django.test import TestCase
 
@@ -86,14 +85,15 @@ class ApiTestCase(TestCase):
         assert actual == expected
 
     def test_get_provider_returns_existing_provider_with_default_language(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider_id = Provider.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"/providers/{provider_id}")
+        response = self.client.get(f"/api/providers/{provider_id}")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": provider_id,
             "name": "Federal Office for the Environment",
             "name_translations": {
@@ -114,14 +114,15 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_provider_returns_provider_with_language_from_query(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider_id = Provider.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"/providers/{provider_id}?lang=de")
+        response = self.client.get(f"/api/providers/{provider_id}?lang=de")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": provider_id,
             "name": "Bundesamt für Umwelt",
             "name_translations": {
@@ -142,14 +143,17 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_provider_returns_404_for_nonexisting_provider(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
-        client = TestClient(router)
-        response = client.get("/providers/2")
+        response = self.client.get("/api/providers/2")
 
         assert response.status_code == 404
-        assert response.data == {"code": 404, "description": "Resource not found"}
+        assert response.json() == {"code": 404, "description": "Resource not found"}
 
     def test_get_provider_skips_translations_that_are_not_available(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider = Provider.objects.last()
         provider.name_it = None
@@ -158,11 +162,10 @@ class ApiTestCase(TestCase):
         provider.acronym_rm = None
         provider.save()
 
-        client = TestClient(router)
-        response = client.get(f"/providers/{provider.id}")
+        response = self.client.get(f"/api/providers/{provider.id}")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": provider.id,
             "name": "Federal Office for the Environment",
             "name_translations": {
@@ -179,14 +182,17 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_provider_returns_provider_with_language_from_header(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider_id = Provider.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"/providers/{provider_id}", headers={"Accept-Language": "de"})
+        response = self.client.get(
+            f"/api/providers/{provider_id}", headers={"Accept-Language": "de"}
+        )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": provider_id,
             "name": "Bundesamt für Umwelt",
             "name_translations": {
@@ -207,16 +213,17 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_provider_returns_provider_with_language_from_query_param_even_if_header_set(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider_id = Provider.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(
-            f"/providers/{provider_id}?lang=fr", headers={"Accept-Language": "de"}
+        response = self.client.get(
+            f"/api/providers/{provider_id}?lang=fr", headers={"Accept-Language": "de"}
         )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": provider_id,
             "name": "Office fédéral de l'environnement",
             "name_translations": {
@@ -237,14 +244,15 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_provider_returns_provider_with_default_language_if_header_empty(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider_id = Provider.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(f"/providers/{provider_id}", headers={"Accept-Language": ""})
+        response = self.client.get(f"/api/providers/{provider_id}", headers={"Accept-Language": ""})
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": provider_id,
             "name": "Federal Office for the Environment",
             "name_translations": {
@@ -265,16 +273,17 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_provider_returns_provider_with_first_known_language_from_header(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider_id = Provider.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(
-            f"/providers/{provider_id}", headers={"Accept-Language": "cn, *, de-DE, en"}
+        response = self.client.get(
+            f"/api/providers/{provider_id}", headers={"Accept-Language": "cn, *, de-DE, en"}
         )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": provider_id,
             "name": "Bundesamt für Umwelt",
             "name_translations": {
@@ -297,15 +306,17 @@ class ApiTestCase(TestCase):
     def test_get_provider_returns_provider_with_first_known_language_from_header_ignoring_qfactor(
         self
     ):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
+
         provider_id = Provider.objects.last().id
 
-        client = TestClient(router)
-        response = client.get(
-            f"/providers/{provider_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
+        response = self.client.get(
+            f"/api/providers/{provider_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
         )
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "id": provider_id,
             "name": "Office fédéral de l'environnement",
             "name_translations": {
@@ -325,13 +336,31 @@ class ApiTestCase(TestCase):
             }
         }
 
-    def test_get_providers_returns_single_provider_with_given_language(self):
+    def test_get_provider_returns_401_if_not_logged_in(self):
+        provider_id = Provider.objects.last().id
+        response = self.client.get(f"/api/providers/{provider_id}")
 
-        client = TestClient(router)
-        response = client.get("/providers?lang=fr")
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+
+    def test_get_provider_returns_403_if_no_permission(self):
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        provider_id = Provider.objects.last().id
+        response = self.client.get(f"/api/providers/{provider_id}")
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}
+
+    def test_get_providers_returns_single_provider_with_given_language(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
+
+        response = self.client.get("/api/providers?lang=fr")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [{
                 "id": Provider.objects.last().id,
                 "name": "Office fédéral de l'environnement",
@@ -354,6 +383,8 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_providers_skips_translations_that_are_not_available(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider = Provider.objects.last()
         provider.name_it = None
@@ -362,11 +393,10 @@ class ApiTestCase(TestCase):
         provider.acronym_rm = None
         provider.save()
 
-        client = TestClient(router)
-        response = client.get("/providers")
+        response = self.client.get("/api/providers")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [{
                 "id": provider.id,
                 "name": "Federal Office for the Environment",
@@ -385,12 +415,13 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_providers_returns_provider_with_language_from_header(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
-        client = TestClient(router)
-        response = client.get("/providers", headers={"Accept-Language": "de"})
+        response = self.client.get("/api/providers", headers={"Accept-Language": "de"})
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [{
                 "id": Provider.objects.last().id,
                 "name": "Bundesamt für Umwelt",
@@ -413,6 +444,8 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(self):
+        create_user_with_permissions('test', 'test', [('provider', 'provider', 'view_provider')])
+        self.client.login(username='test', password='test')
 
         provider = {
             "name_de": "Bundesamt für Verkehr",
@@ -428,11 +461,10 @@ class ApiTestCase(TestCase):
         }
         Provider.objects.create(**provider)
 
-        client = TestClient(router)
-        response = client.get("/providers?lang=fr")
+        response = self.client.get("/api/providers?lang=fr")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [
                 {
                     "id": Provider.objects.first().id,
@@ -474,3 +506,18 @@ class ApiTestCase(TestCase):
                 },
             ]
         }
+
+    def test_get_providers_returns_401_if_not_logged_in(self):
+        response = self.client.get("/api/providers")
+
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+
+    def test_get_providers_returns_403_if_no_permission(self):
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        response = self.client.get("/api/providers")
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}

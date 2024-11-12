@@ -33,6 +33,7 @@ django-stubs = "~=5.0.4"
 debugpy = "*"
 boto3-stubs = {extras = ["cognito-idp"], version = "~=1.35"}
 bandit = "*"
+pytest-xdist = "*"
 
 [requires]
 python_version = "3.12"
