@@ -3,6 +3,7 @@ from cognito.utils.user import delete_cognito_user
 from ninja import Router
 from ninja.errors import HttpError
 from provider.models import Provider
+from utils.authentication import PermissionAuth
 
 from django.db import transaction
 from django.http import Http404
@@ -31,7 +32,12 @@ def user_to_response(model: User) -> UserSchema:
     return response
 
 
-@router.get("users/{username}", response={200: UserSchema}, exclude_none=True)
+@router.get(
+    "users/{username}",
+    response={200: UserSchema},
+    exclude_none=True,
+    auth=PermissionAuth('access.view_user')
+)
 def user(request: HttpRequest, username: str) -> UserSchema:
     """
     Get the user with the given username.
@@ -41,7 +47,12 @@ def user(request: HttpRequest, username: str) -> UserSchema:
     return response
 
 
-@router.get("users", response={200: UserListSchema}, exclude_none=True)
+@router.get(
+    "users",
+    response={200: UserListSchema},
+    exclude_none=True,
+    auth=PermissionAuth('access.view_user')
+)
 def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     """
     Get all users.
@@ -51,7 +62,7 @@ def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     return {"items": responses}
 
 
-@router.post("users", response={201: UserSchema})
+@router.post("users", response={201: UserSchema}, auth=PermissionAuth('access.add_user'))
 def create(request: HttpRequest, user_in: UserSchema) -> UserSchema:
     """Create the given user and return it.
 
@@ -80,7 +91,7 @@ def create(request: HttpRequest, user_in: UserSchema) -> UserSchema:
     return user_to_response(user_out)
 
 
-@router.delete("users/{username}")
+@router.delete("users/{username}", auth=PermissionAuth('access.delete_user'))
 def delete(request: HttpRequest, username: str) -> HttpResponse:
     """
     Delete the user with the given username.

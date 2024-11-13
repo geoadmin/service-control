@@ -115,6 +115,14 @@ and the migrations.
 
 ## Local Development
 
+### Running tests in parallel
+
+Run tests with, for example, 16 workers:
+
+```bash
+pytest -n 16
+```
+
 ### vs code Integration
 
 There are some possibilities to debug this codebase from within visual studio code.

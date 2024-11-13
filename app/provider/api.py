@@ -1,4 +1,5 @@
 from ninja import Router
+from utils.authentication import PermissionAuth
 from utils.language import LanguageCode
 from utils.language import get_language
 from utils.language import get_translation
@@ -40,7 +41,12 @@ def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
     return response
 
 
-@router.get("/providers/{provider_id}", response={200: ProviderSchema}, exclude_none=True)
+@router.get(
+    "/providers/{provider_id}",
+    response={200: ProviderSchema},
+    exclude_none=True,
+    auth=PermissionAuth('provider.view_provider')
+)
 def provider(
     request: HttpRequest, provider_id: int, lang: LanguageCode | None = None
 ) -> ProviderSchema:
@@ -94,7 +100,12 @@ def provider(
     return response
 
 
-@router.get("/providers", response={200: ProviderListSchema}, exclude_none=True)
+@router.get(
+    "/providers",
+    response={200: ProviderListSchema},
+    exclude_none=True,
+    auth=PermissionAuth('provider.view_provider')
+)
 def providers(request: HttpRequest, lang: LanguageCode | None = None) -> ProviderListSchema:
     """
     Get all providers, return translatable fields in the given language.

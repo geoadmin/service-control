@@ -1,19 +1,15 @@
-from config.api import root
-from utils.testing import TestClient
-
 from django.test import TestCase
 
 
 class CheckerUrlTestCase(TestCase):
 
     def test_checker_url(self):
-        client = TestClient(root)
 
         # intentionally not using reverse here as we want to
         # make sure the URL really is /checker
         url = '/checker'
 
-        response = client.get(url)
+        response = self.client.get(url)
         assert response.status_code == 200
         content = response.json()
 

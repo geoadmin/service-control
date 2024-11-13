@@ -1,16 +1,16 @@
 from unittest.mock import patch
 
-from access.api import router
 from access.api import user_to_response
 from access.models import User
 from access.schemas import UserSchema
 from botocore.exceptions import EndpointConnectionError
 from provider.models import Provider
-from utils.testing import TestClient
+from utils.testing import create_user_with_permissions
 
 from django.test import TestCase
 
 
+# pylint: disable=too-many-public-methods
 class ApiTestCase(TestCase):
 
     def setUp(self):
@@ -23,8 +23,6 @@ class ApiTestCase(TestCase):
             "provider": provider,
         }
         User.objects.create(**model_fields)
-
-        self.client = TestClient(router)
 
     def test_user_to_response_maps_fields_correctly(self):
 
@@ -43,11 +41,13 @@ class ApiTestCase(TestCase):
         assert actual == expected
 
     def test_get_user_returns_existing_user(self):
+        create_user_with_permissions('test', 'test', [('access', 'user', 'view_user')])
+        self.client.login(username='test', password='test')
 
-        response = self.client.get("users/dude")
+        response = self.client.get("/api/users/dude")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "username": "dude",
             "first_name": "Jeffrey",
             "last_name": "Lebowski",
@@ -56,18 +56,37 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_user_returns_404_if_nonexisting(self):
+        create_user_with_permissions('test', 'test', [('access', 'user', 'view_user')])
+        self.client.login(username='test', password='test')
 
-        response = self.client.get("users/nihilist")
+        response = self.client.get("/api/users/nihilist")
 
         assert response.status_code == 404
-        assert response.data == {"code": 404, "description": "Resource not found"}
+        assert response.json() == {"code": 404, "description": "Resource not found"}
+
+    def test_get_user_returns_401_if_not_logged_in(self):
+        response = self.client.get("/api/users/dude")
+
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+
+    def test_get_user_returns_403_if_no_permission(self):
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        response = self.client.get("/api/users/dude")
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}
 
     def test_get_users_returns_single_user(self):
+        create_user_with_permissions('test', 'test', [('access', 'user', 'view_user')])
+        self.client.login(username='test', password='test')
 
-        response = self.client.get("users")
+        response = self.client.get("/api/users")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [{
                 "username": "dude",
                 "first_name": "Jeffrey",
@@ -78,6 +97,8 @@ class ApiTestCase(TestCase):
         }
 
     def test_get_users_returns_users_ordered_by_id(self):
+        create_user_with_permissions('test', 'test', [('access', 'user', 'view_user')])
+        self.client.login(username='test', password='test')
 
         model_fields = {
             "username": "veteran",
@@ -88,10 +109,10 @@ class ApiTestCase(TestCase):
         }
         User.objects.create(**model_fields)
 
-        response = self.client.get("users")
+        response = self.client.get("/api/users")
 
         assert response.status_code == 200
-        assert response.data == {
+        assert response.json() == {
             "items": [
                 {
                     "username": "dude",
@@ -110,9 +131,27 @@ class ApiTestCase(TestCase):
             ]
         }
 
+    def test_get_users_returns_401_if_not_logged_in(self):
+        response = self.client.get("/api/users")
+
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+
+    def test_get_users_returns_403_if_no_permission(self):
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        response = self.client.get("/api/users")
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}
+
     @patch('access.api.create_cognito_user')
     def test_post_users_creates_new_user_in_db_and_returns_it(self, create_cognito_user):
         create_cognito_user.return_value = True
+
+        create_user_with_permissions('test', 'test', [('access', 'user', 'add_user')])
+        self.client.login(username='test', password='test')
 
         payload = {
             "username": "donny",
@@ -122,15 +161,19 @@ class ApiTestCase(TestCase):
             "provider_id": Provider.objects.last().id,
         }
 
-        response = self.client.post("users", json=payload)
+        response = self.client.post("/api/users", data=payload, content_type='application/json')
 
         assert response.status_code == 201
-        assert response.data == payload
+        assert response.json() == payload
+        assert User.objects.count() == 2
         assert create_cognito_user.called
 
     @patch('access.api.create_cognito_user')
     def test_post_users_returns_404_if_provider_id_does_not_exist(self, create_cognito_user):
         create_cognito_user.return_value = False
+
+        create_user_with_permissions('test', 'test', [('access', 'user', 'add_user')])
+        self.client.login(username='test', password='test')
 
         non_existing_provider_id = Provider.objects.last().id + 1
         payload = {
@@ -141,15 +184,18 @@ class ApiTestCase(TestCase):
             "provider_id": non_existing_provider_id,
         }
 
-        response = self.client.post("users", json=payload)
+        response = self.client.post("/api/users", data=payload, content_type='application/json')
 
         assert response.status_code == 404
-        assert response.data == {"code": 404, "description": "Resource not found"}
+        assert response.json() == {"code": 404, "description": "Resource not found"}
         assert not create_cognito_user.called
 
     @patch('access.api.create_cognito_user')
     def test_post_users_returns_422_if_email_format_invalid(self, create_cognito_user):
         create_cognito_user.return_value = False
+
+        create_user_with_permissions('test', 'test', [('access', 'user', 'add_user')])
+        self.client.login(username='test', password='test')
 
         invalid_email = "donny_at_bowling_dot_com"
         payload = {
@@ -160,15 +206,18 @@ class ApiTestCase(TestCase):
             "provider_id": Provider.objects.last().id,
         }
 
-        response = self.client.post("users", json=payload)
+        response = self.client.post("/api/users", data=payload, content_type='application/json')
 
         assert response.status_code == 422
-        assert response.data == {'code': 422, 'description': ["Enter a valid email address."]}
+        assert response.json() == {'code': 422, 'description': ["Enter a valid email address."]}
         assert not create_cognito_user.called
 
     @patch('access.api.create_cognito_user')
     def test_post_users_returns_409_if_user_exists_already(self, create_cognito_user):
         create_cognito_user.return_value = False
+
+        create_user_with_permissions('test', 'test', [('access', 'user', 'add_user')])
+        self.client.login(username='test', password='test')
 
         payload = {
             "username": "dude",
@@ -178,10 +227,10 @@ class ApiTestCase(TestCase):
             "provider_id": Provider.objects.last().id,
         }
 
-        response = self.client.post("users", json=payload)
+        response = self.client.post("/api/users", data=payload, content_type='application/json')
 
         assert response.status_code == 409
-        assert response.data == {
+        assert response.json() == {
             'code': 409, 'description': ["User with this User name already exists."]
         }
         assert not create_cognito_user.called
@@ -192,6 +241,9 @@ class ApiTestCase(TestCase):
     ):
         create_cognito_user.return_value = False
 
+        create_user_with_permissions('test', 'test', [('access', 'user', 'add_user')])
+        self.client.login(username='test', password='test')
+
         invalid_email = "donny_at_bowling_dot_com"
         payload = {
             "username": "dude",
@@ -201,10 +253,10 @@ class ApiTestCase(TestCase):
             "provider_id": Provider.objects.last().id,
         }
 
-        response = self.client.post("users", json=payload)
+        response = self.client.post("/api/users", data=payload, content_type='application/json')
 
         assert response.status_code == 409
-        assert response.data == {
+        assert response.json() == {
             'code': 409,
             'description': [
                 "Enter a valid email address.", "User with this User name already exists."
@@ -216,6 +268,9 @@ class ApiTestCase(TestCase):
     def test_post_users_returns_500_if_cognito_inconsistent(self, create_cognito_user):
         create_cognito_user.return_value = False
 
+        create_user_with_permissions('test', 'test', [('access', 'user', 'add_user')])
+        self.client.login(username='test', password='test')
+
         payload = {
             "username": "donny",
             "first_name": "Theodore Donald",
@@ -224,10 +279,10 @@ class ApiTestCase(TestCase):
             "provider_id": Provider.objects.last().id,
         }
 
-        response = self.client.post("users", json=payload)
+        response = self.client.post("/api/users", data=payload, content_type='application/json')
 
         assert response.status_code == 500
-        assert response.data == {'code': 500, 'description': 'Internal Server Error'}
+        assert response.json() == {'code': 500, 'description': 'Internal Server Error'}
         assert User.objects.count() == 1
         assert create_cognito_user.called
 
@@ -235,6 +290,9 @@ class ApiTestCase(TestCase):
     def test_post_users_returns_503_if_cognito_down(self, create_cognito_user):
         create_cognito_user.side_effect = EndpointConnectionError(endpoint_url='http://localhost')
 
+        create_user_with_permissions('test', 'test', [('access', 'user', 'add_user')])
+        self.client.login(username='test', password='test')
+
         payload = {
             "username": "donny",
             "first_name": "Theodore Donald",
@@ -243,18 +301,46 @@ class ApiTestCase(TestCase):
             "provider_id": Provider.objects.last().id,
         }
 
-        response = self.client.post("users", json=payload)
+        response = self.client.post("/api/users", data=payload, content_type='application/json')
 
         assert response.status_code == 503
-        assert response.data == {'code': 503, 'description': 'Service Unavailable'}
+        assert response.json() == {'code': 503, 'description': 'Service Unavailable'}
         assert User.objects.count() == 1
         assert create_cognito_user.called
+
+    @patch('access.api.create_cognito_user')
+    def test_post_user_returns_401_if_not_logged_in(self, create_cognito_user):
+        create_cognito_user.return_value = True
+
+        response = self.client.post("/api/users", data={}, content_type='application/json')
+
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+        assert not create_cognito_user.called
+        assert User.objects.count() == 1
+
+    @patch('access.api.create_cognito_user')
+    def test_post_user_returns_403_if_no_permission(self, create_cognito_user):
+        create_cognito_user.return_value = True
+
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        response = self.client.post("/api/users", data={}, content_type='application/json')
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}
+        assert not create_cognito_user.called
+        assert User.objects.count() == 1
 
     @patch('access.api.delete_cognito_user')
     def test_delete_user_deletes_user(self, delete_cognito_user):
         delete_cognito_user.return_value = True
 
-        response = self.client.delete("users/dude")
+        create_user_with_permissions('test', 'test', [('access', 'user', 'delete_user')])
+        self.client.login(username='test', password='test')
+
+        response = self.client.delete("/api/users/dude")
 
         assert response.status_code == 204
         assert response.content == b''
@@ -265,10 +351,13 @@ class ApiTestCase(TestCase):
     def test_delete_user_returns_404_if_nonexisting(self, delete_cognito_user):
         delete_cognito_user.return_value = False
 
-        response = self.client.delete("users/lebowski")
+        create_user_with_permissions('test', 'test', [('access', 'user', 'delete_user')])
+        self.client.login(username='test', password='test')
+
+        response = self.client.delete("/api/users/lebowski")
 
         assert response.status_code == 404
-        assert response.data == {"code": 404, "description": "Resource not found"}
+        assert response.json() == {"code": 404, "description": "Resource not found"}
         assert User.objects.count() == 1
         assert not delete_cognito_user.called
 
@@ -276,10 +365,13 @@ class ApiTestCase(TestCase):
     def test_delete_user_returns_500_if_cognito_inconsistent(self, delete_cognito_user):
         delete_cognito_user.return_value = False
 
-        response = self.client.delete("users/dude")
+        create_user_with_permissions('test', 'test', [('access', 'user', 'delete_user')])
+        self.client.login(username='test', password='test')
+
+        response = self.client.delete("/api/users/dude")
 
         assert response.status_code == 500
-        assert response.data == {"code": 500, "description": "Internal Server Error"}
+        assert response.json() == {"code": 500, "description": "Internal Server Error"}
         assert User.objects.count() == 1
         assert delete_cognito_user.called
 
@@ -287,9 +379,37 @@ class ApiTestCase(TestCase):
     def test_delete_user_returns_503_if_cognito_down(self, delete_cognito_user):
         delete_cognito_user.side_effect = EndpointConnectionError(endpoint_url='http://localhost')
 
-        response = self.client.delete("users/dude")
+        create_user_with_permissions('test', 'test', [('access', 'user', 'delete_user')])
+        self.client.login(username='test', password='test')
+
+        response = self.client.delete("/api/users/dude")
 
         assert response.status_code == 503
-        assert response.data == {"code": 503, "description": "Service Unavailable"}
+        assert response.json() == {"code": 503, "description": "Service Unavailable"}
         assert User.objects.count() == 1
         assert delete_cognito_user.called
+
+    @patch('access.api.delete_cognito_user')
+    def test_delete_user_returns_401_if_not_logged_in(self, delete_cognito_user):
+        delete_cognito_user.return_value = True
+
+        response = self.client.delete("/api/users/dude", data={}, content_type='application/json')
+
+        assert response.status_code == 401
+        assert response.json() == {"code": 401, "description": "Unauthorized"}
+        assert User.objects.count() == 1
+        assert not delete_cognito_user.called
+
+    @patch('access.api.delete_cognito_user')
+    def test_delete_user_returns_403_if_no_permission(self, delete_cognito_user):
+        delete_cognito_user.return_value = True
+
+        create_user_with_permissions('test', 'test', [])
+        self.client.login(username='test', password='test')
+
+        response = self.client.delete("/api/users/dude", data={}, content_type='application/json')
+
+        assert response.status_code == 403
+        assert response.json() == {"code": 403, "description": "Forbidden"}
+        assert User.objects.count() == 1
+        assert not delete_cognito_user.called
