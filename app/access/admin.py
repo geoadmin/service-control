@@ -9,10 +9,10 @@ from .models import User
 class UserAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     '''Admin View for User'''
     list_display = ('provider', 'username', 'deleted_at')
-    actions = ["make_disabled"]
+    actions = ["disable"]
 
     @admin.action(description="Disable selected users")
-    def make_disabled(self, request: HttpRequest, queryset: models.QuerySet[User]) -> None:
+    def disable(self, request: HttpRequest, queryset: models.QuerySet[User]) -> None:
         for u in queryset:
             u.disable()
 

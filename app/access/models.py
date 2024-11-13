@@ -7,7 +7,7 @@ from django.utils.translation import pgettext_lazy as _
 
 
 class ActiveUserManager(models.Manager["User"]):
-    """ActiveUserManager filters out any users that have deleted_at set.
+    """ActiveUserManager filters out soft deleted users.
     """
 
     def get_queryset(self) -> models.QuerySet["User"]:
@@ -49,5 +49,6 @@ class User(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
     def disable(self) -> None:
+        # use django.utils.timezone over datetime to use timezone aware objects.
         self.deleted_at = timezone.now()
         self.save()
