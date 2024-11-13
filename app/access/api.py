@@ -125,8 +125,8 @@ def update_user(
 
     Return HTTP status code
     - 200 (OK) if the user has been updated successfully
-    - 404 (Not Found) if there is no user with the given username or if there is
-      no provider with the given ID
+    - 400 (Bad Request) if there is no provider with the given ID
+    - 404 (Not Found) if there is no user with the given username
     - 500 (Internal Server Error) if there is an inconsistency with Cognito
     - 503 (Service Unavailable) if Cognito cannot be reached
     """
@@ -136,7 +136,7 @@ def update_user(
             raise Http404()
 
         if not Provider.objects.filter(id=user_in.provider_id).exists():
-            raise HttpError(HTTPStatus.NOT_FOUND, "Provider does not exist")
+            raise HttpError(HTTPStatus.BAD_REQUEST, "Provider does not exist")
 
         for attr, value in user_in.dict(exclude_unset=True).items():
             setattr(user_object, attr, value)
