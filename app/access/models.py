@@ -6,6 +6,14 @@ from django.utils import timezone
 from django.utils.translation import pgettext_lazy as _
 
 
+class ActiveUserManager(models.Manager["User"]):
+    """ActiveUserManager filters out any users that have deleted_at set.
+    """
+
+    def get_queryset(self) -> models.QuerySet["User"]:
+        return super().get_queryset().filter(deleted_at__isnull=True)
+
+
 class User(models.Model):
 
     _context = "User model"
@@ -21,9 +29,9 @@ class User(models.Model):
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
 
-    @staticmethod
-    def objects_api() -> models.QuerySet["User"]:
-        return User.objects.filter(deleted_at__isnull=True)
+    # By default only return active users
+    objects = ActiveUserManager()
+    all_objects = models.Manager()
 
     @property
     def is_active(self) -> bool:

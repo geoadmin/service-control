@@ -45,7 +45,7 @@ def user(request: HttpRequest, username: str) -> UserSchema:
     """
     Get the user with the given username.
     """
-    model = get_object_or_404(User.objects_api(), username=username)
+    model = get_object_or_404(User.objects, username=username)
     response = user_to_response(model)
     return response
 
@@ -60,7 +60,7 @@ def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     """
     Get all users.
     """
-    models = User.objects_api().all()
+    models = User.objects.all()
     responses = [user_to_response(model) for model in models]
     return {"items": responses}
 
@@ -107,7 +107,7 @@ def delete(request: HttpRequest, username: str) -> HttpResponse:
     """
 
     with transaction.atomic():
-        user_to_delete = User.objects_api().select_for_update().filter(username=username).first()
+        user_to_delete = User.objects.select_for_update().filter(username=username).first()
         if not user_to_delete:
             raise Http404("Not Found")
         deleted = disable_cognito_user(user_to_delete)

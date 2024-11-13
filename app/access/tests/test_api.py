@@ -22,11 +22,11 @@ class ApiTestCase(TestCase):
             "email": "dude@bowling.com",
             "provider": provider,
         }
-        User.objects_api().create(**model_fields)
+        User.objects.create(**model_fields)
 
     def test_user_to_response_maps_fields_correctly(self):
 
-        model = User.objects_api().last()
+        model = User.objects.last()
 
         actual = user_to_response(model)
 
@@ -107,7 +107,7 @@ class ApiTestCase(TestCase):
             "email": "veteran@bowling.com",
             "provider": Provider.objects.last(),
         }
-        User.objects_api().create(**model_fields)
+        User.objects.create(**model_fields)
 
         response = self.client.get("/api/users")
 
@@ -283,7 +283,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 500
         assert response.json() == {'code': 500, 'description': 'Internal Server Error'}
-        assert User.objects_api().count() == 1
+        assert User.objects.count() == 1
         assert create_cognito_user.called
 
     @patch('access.api.create_cognito_user')
@@ -305,7 +305,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 503
         assert response.json() == {'code': 503, 'description': 'Service Unavailable'}
-        assert User.objects_api().count() == 1
+        assert User.objects.count() == 1
         assert create_cognito_user.called
 
     @patch('access.api.create_cognito_user')
@@ -344,7 +344,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 204
         assert response.content == b''
-        assert User.objects_api().count() == 0
+        assert User.objects.count() == 0
         assert disable_cognito_user.called
 
     @patch('access.api.disable_cognito_user')
@@ -358,7 +358,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 404
         assert response.json() == {"code": 404, "description": "Resource not found"}
-        assert User.objects_api().count() == 1
+        assert User.objects.count() == 1
         assert not disable_cognito_user.called
 
     @patch('access.api.disable_cognito_user')
@@ -372,7 +372,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 500
         assert response.json() == {"code": 500, "description": "Internal Server Error"}
-        assert User.objects_api().count() == 1
+        assert User.objects.count() == 1
         assert disable_cognito_user.called
 
     @patch('access.api.disable_cognito_user')
@@ -386,7 +386,7 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 503
         assert response.json() == {"code": 503, "description": "Service Unavailable"}
-        assert User.objects_api().count() == 1
+        assert User.objects.count() == 1
         assert disable_cognito_user.called
 
     @patch('access.api.disable_cognito_user')

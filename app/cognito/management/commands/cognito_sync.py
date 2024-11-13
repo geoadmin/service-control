@@ -95,7 +95,7 @@ class Handler(CommandHandler):
         """ Synchronizes local and cognito users. """
 
         # Get all remote and local users
-        local_users = {user.username: user for user in User.objects.all()}
+        local_users = {user.username: user for user in User.all_objects.all()}
         local_usernames = set(local_users.keys())
         remote_users = {user['Username']: user for user in self.client.list_users()}
         remote_usernames = set(remote_users.keys())

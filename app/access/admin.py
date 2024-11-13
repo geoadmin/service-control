@@ -15,3 +15,6 @@ class UserAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     def make_disabled(self, request: HttpRequest, queryset: models.QuerySet[User]) -> None:
         for u in queryset:
             u.disable()
+
+    def get_queryset(self, request: HttpRequest) -> models.QuerySet[User]:
+        return User.all_objects.get_queryset()
