@@ -10,7 +10,6 @@ from utils.testing import create_user_with_permissions
 from django.test import TestCase
 
 
-# pylint: disable=too-many-public-methods
 class ApiTestCase(TestCase):
 
     def setUp(self):
@@ -39,6 +38,9 @@ class ApiTestCase(TestCase):
         )
 
         assert actual == expected
+
+
+class GetUserTestCase(ApiTestCase):
 
     def test_get_user_returns_existing_user(self):
         create_user_with_permissions('test', 'test', [('access', 'user', 'view_user')])
@@ -145,6 +147,9 @@ class ApiTestCase(TestCase):
 
         assert response.status_code == 403
         assert response.json() == {"code": 403, "description": "Forbidden"}
+
+
+class PostUserTestCase(ApiTestCase):
 
     @patch('access.api.create_cognito_user')
     def test_post_users_creates_new_user_in_db_and_returns_it(self, create_cognito_user):
@@ -333,6 +338,9 @@ class ApiTestCase(TestCase):
         assert not create_cognito_user.called
         assert User.objects.count() == 1
 
+
+class DeleteUserTestCase(ApiTestCase):
+
     @patch('access.api.delete_cognito_user')
     def test_delete_user_deletes_user(self, delete_cognito_user):
         delete_cognito_user.return_value = True
@@ -413,6 +421,9 @@ class ApiTestCase(TestCase):
         assert response.json() == {"code": 403, "description": "Forbidden"}
         assert User.objects.count() == 1
         assert not delete_cognito_user.called
+
+
+class UpdateUserTestCase(ApiTestCase):
 
     @patch('access.api.update_cognito_user')
     def test_update_user_updates_existing_user_as_expected(self, update_cognito_user):
