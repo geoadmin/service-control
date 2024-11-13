@@ -117,7 +117,7 @@ def delete(request: HttpRequest, username: str) -> HttpResponse:
         return HttpResponse(status=204)
 
 
-@router.put("users/{username}")
+@router.put("users/{username}", auth=PermissionAuth('access.change_user'))
 def update_user(
     request: HttpRequest, username: str, user_in: UserSchema
 ) -> HttpResponse | UserSchema:
