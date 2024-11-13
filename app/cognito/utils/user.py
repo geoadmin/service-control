@@ -37,7 +37,7 @@ def delete_cognito_user(user: User) -> bool:
     return deleted
 
 
-def update_user(user: User) -> bool:
+def update_cognito_user(user: User) -> bool:
     """ Update the given user in cognito.
 
     Returns True, if the user has been updated.
@@ -48,5 +48,5 @@ def update_user(user: User) -> bool:
     if updated:
         logger.info("User %s updated", user.username)
     else:
-        logger.warning("User %s does not exist, not updated", user.username)
+        logger.critical("User %s does not exist, not updated", user.username)
     return updated

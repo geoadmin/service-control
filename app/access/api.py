@@ -1,5 +1,8 @@
+from http import HTTPStatus
+
 from cognito.utils.user import create_cognito_user
 from cognito.utils.user import delete_cognito_user
+from cognito.utils.user import update_cognito_user
 from ninja import Router
 from ninja.errors import HttpError
 from provider.models import Provider
@@ -112,3 +115,34 @@ def delete(request: HttpRequest, username: str) -> HttpResponse:
             raise HttpError(500, "Internal Server Error")
         user_to_delete.delete()
         return HttpResponse(status=204)
+
+
+@router.put("users/{username}", auth=PermissionAuth('access.change_user'))
+def update_user(
+    request: HttpRequest, username: str, user_in: UserSchema
+) -> HttpResponse | UserSchema:
+    """Update the given user with the given user data and return it.
+
+    Return HTTP status code
+    - 200 (OK) if the user has been updated successfully
+    - 400 (Bad Request) if there is no provider with the given ID
+    - 404 (Not Found) if there is no user with the given username
+    - 500 (Internal Server Error) if there is an inconsistency with Cognito
+    - 503 (Service Unavailable) if Cognito cannot be reached
+    """
+    with transaction.atomic():
+        user_object = User.objects.select_for_update().filter(username=username).first()
+        if not user_object:
+            raise Http404()
+
+        if not Provider.objects.filter(id=user_in.provider_id).exists():
+            raise HttpError(HTTPStatus.BAD_REQUEST, "Provider does not exist")
+
+        for attr, value in user_in.dict(exclude_unset=True).items():
+            setattr(user_object, attr, value)
+        user_object.save()
+
+        updated = update_cognito_user(user_object)
+        if not updated:
+            raise HttpError(HTTPStatus.INTERNAL_SERVER_ERROR, "Internal Server Error")
+        return user_to_response(user_object)
