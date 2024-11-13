@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from cognito.utils.user import create_cognito_user
-from cognito.utils.user import delete_cognito_user
+from cognito.utils.user import disable_cognito_user
 from cognito.utils.user import update_cognito_user
 from ninja import Router
 from ninja.errors import HttpError
@@ -45,7 +45,7 @@ def user(request: HttpRequest, username: str) -> UserSchema:
     """
     Get the user with the given username.
     """
-    model = get_object_or_404(User, username=username)
+    model = get_object_or_404(User.objects, username=username)
     response = user_to_response(model)
     return response
 
@@ -110,10 +110,10 @@ def delete(request: HttpRequest, username: str) -> HttpResponse:
         user_to_delete = User.objects.select_for_update().filter(username=username).first()
         if not user_to_delete:
             raise Http404("Not Found")
-        deleted = delete_cognito_user(user_to_delete)
+        deleted = disable_cognito_user(user_to_delete)
         if not deleted:
             raise HttpError(500, "Internal Server Error")
-        user_to_delete.delete()
+        user_to_delete.disable()
         return HttpResponse(status=204)
 
 

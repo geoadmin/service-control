@@ -222,3 +222,51 @@ class ClientTestCase(TestCase):
             ),
             boto3.mock_calls
         )
+
+    @patch('cognito.utils.client.client')
+    def test_disable_user_disables_managed(self, boto3):
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', True, 'get_user')
+
+        client = Client()
+        disabled = client.disable_user('1234')
+        self.assertEqual(disabled, True)
+        self.assertIn(
+            call().admin_disable_user(UserPoolId=client.user_pool_id, Username='1234'),
+            boto3.mock_calls
+        )
+
+    @patch('cognito.utils.client.client')
+    def test_disable_user_does_not_disable_unmanaged(self, boto3):
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False, 'get_user')
+
+        client = Client()
+        disabled = client.disable_user('1234')
+        self.assertEqual(disabled, False)
+        self.assertNotIn(
+            call().admin_disable_user(UserPoolId=client.user_pool_id, Username='1234'),
+            boto3.mock_calls
+        )
+
+    @patch('cognito.utils.client.client')
+    def test_enable_user_enables_managed(self, boto3):
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', True, 'get_user')
+
+        client = Client()
+        enabled = client.enable_user('1234')
+        self.assertEqual(enabled, True)
+        self.assertIn(
+            call().admin_enable_user(UserPoolId=client.user_pool_id, Username='1234'),
+            boto3.mock_calls
+        )
+
+    @patch('cognito.utils.client.client')
+    def test_enable_user_does_not_enable_unmanaged(self, boto3):
+        boto3.return_value.admin_get_user.return_value = cognito_user('1234', False, 'get_user')
+
+        client = Client()
+        enabled = client.enable_user('1234')
+        self.assertEqual(enabled, False)
+        self.assertNotIn(
+            call().admin_enable_user(UserPoolId=client.user_pool_id, Username='1234'),
+            boto3.mock_calls
+        )

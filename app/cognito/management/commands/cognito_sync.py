@@ -20,7 +20,7 @@ class Handler(CommandHandler):
         self.clear = options['clear']
         self.dry_run = options['dry_run']
         self.client = Client()
-        self.counts = {'added': 0, 'deleted': 0, 'updated': 0}
+        self.counts = {'added': 0, 'deleted': 0, 'updated': 0, 'enabled': 0, 'disabled': 0}
 
     def clear_users(self) -> None:
         """ Remove all existing cognito users. """
@@ -75,11 +75,27 @@ class Handler(CommandHandler):
                         local_user.username
                     )
 
+        if local_user.is_active != remote_user['Enabled']:
+            if local_user.is_active:
+                self.counts['enabled'] += 1
+                self.print(f'enabling user {local_user.username}')
+                if not self.dry_run:
+                    enabled = self.client.enable_user(local_user.username)
+                    if not enabled:
+                        self.print_error('Could not enable %s', local_user.username)
+            else:
+                self.counts['disabled'] += 1
+                self.print(f'disabling user {local_user.username}')
+                if not self.dry_run:
+                    disabled = self.client.disable_user(local_user.username)
+                    if not disabled:
+                        self.print_error('Could not disable %s', local_user.username)
+
     def sync_users(self) -> None:
         """ Synchronizes local and cognito users. """
 
         # Get all remote and local users
-        local_users = {user.username: user for user in User.objects.all()}
+        local_users = {user.username: user for user in User.all_objects.all()}
         local_usernames = set(local_users.keys())
         remote_users = {user['Username']: user for user in self.client.list_users()}
         remote_usernames = set(remote_users.keys())

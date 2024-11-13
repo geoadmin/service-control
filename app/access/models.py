@@ -2,7 +2,16 @@ from typing import Iterable
 
 from django.db import models
 from django.db.models.base import ModelBase
+from django.utils import timezone
 from django.utils.translation import pgettext_lazy as _
+
+
+class ActiveUserManager(models.Manager["User"]):
+    """ActiveUserManager filters out soft deleted users.
+    """
+
+    def get_queryset(self) -> models.QuerySet["User"]:
+        return super().get_queryset().filter(deleted_at__isnull=True)
 
 
 class User(models.Model):
@@ -16,8 +25,17 @@ class User(models.Model):
     first_name = models.CharField(_(_context, "First name"))
     last_name = models.CharField(_(_context, "Last name"))
     email = models.EmailField(_(_context, "Email"))
+    deleted_at = models.DateTimeField(_(_context, "deleted at"), null=True, blank=True)
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
+
+    # By default only return active users
+    objects = ActiveUserManager()
+    all_objects = models.Manager()
+
+    @property
+    def is_active(self) -> bool:
+        return self.deleted_at is None
 
     def save(
         self,
@@ -29,3 +47,8 @@ class User(models.Model):
         """Validates the model before writing it to the database."""
         self.full_clean()
         super().save(force_insert, force_update, using, update_fields)
+
+    def disable(self) -> None:
+        # use django.utils.timezone over datetime to use timezone aware objects.
+        self.deleted_at = timezone.now()
+        self.save()
