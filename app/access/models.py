@@ -2,6 +2,7 @@ from logging import getLogger
 from typing import Iterable
 
 from cognito.utils.client import Client
+from utils.short_id import generate_short_id
 
 from django.db import models
 from django.db import transaction
@@ -34,6 +35,7 @@ class User(models.Model):
         return f'{self.first_name} {self.last_name}'
 
     username = models.CharField(_(_context, "User name"), unique=True)
+    user_id = models.CharField(_(_context, "User ID"), unique=True, default=generate_short_id)
     first_name = models.CharField(_(_context, "First name"))
     last_name = models.CharField(_(_context, "Last name"))
     email = models.EmailField(_(_context, "Email"))
@@ -63,14 +65,14 @@ class User(models.Model):
         with transaction.atomic():
             if self._state.adding:
                 super().save(force_insert=True, using=using, update_fields=update_fields)
-                if not client.create_user(self.username, self.email):
-                    logger.critical("User %s already exists in cognito, not created", self.username)
+                if not client.create_user(self.user_id, self.username, self.email):
+                    logger.critical("User %s already exists in cognito, not created", self.user_id)
                     raise CognitoInconsistencyError()
             else:
                 User.objects.select_for_update().filter(pk=self.pk).get()
                 super().save(force_update=True, using=using, update_fields=update_fields)
-                if not client.update_user(self.username, self.email):
-                    logger.critical("User %s does not exist in cognito, not updated", self.username)
+                if not client.update_user(self.user_id, self.username, self.email):
+                    logger.critical("User %s does not exist in cognito, not updated", self.user_id)
                     raise CognitoInconsistencyError()
 
     def delete(self,
@@ -82,8 +84,8 @@ class User(models.Model):
         with transaction.atomic():
             User.objects.select_for_update().filter(pk=self.pk).get()
             result = super().delete(using=using, keep_parents=keep_parents)
-            if not client.delete_user(self.username):
-                logger.critical("User %s does not exist in cognito, not deleted", self.username)
+            if not client.delete_user(self.user_id):
+                logger.critical("User %s does not exist in cognito, not deleted", self.user_id)
                 raise CognitoInconsistencyError()
             return result
 
@@ -94,6 +96,6 @@ class User(models.Model):
             # use django.utils.timezone over datetime to use timezone aware objects.
             self.deleted_at = timezone.now()
             super().save(force_update=True)
-            if not client.disable_user(self.username):
-                logger.critical("User %s does not exist in cognito, not disabled", self.username)
+            if not client.disable_user(self.user_id):
+                logger.critical("User %s does not exist in cognito, not disabled", self.user_id)
                 raise CognitoInconsistencyError()

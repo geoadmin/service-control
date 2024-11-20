@@ -27,87 +27,93 @@ class Handler(CommandHandler):
 
         for user in self.client.list_users():
             self.counts['deleted'] += 1
-            username = user['Username']
-            self.print(f'deleting user {username}')
+            user_id = user['Username']
+            self.print(f'deleting user {user_id}')
             if not self.dry_run:
-                deleted = self.client.delete_user(username)
+                deleted = self.client.delete_user(user_id)
                 if not deleted:
                     self.print_error(
-                        'Could not delete %s, might not exist or might be unmanged', username
+                        'Could not delete %s, might not exist or might be unmanged', user_id
                     )
 
     def add_user(self, user: User) -> None:
         """ Add a local user to cognito. """
 
         self.counts['added'] += 1
-        self.print(f'adding user {user.username}')
+        self.print(f'adding user {user.user_id}')
         if not self.dry_run:
-            created = self.client.create_user(user.username, user.email)
+            created = self.client.create_user(user.user_id, user.username, user.email)
             if not created:
                 self.print_error(
-                    'Could not create %s, might already exist as unmanaged user', user.username
+                    'Could not create %s, might already exist as unmanaged user', user.user_id
                 )
 
-    def delete_user(self, username: str) -> None:
+    def delete_user(self, user_id: str) -> None:
         """ Delete a remote user from cognito. """
 
         self.counts['deleted'] += 1
-        self.print(f'deleting user {username}')
+        self.print(f'deleting user {user_id}')
         if not self.dry_run:
-            deleted = self.client.delete_user(username)
+            deleted = self.client.delete_user(user_id)
             if not deleted:
                 self.print_error(
-                    'Could not delete %s, might not exist or might be unmanaged', username
+                    'Could not delete %s, might not exist or might be unmanaged', user_id
                 )
 
     def update_user(self, local_user: User, remote_user: 'UserTypeTypeDef') -> None:
         """ Update a remote user in cognito. """
 
         remote_attributes = user_attributes_to_dict(remote_user['Attributes'])
-        if local_user.email != remote_attributes.get('email'):
+        changed = (
+            local_user.email != remote_attributes.get('email') or
+            local_user.username != remote_attributes.get('preferred_username')
+        )
+        if changed:
             self.counts['updated'] += 1
-            self.print(f'updating user {local_user.username}')
+            self.print(f'updating user {local_user.user_id}')
             if not self.dry_run:
-                updated = self.client.update_user(local_user.username, local_user.email)
+                updated = self.client.update_user(
+                    local_user.user_id, local_user.username, local_user.email
+                )
                 if not updated:
                     self.print_error(
                         'Could not update %s, might not exist or might be unmanaged',
-                        local_user.username
+                        local_user.user_id
                     )
 
         if local_user.is_active != remote_user['Enabled']:
             if local_user.is_active:
                 self.counts['enabled'] += 1
-                self.print(f'enabling user {local_user.username}')
+                self.print(f'enabling user {local_user.user_id}')
                 if not self.dry_run:
-                    enabled = self.client.enable_user(local_user.username)
+                    enabled = self.client.enable_user(local_user.user_id)
                     if not enabled:
-                        self.print_error('Could not enable %s', local_user.username)
+                        self.print_error('Could not enable %s', local_user.user_id)
             else:
                 self.counts['disabled'] += 1
-                self.print(f'disabling user {local_user.username}')
+                self.print(f'disabling user {local_user.user_id}')
                 if not self.dry_run:
-                    disabled = self.client.disable_user(local_user.username)
+                    disabled = self.client.disable_user(local_user.user_id)
                     if not disabled:
-                        self.print_error('Could not disable %s', local_user.username)
+                        self.print_error('Could not disable %s', local_user.user_id)
 
     def sync_users(self) -> None:
         """ Synchronizes local and cognito users. """
 
         # Get all remote and local users
-        local_users = {user.username: user for user in User.all_objects.all()}
-        local_usernames = set(local_users.keys())
+        local_users = {user.user_id: user for user in User.all_objects.all()}
+        local_user_ids = set(local_users.keys())
         remote_users = {user['Username']: user for user in self.client.list_users()}
-        remote_usernames = set(remote_users.keys())
+        remote_user_ids = set(remote_users.keys())
 
-        for username in local_usernames.difference(remote_usernames):
-            self.add_user(local_users[username])
+        for user_id in local_user_ids.difference(remote_user_ids):
+            self.add_user(local_users[user_id])
 
-        for username in remote_usernames.difference(local_usernames):
-            self.delete_user(username)
+        for user_id in remote_user_ids.difference(local_user_ids):
+            self.delete_user(user_id)
 
-        for username in local_usernames.intersection(remote_usernames):
-            self.update_user(local_users[username], remote_users[username])
+        for user_id in local_user_ids.intersection(remote_user_ids):
+            self.update_user(local_users[user_id], remote_users[user_id])
 
     def run(self) -> None:
         """ Main entry point of command. """

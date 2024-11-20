@@ -38,6 +38,7 @@ def test_user_stored_as_expected_for_valid_input(client, provider):
     User.objects.create(**model_fields)
     actual = User.objects.first()
 
+    assert len(actual.user_id) == 12
     assert actual.username == "dude"
     assert actual.first_name == "Jeffrey"
     assert actual.last_name == "Lebowski"
@@ -95,6 +96,7 @@ def test_create_user_raises_cognito_exception(logger, client, provider):
     client.return_value.create_user.return_value = False
 
     model_fields = {
+        "user_id": "2ihg2ox304po",
         "username": "dude",
         "first_name": "Jeffrey",
         "last_name": "Lebowski",
@@ -108,7 +110,7 @@ def test_create_user_raises_cognito_exception(logger, client, provider):
     assert User.objects.count() == 0
     assert client.return_value.create_user.called
     assert call.critical(
-        'User %s already exists in cognito, not created', 'dude'
+        'User %s already exists in cognito, not created', '2ihg2ox304po'
     ) in logger.mock_calls
 
 
