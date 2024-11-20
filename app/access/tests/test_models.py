@@ -1,4 +1,8 @@
+from unittest.mock import call
+from unittest.mock import patch
+
 import pytest
+from access.models import CognitoInconsistencyError
 from access.models import User
 from provider.models import Provider
 
@@ -9,7 +13,10 @@ from django.forms import ModelForm
 @pytest.mark.django_db
 class TestUser:
 
-    def test_user_stored_as_expected_for_valid_input(self):
+    @patch('access.models.Client')
+    def test_user_stored_as_expected_for_valid_input(self, client):
+        client.return_value.create_user.return_value = True
+
         provider = Provider.objects.create()
         model_fields = {
             "username": "dude",
@@ -19,15 +26,20 @@ class TestUser:
             "provider": provider,
         }
 
-        actual = User.objects.create(**model_fields)
+        User.objects.create(**model_fields)
+        actual = User.objects.first()
 
         assert actual.username == "dude"
         assert actual.first_name == "Jeffrey"
         assert actual.last_name == "Lebowski"
         assert actual.email == "dude@bowling.com"
         assert actual.provider == provider
+        assert client.return_value.create_user.called
 
-    def test_user_raises_exception_for_user_with_existing_user_name(self):
+    @patch('access.models.Client')
+    def test_user_raises_exception_for_user_with_existing_user_name(self, client):
+        client.return_value.create_user.return_value = True
+
         User.objects.create(
             username="dude",
             first_name="Jeffrey",
@@ -44,7 +56,13 @@ class TestUser:
                 provider=Provider.objects.create()
             )
 
-    def test_user_with_invalid_email_raises_exception_when_creating_db_record(self):
+        assert User.objects.count() == 1
+        assert client.return_value.create_user.call_count == 1
+
+    @patch('access.models.Client')
+    def test_user_with_invalid_email_raises_exception_when_creating_db_record(self, client):
+        client.return_value.create_user.return_value = True
+
         provider = Provider.objects.create()
         model_fields = {
             "username": "dude",
@@ -57,7 +75,191 @@ class TestUser:
         with pytest.raises(ValidationError):
             User.objects.create(**model_fields)
 
-    def test_form_invalid_for_user_with_invalid_email(self):
+        assert User.objects.count() == 0
+        assert not client.return_value.create_user.called
+
+    @patch('access.models.Client')
+    @patch('access.models.logger')
+    def test_create_user_raises_cognito_exception(self, logger, client):
+        client.return_value.create_user.return_value = False
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "username": "dude",
+            "first_name": "Jeffrey",
+            "last_name": "Lebowski",
+            "email": "dude@bowling.com",
+            "provider": provider,
+        }
+
+        with pytest.raises(CognitoInconsistencyError):
+            User.objects.create(**model_fields)
+
+        assert User.objects.count() == 0
+        assert client.return_value.create_user.called
+        assert call.critical(
+            'User %s already exists in cognito, not created', 'dude'
+        ) in logger.mock_calls
+
+    @patch('access.models.Client')
+    def test_save_user_updates_records(self, client):
+        client.return_value.create_user.return_value = True
+        client.return_value.update_user.return_value = True
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "username": "dude",
+            "first_name": "Jeffrey",
+            "last_name": "Lebowski",
+            "email": "dude@bowling.com",
+            "provider": provider,
+        }
+
+        User.objects.create(**model_fields)
+        actual = User.objects.first()
+
+        assert actual.email == "dude@bowling.com"
+        assert client.return_value.create_user.called
+
+        actual.email = "jeffrey.lebowski@bowling.com"
+        actual.save()
+
+        updated = User.objects.first()
+
+        assert updated.email == 'jeffrey.lebowski@bowling.com'
+        assert client.return_value.update_user.called
+
+    @patch('access.models.Client')
+    def test_save_user_raises_cognito_exception(self, client):
+        client.return_value.create_user.return_value = True
+        client.return_value.update_user.return_value = False
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "username": "dude",
+            "first_name": "Jeffrey",
+            "last_name": "Lebowski",
+            "email": "dude@bowling.com",
+            "provider": provider,
+        }
+
+        User.objects.create(**model_fields)
+        actual = User.objects.first()
+
+        assert actual.email == "dude@bowling.com"
+        assert client.return_value.create_user.called
+
+        actual.email = "jeffrey.lebowski@bowling.com"
+        with pytest.raises(CognitoInconsistencyError):
+            actual.save()
+
+        retained = User.objects.first()
+
+        assert retained.email == 'dude@bowling.com'
+        assert client.return_value.update_user.called
+
+    @patch('access.models.Client')
+    def test_delete_user_deletes_records(self, client):
+        client.return_value.create_user.return_value = True
+        client.return_value.delete_user.return_value = True
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "username": "dude",
+            "first_name": "Jeffrey",
+            "last_name": "Lebowski",
+            "email": "dude@bowling.com",
+            "provider": provider,
+        }
+
+        User.objects.create(**model_fields)
+        actual = User.objects.first()
+
+        assert client.return_value.create_user.called
+
+        actual.delete()
+
+        assert not User.objects.first()
+        assert client.return_value.delete_user.called
+
+    @patch('access.models.Client')
+    def test_delete_user_raises_cognito_exception(self, client):
+        client.return_value.create_user.return_value = True
+        client.return_value.delete_user.return_value = False
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "username": "dude",
+            "first_name": "Jeffrey",
+            "last_name": "Lebowski",
+            "email": "dude@bowling.com",
+            "provider": provider,
+        }
+
+        User.objects.create(**model_fields)
+        actual = User.objects.first()
+
+        assert client.return_value.create_user.called
+
+        with pytest.raises(CognitoInconsistencyError):
+            actual.delete()
+
+        assert User.objects.first()
+        assert client.return_value.delete_user.called
+
+    @patch('access.models.Client')
+    def test_disable_user_disables_records(self, client):
+        client.return_value.create_user.return_value = True
+        client.return_value.disable_user.return_value = True
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "username": "dude",
+            "first_name": "Jeffrey",
+            "last_name": "Lebowski",
+            "email": "dude@bowling.com",
+            "provider": provider,
+        }
+
+        User.objects.create(**model_fields)
+        actual = User.objects.first()
+
+        assert client.return_value.create_user.called
+
+        actual.disable()
+
+        assert not User.objects.first()
+        assert User.all_objects.first()
+        assert client.return_value.disable_user.called
+
+    @patch('access.models.Client')
+    def test_disable_user_raises_cognito_exception(self, client):
+        client.return_value.create_user.return_value = True
+        client.return_value.disable_user.return_value = False
+
+        provider = Provider.objects.create()
+        model_fields = {
+            "username": "dude",
+            "first_name": "Jeffrey",
+            "last_name": "Lebowski",
+            "email": "dude@bowling.com",
+            "provider": provider,
+        }
+
+        User.objects.create(**model_fields)
+        actual = User.objects.first()
+
+        assert client.return_value.create_user.called
+
+        with pytest.raises(CognitoInconsistencyError):
+            actual.disable()
+
+        assert User.objects.first()
+        assert client.return_value.disable_user.called
+
+    @patch('access.models.Client')
+    def test_form_invalid_for_user_with_invalid_email(self, client):
+        client.return_value.create_user.return_value = True
 
         class UserForm(ModelForm):
 

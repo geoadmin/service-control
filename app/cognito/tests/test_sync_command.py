@@ -35,14 +35,16 @@ class CognitoSyncCommandTest(TestCase):
         )
 
     def add_user(self, username, email, deleted_at=None):
-        User.objects.create(
-            username=username,
-            first_name=username,
-            last_name=username,
-            email=email,
-            provider=self.provider,
-            deleted_at=deleted_at
-        )
+        with patch('access.models.Client') as client:
+            client.return_value.create_user.return_value = True
+            User.objects.create(
+                username=username,
+                first_name=username,
+                last_name=username,
+                email=email,
+                provider=self.provider,
+                deleted_at=deleted_at
+            )
 
     @patch('cognito.management.commands.cognito_sync.Client')
     def test_command_adds(self, client):
