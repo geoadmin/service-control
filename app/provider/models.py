@@ -7,7 +7,7 @@ class Provider(models.Model):
     _context = "Provider model"
 
     def __str__(self) -> str:
-        return str(self.name_en)
+        return str(self.acronym_en)
 
     '''
     Note: The "blank=False" for a model field doesn't prevent DB changes.

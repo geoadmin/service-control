@@ -8,8 +8,9 @@ from .models import User
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     '''Admin View for User'''
-    list_display = ('provider', 'username', 'deleted_at')
-    actions = ["disable"]
+    list_display = ('username', 'deleted_at', 'provider')
+    list_filter = ('deleted_at', ('provider', admin.RelatedOnlyFieldListFilter))
+    actions = ('disable',)
 
     @admin.action(description="Disable selected users")
     def disable(self, request: HttpRequest, queryset: models.QuerySet[User]) -> None:
