@@ -91,3 +91,32 @@ class Dataset(models.Model):
             using=using,
             update_fields=update_fields
         )
+
+
+class PackageDistribution(models.Model):
+
+    _context = "Package Distribution Model"
+
+    def __str__(self) -> str:
+        return str(self.slug)
+
+    slug = CustomSlugField(_(_context, "Slug"), max_length=100)
+    managed_by_stac = models.BooleanField(_(_context, "Managed by STAC"), max_length=100)
+
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+
+    def save(
+        self,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None
+    ) -> None:
+
+        self.full_clean()
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields
+        )
