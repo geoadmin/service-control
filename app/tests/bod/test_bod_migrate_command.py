@@ -92,8 +92,8 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
         name_fr="XXX",
         name_en="XXX",
         acronym_de="BAFU",
-        acronym_fr="",
-        acronym_en="",
+        acronym_fr="XXX",
+        acronym_en="XXX",
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     attribution = Attribution.objects.create(
@@ -101,13 +101,13 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
         name_fr="XXX",
         name_en="XXX",
         description_de="BAFU",
-        description_fr="",
-        description_en="",
+        description_fr="XXX",
+        description_en="XXX",
         provider=provider,
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     dataset = Dataset.objects.create(
-        slug="XXX", provider=provider, attribution=attribution, _legacy_id=bod_dataset.id
+        slug="xxx", provider=provider, attribution=attribution, _legacy_id=bod_dataset.id
     )
 
     out = StringIO()
@@ -173,7 +173,7 @@ def test_command_removes_orphaned(bod_dataset):
         provider=provider,
         _legacy_id=16
     )
-    Dataset.objects.create(slug="XXX", provider=provider, attribution=attribution, _legacy_id=160)
+    Dataset.objects.create(slug="xxx", provider=provider, attribution=attribution, _legacy_id=160)
 
     # Add objects which will not be removed
     provider = Provider.objects.create(
@@ -193,7 +193,7 @@ def test_command_removes_orphaned(bod_dataset):
         description_en="YYY",
         provider=provider
     )
-    Dataset.objects.create(slug="YYYY", provider=provider, attribution=attribution)
+    Dataset.objects.create(slug="yyyy", provider=provider, attribution=attribution)
 
     out = StringIO()
     call_command("bod_migrate", verbosity=2, stdout=out)
@@ -209,7 +209,7 @@ def test_command_removes_orphaned(bod_dataset):
     assert {'BAFU', 'YYYY'} == set(Provider.objects.values_list('acronym_de', flat=True))
     assert {'BAFU', 'YYYY'} == set(Attribution.objects.values_list('name_de', flat=True))
     assert {'ch.bafu.auen-vegetationskarten',
-            'YYYY'} == set(Dataset.objects.values_list('slug', flat=True))
+            'yyyy'} == set(Dataset.objects.values_list('slug', flat=True))
 
 
 def test_command_does_not_import_if_dry_run(bod_dataset):
@@ -243,7 +243,7 @@ def test_command_clears_existing_data(bod_dataset):
         description_en="XXX",
         provider=provider
     )
-    Dataset.objects.create(slug="YYYY", provider=provider, attribution=attribution)
+    Dataset.objects.create(slug="yyyy", provider=provider, attribution=attribution)
 
     out = StringIO()
     call_command("bod_migrate", clear=True, stdout=out)

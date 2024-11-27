@@ -1,4 +1,7 @@
+from typing import Iterable
+
 from django.db import models
+from django.db.models.base import ModelBase
 from django.utils.translation import pgettext_lazy as _
 
 
@@ -32,3 +35,19 @@ class Provider(models.Model):
         db_index=False,
         help_text="This field is used to track objects imported from the BOD"
     )
+
+    def save(
+        self,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None
+    ) -> None:
+
+        self.full_clean()
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields
+        )

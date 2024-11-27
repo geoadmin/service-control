@@ -1,7 +1,7 @@
 from provider.models import Provider
 from pytest import raises
 
-from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
 
@@ -72,7 +72,7 @@ def test_object_created_in_db_with_optional_fields_null(db):
 
 
 def test_raises_exception_when_creating_db_object_with_mandatory_field_null(db):
-    with raises(IntegrityError):
+    with raises(ValidationError):
         Provider.objects.create(name_de=None)
 
 
