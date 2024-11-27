@@ -81,8 +81,19 @@ class Handler(CommandHandler):
             processed.add(legacy_id)
 
             # Get or create provider
-            provider, is_new_model = Provider.objects.get_or_create(_legacy_id=legacy_id)
-            if is_new_model:
+            is_new_model = False
+            provider = Provider.objects.filter(_legacy_id=legacy_id).first()
+            if not provider:
+                is_new_model = True
+                provider = Provider.objects.create(
+                    _legacy_id=legacy_id,
+                    acronym_de="undefined",
+                    acronym_fr="undefined",
+                    acronym_en="undefined",
+                    name_de="undefined",
+                    name_fr="undefined",
+                    name_en="undefined"
+                )
                 self.increment_counter('provider', 'added')
                 self.print(f"Added provider '{organization.name_en}'")
 
@@ -141,9 +152,19 @@ class Handler(CommandHandler):
         """
 
         # Get or create attribution
-        attribution, is_new_model = provider.attribution_set.get_or_create(_legacy_id=legacy_id)
-
-        if is_new_model:
+        is_new_model = False
+        attribution = provider.attribution_set.filter(_legacy_id=legacy_id).first()
+        if not attribution:
+            is_new_model = True
+            attribution = provider.attribution_set.create(
+                _legacy_id=legacy_id,
+                name_de="undefined",
+                name_fr="undefined",
+                name_en="undefined",
+                description_de="undefined",
+                description_fr="undefined",
+                description_en="undefined"
+            )
             self.increment_counter('attribution', 'added')
             self.print(f"Added attribution '{organization.attribution}'")
 
@@ -183,7 +204,8 @@ class Handler(CommandHandler):
             changed = self.update_model(
                 attribution,
                 attribution_attribute,
-                getattr(translation, translation_attribute, '') or '',
+                getattr(translation, translation_attribute, '') or organization.attribution or
+                'undefined',
                 is_new_model
             )
             any_changed = any_changed or changed
@@ -208,10 +230,18 @@ class Handler(CommandHandler):
             processed.add(legacy_id)
 
             # Get or create dataset
-            dataset, is_new_model = Dataset.objects.get_or_create(
+            is_new_model = False
+            dataset = Dataset.objects.filter(
                 provider=provider, attribution=attribution, _legacy_id=legacy_id
-            )
-            if is_new_model:
+            ).first()
+            if not dataset:
+                is_new_model = True
+                dataset = Dataset.objects.create(
+                    provider=provider,
+                    attribution=attribution,
+                    _legacy_id=legacy_id,
+                    slug='undefined'
+                )
                 self.increment_counter('dataset', 'added')
                 self.print(f"Added dataset '{bod_dataset.id_dataset}'")
 

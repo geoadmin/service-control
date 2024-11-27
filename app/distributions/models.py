@@ -1,4 +1,9 @@
+from typing import Iterable
+
+from utils.fields import CustomSlugField
+
 from django.db import models
+from django.db.models.base import ModelBase
 from django.utils.translation import pgettext_lazy as _
 
 
@@ -31,6 +36,22 @@ class Attribution(models.Model):
         help_text="This field is used to track objects imported from the BOD"
     )
 
+    def save(
+        self,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None
+    ) -> None:
+
+        self.full_clean()
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields
+        )
+
 
 class Dataset(models.Model):
 
@@ -40,7 +61,7 @@ class Dataset(models.Model):
         return str(self.slug)
 
 
-    slug = models.SlugField(_(_context, "Slug"), max_length=100)
+    slug = CustomSlugField(_(_context, "Slug"), max_length=100)
     created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
     updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
 
@@ -54,3 +75,19 @@ class Dataset(models.Model):
         db_index=False,
         help_text="This field is used to track objects imported from the BOD"
     )
+
+    def save(
+        self,
+        force_insert: bool | tuple[ModelBase, ...] = False,
+        force_update: bool = False,
+        using: str | None = None,
+        update_fields: Iterable[str] | None = None
+    ) -> None:
+
+        self.full_clean()
+        super().save(
+            force_insert=force_insert,
+            force_update=force_update,
+            using=using,
+            update_fields=update_fields
+        )

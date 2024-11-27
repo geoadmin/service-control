@@ -3,13 +3,20 @@ from provider.models import Provider
 from pytest import fixture
 from pytest import raises
 
-from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
 
 @fixture(name='provider')
 def fixture_provider(db):
-    yield Provider.objects.create(acronym_de="ENSI")
+    yield Provider.objects.create(
+        acronym_de="BAFU",
+        acronym_fr="OFEV",
+        acronym_en="FOEN",
+        name_de="Bundesamt für Umwelt",
+        name_fr="Office fédéral de l'environnement",
+        name_en="Federal Office for the Environment"
+    )
 
 
 def test_object_created_in_db_with_all_fields_defined(provider):
@@ -45,7 +52,7 @@ def test_object_created_in_db_with_all_fields_defined(provider):
     assert actual.description_it == attribution["description_it"]
     assert actual.description_rm == attribution["description_rm"]
 
-    assert actual.provider.acronym_de == "ENSI"
+    assert actual.provider.acronym_de == "BAFU"
 
 
 def test_object_created_in_db_with_optional_fields_null(provider):
@@ -83,7 +90,7 @@ def test_object_created_in_db_with_optional_fields_null(provider):
 
 
 def test_raises_exception_when_creating_db_object_with_mandatory_field_null(provider):
-    with raises(IntegrityError):
+    with raises(ValidationError):
         Attribution.objects.create(name_de=None, provider=provider)
 
 

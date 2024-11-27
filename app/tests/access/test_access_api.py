@@ -10,7 +10,14 @@ from pytest import fixture
 
 @fixture(name='provider')
 def fixture_provider(db):
-    yield Provider.objects.create()
+    yield Provider.objects.create(
+        acronym_de="BAFU",
+        acronym_fr="OFEV",
+        acronym_en="FOEN",
+        name_de="Bundesamt für Umwelt",
+        name_fr="Office fédéral de l'environnement",
+        name_en="Federal Office for the Environment"
+    )
 
 
 @fixture(name='user')

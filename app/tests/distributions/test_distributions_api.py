@@ -17,7 +17,14 @@ def fixture_time_created():
 
 @fixture(name='provider')
 def fixture_provider(db):
-    yield Provider.objects.create()
+    yield Provider.objects.create(
+        acronym_de="BAFU",
+        acronym_fr="OFEV",
+        acronym_en="FOEN",
+        name_de="Bundesamt für Umwelt",
+        name_fr="Office fédéral de l'environnement",
+        name_en="Federal Office for the Environment"
+    )
 
 
 @fixture(name='attribution')
@@ -521,7 +528,14 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
     provider1 = Provider.objects.last()
     attribution_id_1 = Attribution.objects.last().id
 
-    provider2 = Provider.objects.create()
+    provider2 = Provider.objects.create(
+        acronym_de="Provider2",
+        acronym_fr="Provider2",
+        acronym_en="Provider2",
+        name_de="Provider2",
+        name_fr="Provider2",
+        name_en="Provider2"
+    )
     model_fields = {
         "name_de": "BAV",
         "name_fr": "OFT",
@@ -669,9 +683,21 @@ def test_get_datasets_returns_all_datasets_ordered_by_id(
     django_user_factory('test', 'test', [('distributions', 'dataset', 'view_dataset')])
     client.login(username='test', password='test')
 
-    provider2 = Provider.objects.create(acronym_de="Provider2")
+    provider2 = Provider.objects.create(
+        acronym_de="Provider2",
+        acronym_fr="Provider2",
+        acronym_en="Provider2",
+        name_de="Provider2",
+        name_fr="Provider2",
+        name_en="Provider2"
+    )
     attribution2 = Attribution.objects.create(
         name_de="Attribution2",
+        name_fr="Attribution2",
+        name_en="Attribution2",
+        description_de="Attribution2",
+        description_fr="Attribution2",
+        description_en="Attribution2",
         provider=provider2,
     )
     model_fields2 = {
