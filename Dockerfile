@@ -2,7 +2,7 @@
 # Container that contains basic configurations used by all other containers
 # It should only contain variables that don't change or change very infrequently
 # so that the cache is not needlessly invalidated
-FROM python:3.12-slim-bullseye as base
+FROM python:3.12-slim-bullseye AS base
 ENV HTTP_PORT=8080
 ENV USER=geoadmin
 ENV GROUP=geoadmin
@@ -18,7 +18,7 @@ RUN apt-get -qq update > /dev/null \
 
 ###########################################################
 # Builder container
-FROM base as builder
+FROM base AS builder
 RUN apt-get -qq update > /dev/null \
     && apt-get -qq -y install \
     # dev dependencies
@@ -37,7 +37,7 @@ COPY --chown=${USER}:${GROUP} app/ ${INSTALL_DIR}/app/
 
 ###########################################################
 # Container to perform tests/management/dev tasks
-FROM base as debug
+FROM base AS debug
 LABEL target=debug
 ENV DEBUG=1
 
@@ -81,6 +81,9 @@ ENV PYTHONHOME=""
 ARG VERSION=unknown
 RUN echo "APP_VERSION = '$VERSION'" > ${INSTALL_DIR}/app/config/version.py
 
+# Collect static files.
+RUN ${INSTALL_DIR}/app/manage.py collectstatic --noinput
+
 ARG GIT_HASH=unknown
 ARG GIT_BRANCH=unknown
 ARG GIT_DIRTY=""
@@ -101,7 +104,7 @@ ENTRYPOINT ["python"]
 
 ###########################################################
 # Container to use in production
-FROM base as production
+FROM base AS production
 LABEL target=production
 ENV DEBUG=0
 
@@ -120,6 +123,9 @@ ENV PYTHONHOME=""
 # Overwrite the version.py from source with the actual version
 ARG VERSION=unknown
 RUN echo "APP_VERSION = '$VERSION'" > ${INSTALL_DIR}/app/config/version.py
+
+# Collect static files.
+RUN ${INSTALL_DIR}/app/manage.py collectstatic --noinput
 
 ARG GIT_HASH=unknown
 ARG GIT_BRANCH=unknown
