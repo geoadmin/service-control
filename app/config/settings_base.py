@@ -152,3 +152,7 @@ COGNITO_MANAGED_FLAG_NAME = env.str('COGNITO_MANAGED_FLAG_NAME', 'dev:custom:man
 
 # Testing
 TESTING = False
+
+# nanoid
+SHORT_ID_SIZE = env.int('SHORT_ID_SIZE', 12)
+SHORT_ID_ALPHABET = env.str('SHORT_ID_ALPHABET', '0123456789abcdefghijklmnopqrstuvwxyz')

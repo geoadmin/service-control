@@ -50,7 +50,7 @@ class Client:
         username: str,
         return_unmanaged: bool = False
     ) -> 'AdminGetUserResponseTypeDef | None':
-        """ Get the user with the given username.
+        """ Get the user with the given cognito username.
 
         Returns None if the user does not exist or doesn't have the managed flag and
         return_unamanged is False.
@@ -68,7 +68,7 @@ class Client:
 
         return response
 
-    def create_user(self, username: str, email: str) -> bool:
+    def create_user(self, username: str, preferred_username: str, email: str) -> bool:
         """ Create a new user.
 
         Returns False, if a (managed or unmanaged) user already exist.
@@ -83,6 +83,8 @@ class Client:
                 UserAttributes=[{
                     "Name": "email", "Value": email
                 }, {
+                    "Name": "preferred_username", "Value": preferred_username
+                }, {
                     "Name": self.managed_flag_name, "Value": "true"
                 }],
                 DesiredDeliveryMediums=['EMAIL']
@@ -91,7 +93,7 @@ class Client:
         return False
 
     def delete_user(self, username: str) -> bool:
-        """ Delete the given user.
+        """ Delete the user with the given cognito username.
 
         Returns False, if the user does not exist or doesn't have the managed flag.
 
@@ -103,8 +105,8 @@ class Client:
             return True
         return False
 
-    def update_user(self, username: str, email: str) -> bool:
-        """ Update the given user.
+    def update_user(self, username: str, preferred_username: str, email: str) -> bool:
+        """ Update the user with the given cognito username.
 
         Returns False, if the user does not exist or doesn't have the managed flag.
 
@@ -117,13 +119,15 @@ class Client:
                 Username=username,
                 UserAttributes=[{
                     "Name": "email", "Value": email
+                }, {
+                    "Name": "preferred_username", "Value": preferred_username
                 }]
             )
             return True
         return False
 
     def enable_user(self, username: str) -> bool:
-        """Enable the given user.
+        """Enable the user with the given cognito username.
 
         Returns False, if the user does not exist, or doesn't have the managed flag.
         """
@@ -135,7 +139,7 @@ class Client:
         return True
 
     def disable_user(self, username: str) -> bool:
-        """Disable the given user.
+        """Disable the user with the given cognito username.
 
         Returns False if the user does not exist, or doesn't have the managed flag.
         """
