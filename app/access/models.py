@@ -20,14 +20,23 @@ class CognitoInconsistencyError(Exception):
 
 
 class ActiveUserManager(models.Manager["User"]):
-    """ActiveUserManager filters out soft deleted users.
-    """
+    """ActiveUserManager filters out disabled users."""
 
     def get_queryset(self) -> models.QuerySet["User"]:
         return super().get_queryset().filter(deleted_at__isnull=True)
 
 
 class User(models.Model):
+    """
+    Represents an API user.
+
+    The default queryset (`objects`) excludes disabled users (i.e., those with the `deleted_at`
+    attribute set to a valid timestamp). To include disabled users in queries, use `all_objects`.
+
+    This model automatically synchronizes with Cognito during save and delete operations.
+    Note: Bulk operations performed via the queryset do not trigger synchronization with Cognito.
+    Note: Direct modifications to the `deleted_at` field do not enable/disable the user in Cognito.
+    """
 
     _context = "User model"
 
@@ -69,7 +78,7 @@ class User(models.Model):
                     logger.critical("User %s already exists in cognito, not created", self.user_id)
                     raise CognitoInconsistencyError()
             else:
-                User.objects.select_for_update().filter(pk=self.pk).get()
+                User.all_objects.select_for_update().filter(pk=self.pk).get()
                 super().save(force_update=True, using=using, update_fields=update_fields)
                 if not client.update_user(self.user_id, self.username, self.email):
                     logger.critical("User %s does not exist in cognito, not updated", self.user_id)
@@ -82,7 +91,7 @@ class User(models.Model):
 
         client = Client()
         with transaction.atomic():
-            User.objects.select_for_update().filter(pk=self.pk).get()
+            User.all_objects.select_for_update().filter(pk=self.pk).get()
             result = super().delete(using=using, keep_parents=keep_parents)
             if not client.delete_user(self.user_id):
                 logger.critical("User %s does not exist in cognito, not deleted", self.user_id)
@@ -90,9 +99,11 @@ class User(models.Model):
             return result
 
     def disable(self) -> None:
+        """Disables the user in the database and cognito."""
+
         client = Client()
         with transaction.atomic():
-            User.objects.select_for_update().filter(pk=self.pk).get()
+            User.all_objects.select_for_update().filter(pk=self.pk).get()
             # use django.utils.timezone over datetime to use timezone aware objects.
             self.deleted_at = timezone.now()
             super().save(force_update=True)
