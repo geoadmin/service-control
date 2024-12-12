@@ -27,7 +27,7 @@ class Handler(CommandHandler):
             admin = User.objects.get(username=username)
             operation = 'Updated'
         except User.DoesNotExist:
-            admin = User.objects.create(username=username, email=email)
+            admin = User.objects.create(username=username, email=email, is_staff=True)
             operation = 'Created'
 
         admin.set_password(password)
