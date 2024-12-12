@@ -7,7 +7,8 @@ from typing import cast
 from distributions.models import Dataset
 from distributions.models import PackageDistribution
 from provider.models import Provider
-from requests import get
+from pystac.collection import Collection
+from pystac_client import Client
 from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
@@ -54,15 +55,9 @@ class Handler(CommandHandler):
         processed = set()
 
         # Get collections
-        url = self.url
-        collections = []
-        while url:
-            result = get(url, timeout=60).json()
-            collections += result.get('collections', [])
-            url = {link['rel']: link['href'] for link in result['links']}.get('next')
-
-        for collection in collections:
-            slug = collection['id']
+        client = Client.open(self.url)
+        for collection in client.collection_search().collections():
+            slug = collection.id
             processed.add(slug)
 
             # Get dataset
@@ -98,21 +93,21 @@ class Handler(CommandHandler):
             model_name = model_class.split('.')[-1].lower()
             self.increment_counter(model_name, 'removed', count)
 
-    def check_provider(self, collection: dict[str, Any], dataset: Dataset) -> None:
+    def check_provider(self, collection: Collection, dataset: Dataset) -> None:
         """Checks whether the provider in the STAC collection matches the provider in the dataset
         and warns if they do not.
 
         A similarity ratio can be applied to minimize warnings for minor textual variations.
 
         """
-        slug = collection['id']
-        providers = collection.get('providers', [])
+        slug = collection.id
+        providers = collection.providers
         if not providers:
             self.print_warning("Collection %s has no providers", slug)
         elif len(providers) > 1:
             self.print_warning("Collection %s has more than providers", slug)
         else:
-            provider_name_c = providers[0]['name']
+            provider_name_c = providers[0].name
             provider_name_d = dataset.provider.name_en
             if provider_name_d != provider_name_c:
                 similarity = SequenceMatcher(None, provider_name_c, provider_name_d).ratio()
@@ -172,10 +167,7 @@ class Command(CustomBaseCommand):
             help="Similarity treshold to use when comparing providers"
         )
         parser.add_argument(
-            "--url",
-            type=str,
-            default="https://data.geo.admin.ch/api/stac/v0.9/collections",
-            help="STAC URL"
+            "--url", type=str, default="https://data.geo.admin.ch/api/stac/v0.9", help="STAC URL"
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
