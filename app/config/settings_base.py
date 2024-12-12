@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'distributions',
     'access',
     'cognito',
-    'bod'
+    'bod',
+    'support'
 ]
 
 MIDDLEWARE = [
