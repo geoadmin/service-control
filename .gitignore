@@ -13,4 +13,5 @@ var/
 
 # Coverage
 .coverage
+coverage.lcov
 htmlcov/

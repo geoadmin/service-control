@@ -148,9 +148,13 @@ type-check: ## Run the type-checker mypy
 start-local-db: ## Run the local db as docker container
 	docker compose up -d
 
+.PHONY: test-ci
+test-ci: ## Run tests in the CI
+	$(TEST) --cov --cov-report=lcov
+
 .PHONY: test
 test: ## Run tests locally
-	$(TEST)
+	$(TEST) --cov --cov-report=html
 
 .PHONY: setup-bod
 setup-bod: ## Set up the bod locally
