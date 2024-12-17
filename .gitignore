@@ -10,3 +10,7 @@ var/
 
 # Local database
 .volumes
+
+# Coverage
+.coverage
+htmlcov/
