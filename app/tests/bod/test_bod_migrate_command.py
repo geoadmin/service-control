@@ -85,6 +85,12 @@ def test_command_imports(bod_dataset):
     assert dataset.slug == "ch.bafu.auen-vegetationskarten"
 
 
+def test_command_does_not_need_to_import(db):
+    out = StringIO()
+    call_command("bod_migrate", verbosity=2, stdout=out)
+    assert 'nothing to be done, already in sync' in out.getvalue()
+
+
 def test_command_updates(bod_contact_organisation, bod_dataset):
     # Add objects that will be updated
     provider = Provider.objects.create(
@@ -152,7 +158,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
     assert dataset.slug == "ch.bafu.auen-vegetationskarten"
 
 
-def test_command_removes_orphaned(bod_dataset):
+def test_command_removes_orphaned_provider(bod_dataset):
     # Add objects which will be removed
     provider = Provider.objects.create(
         name_de="XXX",
@@ -210,6 +216,86 @@ def test_command_removes_orphaned(bod_dataset):
     assert {'BAFU', 'YYYY'} == set(Attribution.objects.values_list('name_de', flat=True))
     assert {'ch.bafu.auen-vegetationskarten',
             'yyyy'} == set(Dataset.objects.values_list('slug', flat=True))
+
+
+def test_command_removes_orphaned_attribution(bod_contact_organisation):
+    # Add objects which will not be removed
+    provider = Provider.objects.create(
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        acronym_de="XXX",
+        acronym_fr="XXX",
+        acronym_en="XXX",
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+
+    # Add objects which will be removed
+    attribution = Attribution.objects.create(
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        description_de="XXX",
+        description_fr="XXX",
+        description_en="XXX",
+        provider=provider,
+        _legacy_id=16
+    )
+    Dataset.objects.create(slug="xxx", provider=provider, attribution=attribution, _legacy_id=160)
+
+    out = StringIO()
+    call_command("bod_migrate", verbosity=2, stdout=out)
+    assert "provider(s) removed" not in out.getvalue()
+    assert "1 attribution(s) removed" in out.getvalue()
+    assert "1 dataset(s) removed" in out.getvalue()
+    assert "provider(s) added" not in out.getvalue()
+    assert "1 attribution(s) added" in out.getvalue()
+    assert "dataset(s) added" not in out.getvalue()
+    assert Provider.objects.count() == 1
+    assert Attribution.objects.count() == 1
+    assert Dataset.objects.count() == 0
+    assert {'BAFU'} == set(Provider.objects.values_list('acronym_de', flat=True))
+    assert {'BAFU'} == set(Attribution.objects.values_list('name_de', flat=True))
+
+
+def test_command_removes_orphaned_dataset(bod_contact_organisation):
+    # Add objects which will not be removed
+    provider = Provider.objects.create(
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        acronym_de="XXX",
+        acronym_fr="XXX",
+        acronym_en="XXX",
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+    attribution = Attribution.objects.create(
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        description_de="XXX",
+        description_fr="XXX",
+        description_en="XXX",
+        provider=provider,
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+
+    # Add objects which will be removed
+    Dataset.objects.create(slug="xxx", provider=provider, attribution=attribution, _legacy_id=160)
+
+    out = StringIO()
+    call_command("bod_migrate", verbosity=2, stdout=out)
+    assert "provider(s) removed" not in out.getvalue()
+    assert "attribution(s) removed" not in out.getvalue()
+    assert "1 dataset(s) removed" in out.getvalue()
+    assert "provider(s) added" not in out.getvalue()
+    assert "attribution(s) added" not in out.getvalue()
+    assert "dataset(s) added" not in out.getvalue()
+    assert Provider.objects.count() == 1
+    assert Attribution.objects.count() == 1
+    assert Dataset.objects.count() == 0
+    assert {'BAFU'} == set(Provider.objects.values_list('acronym_de', flat=True))
+    assert {'BAFU'} == set(Attribution.objects.values_list('name_de', flat=True))
 
 
 def test_command_does_not_import_if_dry_run(bod_dataset):
