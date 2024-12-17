@@ -6,7 +6,6 @@ from typing import cast
 
 from distributions.models import Dataset
 from distributions.models import PackageDistribution
-from provider.models import Provider
 from pystac.collection import Collection
 from pystac_client import Client
 from utils.command import CommandHandler
@@ -48,8 +47,8 @@ class Handler(CommandHandler):
 
         This function adds new package distributions, updates existing ones and removes orphans.
 
-        In general, each STAC collection corresponds to a package distribution (of a dataset with
-        the same slug).
+        Each STAC collection corresponds to a package distribution (of a dataset with the same
+        slug).
 
         """
         processed = set()
@@ -63,7 +62,7 @@ class Handler(CommandHandler):
             # Get dataset
             dataset = Dataset.objects.filter(slug=slug).first()
             if not dataset:
-                self.print_warning("No dataset for collection id %s", slug)
+                self.print_warning("No dataset for collection id '%s'", slug)
                 continue
 
             # Get or create package distribution
@@ -103,23 +102,21 @@ class Handler(CommandHandler):
         slug = collection.id
         providers = collection.providers
         if not providers:
-            self.print_warning("Collection %s has no providers", slug)
+            self.print_warning("Collection '%s' has no providers", slug)
         elif len(providers) > 1:
-            self.print_warning("Collection %s has more than providers", slug)
+            self.print_warning("Collection '%s' has more than one provider", slug)
         else:
-            provider_name_c = providers[0].name
-            provider_name_d = dataset.provider.name_en
-            if provider_name_d != provider_name_c:
-                similarity = SequenceMatcher(None, provider_name_c, provider_name_d).ratio()
+            name_collection = providers[0].name
+            name_dataset = dataset.provider.name_en
+            if name_dataset != name_collection:
+                similarity = SequenceMatcher(None, name_collection, name_dataset).ratio()
                 if similarity < self.similarity:
                     self.print_warning(
                         "Provider in collection and dataset differ (%.2f): '%s' / '%s'",
                         similarity,
-                        provider_name_c,
-                        provider_name_d
+                        name_collection,
+                        name_dataset
                     )
-            elif not Provider.objects.filter(name_en=provider_name_c).first():
-                self.print_warning("Provider %s doesn't exist yet", provider_name_c)
 
     def run(self) -> None:
         """ Main entry point of command. """
@@ -164,7 +161,7 @@ class Command(CustomBaseCommand):
             "--similarity",
             type=float,
             default=1.0,
-            help="Similarity treshold to use when comparing providers"
+            help="Similarity threshold to use when comparing providers"
         )
         parser.add_argument(
             "--url", type=str, default="https://data.geo.admin.ch/api/stac/v0.9", help="STAC URL"
