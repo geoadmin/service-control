@@ -73,6 +73,11 @@ class Client:
 
         Returns False, if a (managed or unmanaged) user already exist.
 
+        Marks the provided email as verified because the newly created user will receive an email
+        with a temporary password that they must change upon logging in. If the email is invalid,
+        the user will not receive the password and therefore cannot log in, ensuring the email's
+        validity.
+
         """
 
         user = self.get_user(username, return_unmanaged=True)
@@ -82,6 +87,8 @@ class Client:
                 Username=username,
                 UserAttributes=[{
                     "Name": "email", "Value": email
+                }, {
+                    "Name": "email_verified", "Value": "true"
                 }, {
                     "Name": "preferred_username", "Value": preferred_username
                 }, {
@@ -108,23 +115,38 @@ class Client:
     def update_user(self, username: str, preferred_username: str, email: str) -> bool:
         """ Update the user with the given cognito username.
 
+        Only updates changed attributes.
+
+        If the email is changed, it is marked as verified, and the user's password is reset. The
+        user must reset the password using the new email before being able to log in. If the email
+        is invalid, the user cannot complete the password reset, ensuring the email's validity.
+
         Returns False, if the user does not exist or doesn't have the managed flag.
 
         """
 
         user = self.get_user(username)
-        if user is not None:
+        if user is None:
+            return False
+
+        old_attributes = user_attributes_to_dict(user['UserAttributes'])
+        new_attributes: list[AttributeTypeTypeDef] = []
+        reset_password = False
+        if old_attributes.get('preferred_username') != preferred_username:
+            new_attributes.append({'Name': 'email', 'Value': email})
+            new_attributes.append({'Name': 'email_verified', 'Value': 'true'})
+            reset_password = True
+        if old_attributes.get('email') != email:
+            new_attributes.append({'Name': 'preferred_username', 'Value': preferred_username})
+        if new_attributes:
             self.client.admin_update_user_attributes(
-                UserPoolId=self.user_pool_id,
-                Username=username,
-                UserAttributes=[{
-                    "Name": "email", "Value": email
-                }, {
-                    "Name": "preferred_username", "Value": preferred_username
-                }]
+                UserPoolId=self.user_pool_id, Username=username, UserAttributes=new_attributes
             )
-            return True
-        return False
+
+        if reset_password:
+            self.client.admin_reset_user_password(UserPoolId=self.user_pool_id, Username=username)
+
+        return True
 
     def enable_user(self, username: str) -> bool:
         """Enable the user with the given cognito username.
