@@ -132,11 +132,11 @@ class Client:
         old_attributes = user_attributes_to_dict(user['UserAttributes'])
         new_attributes: list[AttributeTypeTypeDef] = []
         reset_password = False
-        if old_attributes.get('preferred_username') != preferred_username:
+        if old_attributes.get('email') != email:
             new_attributes.append({'Name': 'email', 'Value': email})
             new_attributes.append({'Name': 'email_verified', 'Value': 'true'})
             reset_password = True
-        if old_attributes.get('email') != email:
+        if old_attributes.get('preferred_username') != preferred_username:
             new_attributes.append({'Name': 'preferred_username', 'Value': preferred_username})
         if new_attributes:
             self.client.admin_update_user_attributes(

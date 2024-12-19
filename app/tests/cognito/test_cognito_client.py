@@ -195,6 +195,26 @@ def test_update_user_updates_managed(boto3, cognito_user_response_factory):
 
 
 @patch('cognito.utils.client.client')
+def test_update_user_updates_partial_managed(boto3, cognito_user_response_factory):
+    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
+        '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
+    )
+
+    client = Client()
+    updated = client.update_user('2ihg2ox304po', '5678', 'test@example.org')
+    assert updated is True
+    assert '().admin_update_user_attributes' in [call[0] for call in boto3.mock_calls]
+    assert '().admin_reset_user_password' not in [call[0] for call in boto3.mock_calls]
+    assert call().admin_update_user_attributes(
+        UserPoolId=client.user_pool_id,
+        Username='2ihg2ox304po',
+        UserAttributes=[{
+            'Name': 'preferred_username', 'Value': '5678'
+        }]
+    ) in boto3.mock_calls
+
+
+@patch('cognito.utils.client.client')
 def test_update_user_does_not_update_unchanged_managed(boto3, cognito_user_response_factory):
     boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
         '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
