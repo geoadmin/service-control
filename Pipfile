@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "~=5.0.7"
+django = "~=5.0.10"
 django-ninja = "~=1.1"
 psycopg2-binary = "~=2.9.5"
 django-environ = "~=0.11"
@@ -12,6 +12,9 @@ gunicorn = "~=23.0"
 pyyaml = "~=6.0.2"
 gevent = "~=24.2"
 logging-utilities = "~=4.4.1"
+boto3 = "~=1.35.78"
+nanoid = "~=2.0.0"
+whitenoise = "~=6.8.2"
 
 [dev-packages]
 yapf = "*"
@@ -29,6 +32,12 @@ pytest-django = "*"
 mypy = "*"
 types-gevent = "*"
 django-stubs = "~=5.0.4"
+debugpy = "*"
+boto3-stubs = {extras = ["cognito-idp"], version = "~=1.35"}
+bandit = "*"
+pytest-xdist = "*"
+types-nanoid = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.12"

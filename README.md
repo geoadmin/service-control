@@ -16,7 +16,6 @@
 - [Local Development](#local-development-1)
   - [vs code Integration](#vs-code-integration)
     - [Debug from vs code](#debug-from-vs-code)
-    - [Attach debugger to the tests](#attach-debugger-to-the-tests)
     - [Run tests from within vs code](#run-tests-from-within-vs-code)
 - [Type Checking](#type-checking)
   - [Mypy](#mypy)
@@ -38,25 +37,91 @@ Prerequisites on host for development and build:
 
 ### Setup
 
-Copy the `.env.dist` file to `.env` on your local machine:
+To create and activate a virtual Python environment with all dependencies installed:
 
 ```bash
-cp .env.dist .env
+make setup
 ```
 
-Initialize the local python environment with pipenv:
+To start the local postgres container, run this:
 
 ```bash
-pipenv sync -d
+make start-local-db
 ```
 
-and start the local postgres container
+You may want to do an initial sync of your database by applying the most recent Django migrations with
 
 ```bash
-docker compose up
+app/manage.py migrate
 ```
+
+## Cognito
+
+This project uses Amazon Cognito user identity and access management. It uses a custom user attribute to
+mark users managed_by_service by this service.
+
+To synchronize all local users with cognito, run:
+
+```bash
+app/manage.py cognito_sync
+```
+
+### Local Cognito
+
+For local testing the connection to cognito, [cognito-local](https://github.com/jagregory/cognito-local) is used.
+`cognito-local` stores all of its data as simple JSON files in its volume (`.volumes/cognito/db/`).
+
+You can also use the AWS CLI together with `cognito-local` by specifying the local endpoint, for example:
+
+```bash
+aws --endpoint $COGNITO_ENDPOINT_URL cognito-idp list-users --user-pool-id $COGNITO_POOL_ID
+```
+
+## Importing Data from the BOD
+
+The "Betriebsobjekte Datenbank" (BOD) is a central database for running and configuring the map
+viewer and some of its services. It contains metadata and translations on the individual layers
+and configurations for display and serving the data through our services such as Web Map Service
+(WMS), Web Map Tiling Service (WMTS) and our current api (mf-chsdi3/api3).
+
+You can import a BOD dump and migrate its data:
+
+```bash
+make setup-bod
+make import-bod file=dump.sql
+app/manage.py bod_migrate
+```
+
+To generate more BOD models, run:
+
+```bash
+app/manage.py inspectdb --database=bod
+```
+
+The BOD models are unmanaged, meaning Django does not manage any migrations for these models.
+However, migrations are still needed during tests to set up the test BOD. To achieve this, it is
+necessary to create migrations for the models and dynamically adjust the `managed` flag based on
+whether the tests or the server is running (`django.conf.settings.TESTING`). Since these migrations
+are only for testing purposes, the previous migration file can be removed and recreated:
+
+
+```bash
+rm app/bod/migrations/0001_initial.py
+app/manage.py makemigrations bod
+```
+
+Afterward, the `managed` flag needs to be set to `django.conf.settings.TESTING` in both the models
+and the migrations.
 
 ## Local Development
+
+### Running tests in parallel
+
+Run tests with, for example, 16 workers:
+
+```bash
+pytest -n 16
+```
 
 ### vs code Integration
 
@@ -84,21 +149,24 @@ in it:
     }
   ]
 }
-
 ```
 
-Now you can start the server with `make serve-debug`. The bootup will wait with the execution until 
-the debugger is attached, which can most easily done by hitting f5.
+Alternatively, create the file via menu "Run" > "Add Configuration" by choosing
 
-#### Attach debugger to the tests
+- Debugger: Python Debugger
+- Debug Configration: Remote Attach
+- Hostname: `localhost`
+- Port number: `5678`
 
-The same process described above can be used to debug tests. Simply run `make test-debug`, they will
-then wait until the debugger is attached.
+Now you can start the server with `make serve-debug`.
+The bootup will wait with the execution until the debugger is attached, which can most easily done by hitting F5.
+
 
 #### Run tests from within vs code
 
-The unit tests can also be invoked inside vs code directly. To do this you need to have following
-settings locally to your workspace:
+The unit tests can also be invoked inside vs code directly (beaker icon).
+To do this you need to have the following settings either in
+`.vscode/settings.json` or in your workspace settings:
 
 ```json
   "python.testing.pytestArgs": [
@@ -106,11 +174,15 @@ settings locally to your workspace:
   ],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "python.testing.debugPort": 5678
 ```
 
-They can either be in `.vscode/settings.json` or in your workspace settings. Now the tests can be
-run and debugged with the testing tab of vscode (beaker icon).
+You can also create this file interactively via menu "Python: Configure Tests"
+in the Command Palette (Ctrl+Shift+P).
+
+For the automatic test discovery to work, make sure that vs code has the Python
+interpreter of your venv selected (`.venv/bin/python`).
+You can change the Python interpreter via menu "Python: Select Interpreter"
+in the Command Palette.
 
 ## Type Checking
 

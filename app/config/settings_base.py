@@ -25,6 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str('SECRET_KEY', default=None)
 
+# SECURITY:
+# https://docs.djangoproject.com/en/dev/ref/settings/#secure-proxy-ssl-header
+SECURE_PROXY_SSL_HEADER = ('HTTP_CLOUDFRONT_FORWARDED_PROTO', 'https')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -37,12 +41,19 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',  #'django.contrib.staticfiles',
-    'provider'
+    'django.contrib.staticfiles',
+    'django.contrib.messages',
+    'provider',
+    'distributions',
+    'access',
+    'cognito',
+    'bod',
+    'support'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,8 +96,21 @@ DATABASES = {
         'TEST': {
             'NAME': env.str('DB_NAME_TEST', 'test_service_control'),
         }
+    },
+    'bod': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env.str('BOD_NAME', 'service_control'),
+        'USER': env.str('BOD_USER', 'service_control'),
+        'PASSWORD': env.str('BOD_PW', 'service_control'),
+        'HOST': env.str('BOD_HOST', 'service_control'),
+        'PORT': env.str('BOD_PORT', "5432"),
+        'OPTIONS': {
+            'options': '-c search_path=public'
+        },
     }
 }
+
+DATABASE_ROUTERS = ['utils.database_router.CustomRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -120,9 +144,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_HOST = env.str('DJANGO_STATIC_HOST', '')
+STATIC_URL = f'{STATIC_HOST}/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Cognito
+COGNITO_ENDPOINT_URL = env.str('COGNITO_ENDPOINT_URL', 'http://localhost:9229')
+COGNITO_POOL_ID = env.str('COGNITO_POOL_ID', 'local')
+COGNITO_MANAGED_FLAG_NAME = env.str('COGNITO_MANAGED_FLAG_NAME', 'dev:custom:managed_by_service')
+
+# Testing
+TESTING = False
+
+# nanoid
+SHORT_ID_SIZE = env.int('SHORT_ID_SIZE', 12)
+SHORT_ID_ALPHABET = env.str('SHORT_ID_ALPHABET', '0123456789abcdefghijklmnopqrstuvwxyz')

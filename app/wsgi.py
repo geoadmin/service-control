@@ -30,7 +30,8 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
 import os
 
 from gunicorn.app.base import BaseApplication
-
+from gunicorn.config import Config
+from django.core.handlers.wsgi import WSGIHandler
 from django.core.wsgi import get_wsgi_application
 
 # Here we cannot uses `from django.conf import settings` because it breaks the `make gunicornserver`
@@ -42,12 +43,14 @@ application = get_wsgi_application()
 
 class StandaloneApplication(BaseApplication):  # pylint: disable=abstract-method
 
-    def __init__(self, app, options=None):  # pylint: disable=redefined-outer-name
+    cfg: Config
+
+    def __init__(self, app: WSGIHandler, options: dict[str, object] | None = None) -> None:  # pylint: disable=redefined-outer-name
         self.options = options or {}
         self.application = app
         super().__init__()
 
-    def load_config(self):
+    def load_config(self) -> None:
         config = {
             key: value for key,
             value in self.options.items() if key in self.cfg.settings and value is not None
@@ -55,7 +58,7 @@ class StandaloneApplication(BaseApplication):  # pylint: disable=abstract-method
         for key, value in config.items():
             self.cfg.set(key.lower(), value)
 
-    def load(self):
+    def load(self) -> WSGIHandler:
         return self.application
 
 
@@ -64,7 +67,7 @@ if __name__ == '__main__':
     HTTP_PORT = str(os.environ.get('HTTP_PORT', "8000"))
     # Bind to 0.0.0.0 to let your app listen to all network interfaces.
     options = {
-        'bind': f"{'0.0.0.0'}:{HTTP_PORT}",
+        'bind': f"{'0.0.0.0'}:{HTTP_PORT}",  # nosec B104
         'worker_class': 'gevent',
         'workers': int(os.environ.get('GUNICORN_WORKERS',
                                       '2')),  # scaling horizontally is left to Kubernetes
@@ -72,4 +75,4 @@ if __name__ == '__main__':
         'timeout': 60,
         'logconfig_dict': get_logging_config()
     }
-    StandaloneApplication(application, options).run()
+    StandaloneApplication(application, options).run()  # type:ignore[no-untyped-call]

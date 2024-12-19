@@ -1,2 +1,16 @@
-.env
+# Byte-compiled / optimized / DLL files
 __pycache__
+
+# Distribution / packaging
+.env
+var/
+
+# IDE config files
+.vscode
+
+# Local database
+.volumes
+
+# Coverage
+coverage.xml
+htmlcov/

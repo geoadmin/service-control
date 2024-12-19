@@ -28,14 +28,19 @@ AUTHOR = $(USER)
 # Django specific
 APP_SRC_DIR := app
 DJANGO_MANAGER := $(CURRENT_DIR)/$(APP_SRC_DIR)/manage.py
+DJANGO_MANAGER_DEBUG := -m debugpy --listen localhost:5678 --wait-for-client $(CURRENT_DIR)/$(APP_SRC_DIR)/manage.py
 
 # Commands
 PIPENV_RUN := pipenv run
 PYTHON := $(PIPENV_RUN) python3
+TEST := $(PIPENV_RUN) pytest
 YAPF := $(PIPENV_RUN) yapf
 ISORT := $(PIPENV_RUN) isort
 PYLINT := $(PIPENV_RUN) pylint
 MYPY := $(PIPENV_RUN) mypy
+PSQL := PGPASSWORD=postgres psql -h localhost -p 15433 -U postgres
+PGRESTORE := PGPASSWORD=postgres pg_restore -h localhost -p 15433 -U postgres
+BANDIT := $(PIPENV_RUN) bandit
 
 # Find all python files that are not inside a hidden directory (directory starting with .)
 PYTHON_FILES := $(shell find $(APP_SRC_DIR) -type f -name "*.py" -print)
@@ -55,8 +60,8 @@ ci:
 .PHONY: setup
 setup: $(SETTINGS_TIMESTAMP) ## Create virtualenv with all packages for development
 	pipenv install --dev
-	pipenv shell
 	cp .env.default .env
+	pipenv shell
 
 .PHONY: format
 format: ## Call yapf to make sure your code is easier to read and respects some conventions.
@@ -87,6 +92,9 @@ ci-check-format: format ## Check the format (CI)
 serve: ## Serve the application locally
 	$(PYTHON) $(DJANGO_MANAGER) runserver
 
+.PHONY: serve-debug
+serve-debug: ## Serve the application locally for debugging
+	$(PYTHON) $(DJANGO_MANAGER_DEBUG) runserver
 
 .PHONY: dockerlogin
 dockerlogin: ## Login to the AWS Docker Registry (ECR)
@@ -140,11 +148,30 @@ type-check: ## Run the type-checker mypy
 start-local-db: ## Run the local db as docker container
 	docker compose up -d
 
+.PHONY: test-ci
+test-ci: ## Run tests in the CI
+	$(TEST) --cov --cov-branch --cov-report=xml:coverage.xml
+
 .PHONY: test
 test: ## Run tests locally
-	# Collect static first to avoid warning in the test
-	# $(PYTHON) $(DJANGO_MANAGER) collectstatic --noinput
-	$(PYTHON) $(DJANGO_MANAGER) test --verbosity=2 --parallel 20 $(CI_TEST_OPT) $(TEST_DIR) $(APP_SRC_DIR)
+	$(TEST) --cov --cov-branch --cov-report=html
+
+.PHONY: setup-bod
+setup-bod: ## Set up the bod locally
+	$(PSQL) -c 'CREATE ROLE "pgkogis";'
+	$(PSQL) -c 'CREATE ROLE "www-data";'
+	$(PSQL) -c 'CREATE ROLE "bod_admin";'
+	$(PSQL) -c 'CREATE ROLE "rdsadmin";'
+
+.PHONY: import-bod
+import-bod: ## Import the bod locally
+	$(PSQL) -c 'DROP DATABASE IF EXISTS bod_master;'
+	$(PSQL) -c 'CREATE DATABASE bod_master;'
+	$(PGRESTORE) -d bod_master $(file) --v
+
+.PHONY: security-check
+security-check: ## Run bandit security checker locally
+	$(BANDIT) --recursive --ini .bandit app
 
 .PHONY: help
 help: ## Display this help
