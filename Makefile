@@ -150,7 +150,7 @@ start-local-db: ## Run the local db as docker container
 
 .PHONY: test-ci
 test-ci: ## Run tests in the CI
-	$(TEST) --cov --cov-report=lcov
+	$(TEST) --cov --cov-report=xml:coverage.xml
 
 .PHONY: test
 test: ## Run tests locally
