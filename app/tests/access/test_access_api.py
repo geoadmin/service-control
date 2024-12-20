@@ -54,7 +54,7 @@ def test_get_user_returns_existing_user(user, django_user_factory, client):
     django_user_factory('test', 'test', [('access', 'user', 'view_user')])
     client.login(username='test', password='test')
 
-    response = client.get("/api/users/dude")
+    response = client.get("/api/v1/users/dude")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -70,14 +70,14 @@ def test_get_user_returns_404_if_nonexisting(user, django_user_factory, client):
     django_user_factory('test', 'test', [('access', 'user', 'view_user')])
     client.login(username='test', password='test')
 
-    response = client.get("/api/users/nihilist")
+    response = client.get("/api/v1/users/nihilist")
 
     assert response.status_code == 404
     assert response.json() == {"code": 404, "description": "Resource not found"}
 
 
 def test_get_user_returns_401_if_not_logged_in(user, django_user_factory, client):
-    response = client.get("/api/users/dude")
+    response = client.get("/api/v1/users/dude")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -87,7 +87,7 @@ def test_get_user_returns_403_if_no_permission(user, django_user_factory, client
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    response = client.get("/api/users/dude")
+    response = client.get("/api/v1/users/dude")
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -97,7 +97,7 @@ def test_get_users_returns_single_user(user, django_user_factory, client):
     django_user_factory('test', 'test', [('access', 'user', 'view_user')])
     client.login(username='test', password='test')
 
-    response = client.get("/api/users")
+    response = client.get("/api/v1/users")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -127,7 +127,7 @@ def test_get_users_returns_users_ordered_by_id(cognito_client, user, django_user
     }
     User.objects.create(**model_fields)
 
-    response = client.get("/api/users")
+    response = client.get("/api/v1/users")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -151,7 +151,7 @@ def test_get_users_returns_users_ordered_by_id(cognito_client, user, django_user
 
 
 def test_get_users_returns_401_if_not_logged_in(user, django_user_factory, client):
-    response = client.get("/api/users")
+    response = client.get("/api/v1/users")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -161,7 +161,7 @@ def test_get_users_returns_403_if_no_permission(user, django_user_factory, clien
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    response = client.get("/api/users")
+    response = client.get("/api/v1/users")
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -184,7 +184,7 @@ def test_post_users_creates_new_user_in_db_and_returns_it(
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.post("/api/users", data=payload, content_type='application/json')
+    response = client.post("/api/v1/users", data=payload, content_type='application/json')
 
     assert response.status_code == 201
     assert response.json() == payload
@@ -210,7 +210,7 @@ def test_post_users_returns_404_if_provider_id_does_not_exist(
         "provider_id": non_existing_provider_id,
     }
 
-    response = client.post("/api/users", data=payload, content_type='application/json')
+    response = client.post("/api/v1/users", data=payload, content_type='application/json')
 
     assert response.status_code == 404
     assert response.json() == {"code": 404, "description": "Resource not found"}
@@ -235,7 +235,7 @@ def test_post_users_returns_422_if_email_format_invalid(
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.post("/api/users", data=payload, content_type='application/json')
+    response = client.post("/api/v1/users", data=payload, content_type='application/json')
 
     assert response.status_code == 422
     assert response.json() == {'code': 422, 'description': ["Enter a valid email address."]}
@@ -259,7 +259,7 @@ def test_post_users_returns_409_if_user_exists_already(
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.post("/api/users", data=payload, content_type='application/json')
+    response = client.post("/api/v1/users", data=payload, content_type='application/json')
 
     assert response.status_code == 409
     assert response.json() == {
@@ -286,7 +286,7 @@ def test_post_users_returns_409_and_reports_all_errors_if_multiple_things_amiss(
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.post("/api/users", data=payload, content_type='application/json')
+    response = client.post("/api/v1/users", data=payload, content_type='application/json')
 
     assert response.status_code == 409
     assert response.json() == {
@@ -313,7 +313,7 @@ def test_post_users_returns_500_if_cognito_inconsistent(
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.post("/api/users", data=payload, content_type='application/json')
+    response = client.post("/api/v1/users", data=payload, content_type='application/json')
 
     assert response.status_code == 500
     assert response.json() == {'code': 500, 'description': 'Internal Server Error'}
@@ -338,7 +338,7 @@ def test_post_users_returns_503_if_cognito_down(cognito_client, user, django_use
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.post("/api/users", data=payload, content_type='application/json')
+    response = client.post("/api/v1/users", data=payload, content_type='application/json')
 
     assert response.status_code == 503
     assert response.json() == {'code': 503, 'description': 'Service Unavailable'}
@@ -350,7 +350,7 @@ def test_post_users_returns_503_if_cognito_down(cognito_client, user, django_use
 def test_post_user_returns_401_if_not_logged_in(cognito_client, user, django_user_factory, client):
     cognito_client.return_value.create_user.return_value = True
 
-    response = client.post("/api/users", data={}, content_type='application/json')
+    response = client.post("/api/v1/users", data={}, content_type='application/json')
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -365,7 +365,7 @@ def test_post_user_returns_403_if_no_permission(cognito_client, user, django_use
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    response = client.post("/api/users", data={}, content_type='application/json')
+    response = client.post("/api/v1/users", data={}, content_type='application/json')
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -380,7 +380,7 @@ def test_delete_user_deletes_user(cognito_client, user, django_user_factory, cli
     django_user_factory('test', 'test', [('access', 'user', 'delete_user')])
     client.login(username='test', password='test')
 
-    response = client.delete("/api/users/dude")
+    response = client.delete("/api/v1/users/dude")
 
     assert response.status_code == 204
     assert response.content == b''
@@ -395,7 +395,7 @@ def test_delete_user_returns_404_if_nonexisting(cognito_client, user, django_use
     django_user_factory('test', 'test', [('access', 'user', 'delete_user')])
     client.login(username='test', password='test')
 
-    response = client.delete("/api/users/lebowski")
+    response = client.delete("/api/v1/users/lebowski")
 
     assert response.status_code == 404
     assert response.json() == {"code": 404, "description": "Resource not found"}
@@ -412,7 +412,7 @@ def test_delete_user_returns_500_if_cognito_inconsistent(
     django_user_factory('test', 'test', [('access', 'user', 'delete_user')])
     client.login(username='test', password='test')
 
-    response = client.delete("/api/users/dude")
+    response = client.delete("/api/v1/users/dude")
 
     assert response.status_code == 500
     assert response.json() == {"code": 500, "description": "Internal Server Error"}
@@ -429,7 +429,7 @@ def test_delete_user_returns_503_if_cognito_down(cognito_client, user, django_us
     django_user_factory('test', 'test', [('access', 'user', 'delete_user')])
     client.login(username='test', password='test')
 
-    response = client.delete("/api/users/dude")
+    response = client.delete("/api/v1/users/dude")
 
     assert response.status_code == 503
     assert response.json() == {"code": 503, "description": "Service Unavailable"}
@@ -443,7 +443,7 @@ def test_delete_user_returns_401_if_not_logged_in(
 ):
     cognito_client.return_value.disable_user.return_value = True
 
-    response = client.delete("/api/users/dude", data={}, content_type='application/json')
+    response = client.delete("/api/v1/users/dude", data={}, content_type='application/json')
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -460,7 +460,7 @@ def test_delete_user_returns_403_if_no_permission(
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    response = client.delete("/api/users/dude", data={}, content_type='application/json')
+    response = client.delete("/api/v1/users/dude", data={}, content_type='application/json')
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -469,7 +469,7 @@ def test_delete_user_returns_403_if_no_permission(
 
 
 def test_update_user_returns_401_if_not_logged_in(user, django_user_factory, client):
-    response = client.put("/api/users/dude")
+    response = client.put("/api/v1/users/dude")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -479,7 +479,7 @@ def test_update_user_returns_403_if_no_permission(user, django_user_factory, cli
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    response = client.put("/api/users/dude")
+    response = client.put("/api/v1/users/dude")
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -502,7 +502,7 @@ def test_update_user_updates_existing_user_as_expected(
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.put("/api/users/dude", data=payload, content_type='application/json')
+    response = client.put("/api/v1/users/dude", data=payload, content_type='application/json')
 
     assert response.status_code == 200
     assert response.json() == payload
@@ -530,7 +530,7 @@ def test_update_user_returns_404_and_leaves_user_as_is_if_user_nonexistent(
 
     nonexistent_username = "maude"
     response = client.put(
-        f"/api/users/{nonexistent_username}", data=payload, content_type='application/json'
+        f"/api/v1/users/{nonexistent_username}", data=payload, content_type='application/json'
     )
 
     assert response.status_code == 404
@@ -556,7 +556,7 @@ def test_update_user_returns_400_and_leaves_user_as_is_if_provider_nonexistent(
         "provider_id": nonexistent_id,
     }
 
-    response = client.put("/api/users/dude", data=payload, content_type="application/json")
+    response = client.put("/api/v1/users/dude", data=payload, content_type="application/json")
 
     assert response.status_code == 400
     assert response.json() == {"code": 400, "description": "Provider does not exist"}
@@ -582,7 +582,7 @@ def test_update_user_returns_500_and_leaves_user_as_is_if_cognito_inconsistent(
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.put("/api/users/dude", data=payload, content_type="application/json")
+    response = client.put("/api/v1/users/dude", data=payload, content_type="application/json")
 
     assert response.status_code == 500
     assert response.json() == {"code": 500, "description": "Internal Server Error"}
@@ -611,7 +611,7 @@ def test_update_user_returns_503_and_leaves_user_as_is_if_cognito_down(
         "provider_id": Provider.objects.last().id,
     }
 
-    response = client.put("/api/users/dude", data=payload, content_type="application/json")
+    response = client.put("/api/v1/users/dude", data=payload, content_type="application/json")
 
     assert response.status_code == 503
     assert response.json() == {"code": 503, "description": "Service Unavailable"}
