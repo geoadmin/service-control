@@ -37,6 +37,7 @@ from django.core.wsgi import get_wsgi_application
 # Here we cannot uses `from django.conf import settings` because it breaks the `make gunicornserver`
 from config.settings_prod import get_logging_config
 
+# default to the setting that's being created in DOCKERFILE
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 application = get_wsgi_application()
 
