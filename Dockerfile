@@ -41,6 +41,7 @@ FROM base AS debug
 LABEL target=debug
 ENV DEBUG=1
 
+# install some useful debugging tools
 RUN apt-get -qq update > /dev/null \
     && apt-get -qq -y install \
     curl \
@@ -68,9 +69,6 @@ RUN cd ${INSTALL_DIR} && pipenv sync --dev
 COPY ./wait-for-it.sh ${INSTALL_DIR}/app/
 
 COPY --from=builder ${INSTALL_DIR}/ ${INSTALL_DIR}/
-# on dev, settings.py needs to be replaced to import settings_dev
-RUN echo "from .settings_dev import *" > ${INSTALL_DIR}/app/config/settings.py \
-    && chown ${USER}:${GROUP} ${INSTALL_DIR}/app/config/settings.py
 
 # Activate virtualenv
 ENV VIRTUAL_ENV=${INSTALL_DIR}/.venv
@@ -111,9 +109,6 @@ ENV DEBUG=0
 COPY --from=builder ${SRC_DIR}/.venv/ ${INSTALL_DIR}/.venv/
 
 COPY --from=builder ${INSTALL_DIR}/ ${INSTALL_DIR}/
-# on prod, settings.py needs to be replaced to import settings_prod instead of settings_dev
-RUN echo "from .settings_prod import *" > ${INSTALL_DIR}/app/config/settings.py \
-    && chown ${USER}:${GROUP} ${INSTALL_DIR}/app/config/settings.py
 
 # Activate virtual environnment
 ENV VIRTUAL_ENV=${INSTALL_DIR}/.venv
