@@ -12,5 +12,6 @@ var/
 .volumes
 
 # Coverage
+.coverage
 coverage.xml
 htmlcov/
