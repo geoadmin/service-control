@@ -6,8 +6,8 @@ import sys
 
 def main() -> None:
     """Run administrative tasks."""
-    # default to the prod settings. Can be overwritten with .env
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings_prod')
+    # default to the setting that's being created in DOCKERFILE
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
     try:
         from django.core.management import \
             execute_from_command_line  # pylint: disable=import-outside-toplevel
