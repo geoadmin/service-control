@@ -8,7 +8,11 @@ root:
   propagate: True
 
 # configure loggers per app
-#loggers:
+loggers:
+  django.request:
+    # setting this to ERROR prevents from logging too much
+    # we do the logging ourselves
+    level: ERROR
 #  provider:
 #    level: DEBUG
 #  cognito:
