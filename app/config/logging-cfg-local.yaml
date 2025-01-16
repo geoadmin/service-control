@@ -1,0 +1,30 @@
+version: 1
+disable_existing_loggers: False
+
+root:
+  handlers:
+    - console
+  level: DEBUG
+  propagate: True
+
+# configure loggers per app
+#loggers:
+#  provider:
+#    level: DEBUG
+#  cognito:
+#    level: DEBUG
+#  access:
+#    level: DEBUG
+#  distributions:
+#    level: DEBUG
+
+formatters:
+  ecs:
+    (): ecs_logging.StdlibFormatter
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: ecs
+    stream: ext://sys.stdout
+

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 
 import environ
+import yaml
+import os
 
 env = environ.Env()
 
@@ -163,3 +165,22 @@ TESTING = False
 # nanoid
 SHORT_ID_SIZE = env.int('SHORT_ID_SIZE', 12)
 SHORT_ID_ALPHABET = env.str('SHORT_ID_ALPHABET', '0123456789abcdefghijklmnopqrstuvwxyz')
+
+
+# Read configuration from file
+def get_logging_config():
+    '''Read logging configuration
+    Read and parse the yaml logging configuration file passed in the environment variable
+    LOGGING_CFG and return it as dictionary
+    Note: LOGGING_CFG is relative to the root of the repo
+    '''
+    log_config_file = env('LOGGING_CFG', default='config/logging-cfg-local.yaml')
+    if log_config_file.lower() in ['none', '0', '', 'false', 'no']:
+        return {}
+    log_config = {}
+    with open(BASE_DIR / log_config_file, 'rt', encoding="utf-8") as fd:
+        log_config = yaml.safe_load(os.path.expandvars(fd.read()))
+    return log_config
+
+
+LOGGING = get_logging_config()
