@@ -107,14 +107,7 @@ class LoggedNinjaAPI(NinjaAPI):
             request, data, *args, status=status, temporal_response=temporal_response
         )
 
-        if response.status_code >= 200 and response.status_code < 300:
-            logger.info(
-                "Response %s on %s",
-                response.status_code,  # parameter for %s
-                request.path,  # parameter for %s
-                extra=generate_log_extra(request, response)
-            )
-        elif response.status_code >= 300 and response.status_code < 400:
+        if response.status_code >= 200 and response.status_code < 400:
             logger.info(
                 "Response %s on %s",
                 response.status_code,  # parameter for %s
