@@ -7,12 +7,46 @@ import json
 
 import mock_api  # pylint: disable=unused-import
 import pytest
+from config.logging import generate_log_extra
 from ecs_logging import StdlibFormatter
+
+from django.http import HttpRequest
+from django.http import HttpResponse
 
 
 @pytest.fixture(name='configure_logger')
 def fixture_configure_logger(caplog):
     caplog.handler.setFormatter(StdlibFormatter())
+
+
+def test_generate_log_extra(settings):
+    settings.LOG_ALLOWED_HEADERS = [h.lower() for h in ['Content-Type', 'Lebowski', 'x-apigw-id']]
+
+    request = HttpRequest()
+    # overwrite the headers
+    request.headers = {
+        'opinion': 'just like yours',
+        'content-type': 'bowling',
+        'secret-header': 'remove this',
+        'Lebowski': 'Jeffrey'
+    }
+
+    response = HttpResponse()
+    response['Content-type'] = "Nihilism"
+    response['Set-Cookie'] = "Rug"
+
+    out = generate_log_extra(request, response)
+
+    request_headers = out['http']['request']['header'].keys()
+    response_headers = out['http']['response']['header'].keys()
+
+    assert 'content-type' in request_headers
+    assert 'lebowski' in request_headers
+    assert 'secret-header' not in request_headers
+    assert 'opinion' not in request_headers
+
+    assert 'content-type' in response_headers
+    assert 'set-cookie' not in response_headers
 
 
 def test_404_logging(client, caplog, configure_logger):
