@@ -16,6 +16,7 @@ boto3 = "~=1.35.78"
 nanoid = "~=2.0.0"
 whitenoise = "~=6.8.2"
 pystac-client = "~=0.8.5"
+ecs-logging = "*"
 
 [dev-packages]
 yapf = "*"
