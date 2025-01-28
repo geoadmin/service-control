@@ -184,3 +184,52 @@ def get_logging_config() -> dict[str, object]:
 
 
 LOGGING = get_logging_config()
+
+# list of headers that are allowed to be logged
+_DEFAULT_LOG_ALLOWED_HEADERS = [
+
+    # Standard headers
+    "accept",
+    "accept-encoding",
+    "accept-language",
+    "accept-ranges",
+    "cache-control",
+    "connection",
+    "content-length",
+    "content-security-policy",
+    "content-type",
+    "etag",
+    "host",
+    "if-match",
+    "if-none-match",
+    "origin",
+    "referer",
+    "referrer-policy",
+    "transfer-encoding",
+    "user-agent",
+    "vary",
+    "x-content-type-options",
+    "x-forwarded-for",
+    "x-forwarded-host",
+    "x-forwarded-port",
+    "x-forwarded-proto",
+
+  # Cloudfront headers
+    "cloudfront-is-android-viewer",
+    "cloudfront-is-desktop-viewer",
+    "cloudfront-is-ios-viewer",
+    "cloudfront-is-mobile-viewer",
+    "cloudfront-is-smarttv-viewer",
+    "cloudfront-is-tablet-viewer",
+
+  # PPBGDI headers
+    "x-e2e-testing",
+    # API GW Headers
+    "geoadmin-authenticated"
+    "geoadmin-username",
+    "apigw-requestid"
+]
+LOG_ALLOWED_HEADERS = [
+    str(header).lower()
+    for header in env.list('LOG_ALLOWED_HEADERS', default=_DEFAULT_LOG_ALLOWED_HEADERS)
+]
