@@ -1,5 +1,7 @@
 from typing import Iterable
 
+from utils.short_id import generate_short_id
+
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import pgettext_lazy as _
@@ -34,6 +36,19 @@ class Provider(models.Model):
         blank=True,
         db_index=False,
         help_text="This field is used to track objects imported from the BOD"
+    )
+
+    # defaults to a short id to ensure uniqueness but should be updated to a
+    # format like "ch.<acronym>".
+    external_id = models.CharField(
+        _(_context, "External ID"),
+        null=False,
+        blank=False,
+        unique=True,
+        db_index=True,
+        default=generate_short_id,
+        help_text="This is the externally visible ID, usually of format 'ch.<acronym>'. In BOD" +
+        "this was tracked in column 'attribution'"
     )
 
     def save(
