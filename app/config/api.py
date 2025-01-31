@@ -1,7 +1,6 @@
-from logging import getLogger
-
 from access.api import router as access_router
 from botocore.exceptions import EndpointConnectionError
+from config.logging import LoggedNinjaAPI
 from distributions.api import router as distributions_router
 from ninja import NinjaAPI
 from ninja.errors import AuthenticationError
@@ -17,9 +16,7 @@ from django.http import Http404
 from django.http import HttpRequest
 from django.http import HttpResponse
 
-logger = getLogger(__name__)
-
-api = NinjaAPI()
+api = LoggedNinjaAPI()
 
 api.add_router("", provider_router)
 api.add_router("", distributions_router)
@@ -32,6 +29,7 @@ def handle_django_validation_error(
 ) -> HttpResponse:
     """Convert the given validation error  to a response with corresponding status."""
     error_code_unique_constraint_violated = "unique"
+
     if contains_error_code(exception, error_code_unique_constraint_violated):
         status = 409
     else:
@@ -61,7 +59,6 @@ def handle_404_not_found(request: HttpRequest, exception: Http404) -> HttpRespon
 
 @api.exception_handler(Exception)
 def handle_exception(request: HttpRequest, exception: Exception) -> HttpResponse:
-    logger.exception(exception)
     return api.create_response(
         request,
         {
@@ -84,7 +81,6 @@ def handle_http_error(request: HttpRequest, exception: HttpError) -> HttpRespons
 
 @api.exception_handler(AuthenticationError)
 def handle_unauthorized(request: HttpRequest, exception: AuthenticationError) -> HttpResponse:
-    logger.exception(exception)
     return api.create_response(
         request,
         {
@@ -101,6 +97,7 @@ def handle_ninja_validation_error(
     messages: list[str] = []
     for error in exception.errors:
         messages.extend(error.values())
+
     return api.create_response(
         request,
         {

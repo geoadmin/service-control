@@ -11,6 +11,7 @@ import os
 
 from django.core.asgi import get_asgi_application
 
+# default to the setting that's being created in DOCKERFILE
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 
 application = get_asgi_application()

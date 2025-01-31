@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 import environ
+import yaml
 
 env = environ.Env()
 
@@ -163,3 +165,71 @@ TESTING = False
 # nanoid
 SHORT_ID_SIZE = env.int('SHORT_ID_SIZE', 12)
 SHORT_ID_ALPHABET = env.str('SHORT_ID_ALPHABET', '0123456789abcdefghijklmnopqrstuvwxyz')
+
+
+# Read configuration from file
+def get_logging_config() -> dict[str, object]:
+    '''Read logging configuration
+    Read and parse the yaml logging configuration file passed in the environment variable
+    LOGGING_CFG and return it as dictionary
+    Note: LOGGING_CFG is relative to the root of the repo
+    '''
+    log_config_file = env('LOGGING_CFG', default='config/logging-cfg-local.yaml')
+    if log_config_file.lower() in ['none', '0', '', 'false', 'no']:
+        return {}
+    log_config = {}
+    with open(BASE_DIR / log_config_file, 'rt', encoding="utf-8") as fd:
+        log_config = yaml.safe_load(os.path.expandvars(fd.read()))
+    return log_config
+
+
+LOGGING = get_logging_config()
+
+# list of headers that are allowed to be logged
+_DEFAULT_LOG_ALLOWED_HEADERS = [
+
+    # Standard headers
+    "accept",
+    "accept-encoding",
+    "accept-language",
+    "accept-ranges",
+    "cache-control",
+    "connection",
+    "content-length",
+    "content-security-policy",
+    "content-type",
+    "etag",
+    "host",
+    "if-match",
+    "if-none-match",
+    "origin",
+    "referer",
+    "referrer-policy",
+    "transfer-encoding",
+    "user-agent",
+    "vary",
+    "x-content-type-options",
+    "x-forwarded-for",
+    "x-forwarded-host",
+    "x-forwarded-port",
+    "x-forwarded-proto",
+
+  # Cloudfront headers
+    "cloudfront-is-android-viewer",
+    "cloudfront-is-desktop-viewer",
+    "cloudfront-is-ios-viewer",
+    "cloudfront-is-mobile-viewer",
+    "cloudfront-is-smarttv-viewer",
+    "cloudfront-is-tablet-viewer",
+
+  # PPBGDI headers
+    "x-e2e-testing",
+    # API GW Headers
+    "geoadmin-authenticated"
+    "geoadmin-username",
+    "apigw-requestid"
+]
+LOG_ALLOWED_HEADERS = [
+    str(header).lower()
+    for header in env.list('LOG_ALLOWED_HEADERS', default=_DEFAULT_LOG_ALLOWED_HEADERS)
+]
