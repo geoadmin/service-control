@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from utils.short_id import generate_short_id
+from utils.fields import CustomSlugField
 
 from django.db import models
 from django.db.models.base import ModelBase
@@ -18,6 +18,8 @@ class Provider(models.Model):
     Note: The "blank=False" for a model field doesn't prevent DB changes.
           It only has an effect on form validation.
     '''
+    slug = CustomSlugField(_(_context, "Slug"), max_length=100, unique=True, db_index=True)
+
     name_de = models.CharField(_(_context, "Name (German)"))
     name_fr = models.CharField(_(_context, "Name (French)"))
     name_en = models.CharField(_(_context, "Name (English)"))
@@ -36,19 +38,6 @@ class Provider(models.Model):
         blank=True,
         db_index=False,
         help_text="This field is used to track objects imported from the BOD"
-    )
-
-    # defaults to a short id to ensure uniqueness but should be updated to a
-    # format like "ch.<acronym>".
-    external_id = models.CharField(
-        _(_context, "External ID"),
-        null=False,
-        blank=False,
-        unique=True,
-        db_index=True,
-        default=generate_short_id,
-        help_text="This is the externally visible ID, usually of format 'ch.<acronym>'. In BOD " +
-        "this was tracked in column 'attribution'"
     )
 
     def save(
