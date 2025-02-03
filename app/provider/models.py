@@ -47,7 +47,7 @@ class Provider(models.Model):
         unique=True,
         db_index=True,
         default=generate_short_id,
-        help_text="This is the externally visible ID, usually of format 'ch.<acronym>'. In BOD" +
+        help_text="This is the externally visible ID, usually of format 'ch.<acronym>'. In BOD " +
         "this was tracked in column 'attribution'"
     )
 
