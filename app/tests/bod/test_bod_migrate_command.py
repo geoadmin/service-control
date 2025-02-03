@@ -47,7 +47,9 @@ def fixture_bod_dataset(bod_contact_organisation):
 
 def test_command_imports(bod_dataset):
     out = StringIO()
-    call_command("bod_migrate", verbosity=2, stdout=out)
+    call_command(
+        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+    )
     assert "Added provider 'Federal Office for the Environment'" in out.getvalue()
     assert "1 provider(s) added" in out.getvalue()
     assert "1 attribution(s) added" in out.getvalue()
@@ -57,6 +59,7 @@ def test_command_imports(bod_dataset):
     assert Dataset.objects.count() == 1
 
     provider = Provider.objects.first()
+    assert provider.slug == "ch.bafu"
     assert provider.name_de == "Bundesamt für Umwelt"
     assert provider.name_fr == "Office fédéral de l'environnement"
     assert provider.name_en == "Federal Office for the Environment"
@@ -69,6 +72,7 @@ def test_command_imports(bod_dataset):
     assert provider.acronym_rm == "UFAM"
 
     attribution = provider.attribution_set.first()
+    assert attribution.slug == "ch.bafu"
     assert attribution.name_de == "BAFU"
     assert attribution.name_fr == "OFEV"
     assert attribution.name_en == "FOEN"
@@ -87,13 +91,16 @@ def test_command_imports(bod_dataset):
 
 def test_command_does_not_need_to_import(db):
     out = StringIO()
-    call_command("bod_migrate", verbosity=2, stdout=out)
+    call_command(
+        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+    )
     assert 'nothing to be done, already in sync' in out.getvalue()
 
 
 def test_command_updates(bod_contact_organisation, bod_dataset):
     # Add objects that will be updated
     provider = Provider.objects.create(
+        slug="ch.bafu",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -103,6 +110,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     attribution = Attribution.objects.create(
+        slug="ch.bafu",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -117,7 +125,9 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
     )
 
     out = StringIO()
-    call_command("bod_migrate", verbosity=2, stdout=out)
+    call_command(
+        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+    )
     assert f"Changed Provider {provider.id} name_de" in out.getvalue()
     assert f"Changed Provider {provider.id} acronym_de" not in out.getvalue()
     assert "1 provider(s) updated" in out.getvalue()
@@ -131,6 +141,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
     assert Dataset.objects.count() == 1
 
     provider = Provider.objects.first()
+    assert provider.slug == "ch.bafu"
     assert provider.name_de == "Bundesamt für Umwelt"
     assert provider.name_fr == "Office fédéral de l'environnement"
     assert provider.name_en == "Federal Office for the Environment"
@@ -143,6 +154,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
     assert provider.acronym_rm == "UFAM"
 
     attribution = provider.attribution_set.first()
+    assert attribution.slug == "ch.bafu"
     assert attribution.name_de == "BAFU"
     assert attribution.name_fr == "OFEV"
     assert attribution.name_en == "FOEN"
@@ -161,6 +173,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
 def test_command_removes_orphaned_provider(bod_dataset):
     # Add objects which will be removed
     provider = Provider.objects.create(
+        slug="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -170,6 +183,7 @@ def test_command_removes_orphaned_provider(bod_dataset):
         _legacy_id=16
     )
     attribution = Attribution.objects.create(
+        slug="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -183,6 +197,7 @@ def test_command_removes_orphaned_provider(bod_dataset):
 
     # Add objects which will not be removed
     provider = Provider.objects.create(
+        slug="ch.yyy",
         name_de="YYY",
         name_fr="YYY",
         name_en="YYY",
@@ -191,6 +206,7 @@ def test_command_removes_orphaned_provider(bod_dataset):
         acronym_en="YYYY",
     )
     attribution = Attribution.objects.create(
+        slug="ch.yyy",
         name_de="YYYY",
         name_fr="YYYY",
         name_en="YYYY",
@@ -202,7 +218,9 @@ def test_command_removes_orphaned_provider(bod_dataset):
     Dataset.objects.create(slug="yyyy", provider=provider, attribution=attribution)
 
     out = StringIO()
-    call_command("bod_migrate", verbosity=2, stdout=out)
+    call_command(
+        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+    )
     assert "1 provider(s) removed" in out.getvalue()
     assert "1 attribution(s) removed" in out.getvalue()
     assert "1 dataset(s) removed" in out.getvalue()
@@ -221,6 +239,7 @@ def test_command_removes_orphaned_provider(bod_dataset):
 def test_command_removes_orphaned_attribution(bod_contact_organisation):
     # Add objects which will not be removed
     provider = Provider.objects.create(
+        slug="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -232,6 +251,7 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
 
     # Add objects which will be removed
     attribution = Attribution.objects.create(
+        slug="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -244,7 +264,9 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
     Dataset.objects.create(slug="xxx", provider=provider, attribution=attribution, _legacy_id=160)
 
     out = StringIO()
-    call_command("bod_migrate", verbosity=2, stdout=out)
+    call_command(
+        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+    )
     assert "provider(s) removed" not in out.getvalue()
     assert "1 attribution(s) removed" in out.getvalue()
     assert "1 dataset(s) removed" in out.getvalue()
@@ -261,6 +283,7 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
 def test_command_removes_orphaned_dataset(bod_contact_organisation):
     # Add objects which will not be removed
     provider = Provider.objects.create(
+        slug="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -270,6 +293,7 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     attribution = Attribution.objects.create(
+        slug="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -284,7 +308,9 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
     Dataset.objects.create(slug="xxx", provider=provider, attribution=attribution, _legacy_id=160)
 
     out = StringIO()
-    call_command("bod_migrate", verbosity=2, stdout=out)
+    call_command(
+        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+    )
     assert "provider(s) removed" not in out.getvalue()
     assert "attribution(s) removed" not in out.getvalue()
     assert "1 dataset(s) removed" in out.getvalue()
@@ -300,7 +326,9 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
 
 def test_command_does_not_import_if_dry_run(bod_dataset):
     out = StringIO()
-    call_command("bod_migrate", dry_run=True, stdout=out)
+    call_command(
+        "bod_migrate", providers=True, attributions=True, datasets=True, dry_run=True, stdout=out
+    )
     assert "1 provider(s) added" in out.getvalue()
     assert "1 attribution(s) added" in out.getvalue()
     assert "1 dataset(s) added" in out.getvalue()
@@ -312,6 +340,7 @@ def test_command_does_not_import_if_dry_run(bod_dataset):
 
 def test_command_clears_existing_data(bod_dataset):
     provider = Provider.objects.create(
+        slug="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -321,6 +350,7 @@ def test_command_clears_existing_data(bod_dataset):
         _legacy_id=150
     )
     attribution = Attribution.objects.create(
+        slug="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -332,7 +362,9 @@ def test_command_clears_existing_data(bod_dataset):
     Dataset.objects.create(slug="yyyy", provider=provider, attribution=attribution)
 
     out = StringIO()
-    call_command("bod_migrate", clear=True, stdout=out)
+    call_command(
+        "bod_migrate", clear=True, providers=True, attributions=True, datasets=True, stdout=out
+    )
     assert "1 provider(s) cleared" in out.getvalue()
     assert "1 attribution(s) cleared" in out.getvalue()
     assert "1 dataset(s) cleared" in out.getvalue()
