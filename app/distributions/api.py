@@ -25,6 +25,7 @@ def attribution_to_response(model: Attribution, lang: LanguageCode) -> Attributi
     """
     response = AttributionSchema(
         id=model.id,
+        slug=model.slug,
         name=get_translation(model, "name", lang),
         name_translations=TranslationsSchema(
             de=model.name_de,

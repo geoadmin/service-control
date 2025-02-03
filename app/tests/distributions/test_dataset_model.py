@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 @fixture(name='provider')
 def fixture_provider(db):
     yield Provider.objects.create(
+        slug="ch.bafu",
         acronym_de="BAFU",
         acronym_fr="OFEV",
         acronym_en="FOEN",
@@ -25,6 +26,7 @@ def fixture_provider(db):
 @fixture(name='attribution')
 def fixture_attribution(provider):
     yield Attribution.objects.create(
+        slug="ch.bafu",
         name_de="BAFU",
         name_fr="OFEV",
         name_en="FOEN",
