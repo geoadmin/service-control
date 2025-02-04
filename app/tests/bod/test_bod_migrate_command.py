@@ -97,6 +97,133 @@ def test_command_does_not_need_to_import(db):
     assert 'nothing to be done, already in sync' in out.getvalue()
 
 
+def test_command_no_flag_set(bod_dataset):
+    out = StringIO()
+    call_command(
+        "bod_migrate", providers=False, attributions=False, datasets=False, verbosity=2, stdout=out
+    )
+    assert 'no option provided, nothing changed' in out.getvalue()
+
+
+def test_command_imports_providers(bod_dataset):
+    out = StringIO()
+    call_command(
+        "bod_migrate", providers=True, attributions=False, datasets=False, verbosity=2, stdout=out
+    )
+
+    assert "Added provider 'Federal Office for the Environment'" in out.getvalue()
+    assert "1 provider(s) added" in out.getvalue()
+    assert Provider.objects.count() == 1
+    assert Attribution.objects.count() == 0
+    assert Dataset.objects.count() == 0
+
+    provider = Provider.objects.first()
+    assert provider.slug == "ch.bafu"
+    assert provider.name_de == "Bundesamt für Umwelt"
+    assert provider.name_fr == "Office fédéral de l'environnement"
+    assert provider.name_en == "Federal Office for the Environment"
+    assert provider.name_it == "Ufficio federale dell'ambiente"
+    assert provider.name_rm == "Uffizi federal per l'ambient"
+    assert provider.acronym_de == "BAFU"
+    assert provider.acronym_fr == "OFEV"
+    assert provider.acronym_en == "FOEN"
+    assert provider.acronym_it == "UFAM"
+    assert provider.acronym_rm == "UFAM"
+
+
+def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
+    out = StringIO()
+    call_command(
+        "bod_migrate", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
+    )
+    assert "skipping attribution 'ch.bafu' as no matching provider was found" in out.getvalue()
+    assert 'nothing to be done, already in sync' in out.getvalue()
+    assert Provider.objects.count() == 0
+    assert Attribution.objects.count() == 0
+    assert Dataset.objects.count() == 0
+
+    provider = Provider.objects.create(
+        slug="ch.bafu",
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        acronym_de="BAFU",
+        acronym_fr="XXX",
+        acronym_en="XXX",
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+    call_command(
+        "bod_migrate", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
+    )
+    assert "Added attribution 'ch.bafu'" in out.getvalue()
+    assert "1 attribution(s) added" in out.getvalue()
+    assert Provider.objects.count() == 1
+    assert Attribution.objects.count() == 1
+    assert Dataset.objects.count() == 0
+
+    attribution = provider.attribution_set.first()
+    assert attribution.slug == "ch.bafu"
+    assert attribution.name_de == "BAFU"
+    assert attribution.name_fr == "OFEV"
+    assert attribution.name_en == "FOEN"
+    assert attribution.name_it == "UFAM"
+    assert attribution.name_rm == "UFAM"
+    assert attribution.description_de == "BAFU"
+    assert attribution.description_fr == "OFEV"
+    assert attribution.description_en == "FOEN"
+    assert attribution.description_it == "UFAM"
+    assert attribution.description_rm == "UFAM"
+
+
+def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
+    out = StringIO()
+    call_command(
+        "bod_migrate", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+    )
+    assert (
+        "skipping dataset 'ch.bafu.auen-vegetationskarten' " +
+        "as no matching attribution was found"
+    ) in out.getvalue()
+    assert 'nothing to be done, already in sync' in out.getvalue()
+    assert Provider.objects.count() == 0
+    assert Attribution.objects.count() == 0
+    assert Dataset.objects.count() == 0
+
+    provider = Provider.objects.create(
+        slug="ch.bafu",
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        acronym_de="BAFU",
+        acronym_fr="XXX",
+        acronym_en="XXX",
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+    attribution = Attribution.objects.create(
+        slug="ch.bafu",
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        description_de="BAFU",
+        description_fr="XXX",
+        description_en="XXX",
+        provider=provider,
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+    call_command(
+        "bod_migrate", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+    )
+    assert "Added dataset 'ch.bafu.auen-vegetationskarten'" in out.getvalue()
+    assert "1 dataset(s) added" in out.getvalue()
+    assert Provider.objects.count() == 1
+    assert Attribution.objects.count() == 1
+    assert Dataset.objects.count() == 1
+
+    dataset = provider.dataset_set.first()
+    assert dataset.attribution == attribution
+    assert dataset.slug == "ch.bafu.auen-vegetationskarten"
+
+
 def test_command_updates(bod_contact_organisation, bod_dataset):
     # Add objects that will be updated
     provider = Provider.objects.create(

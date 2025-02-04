@@ -184,7 +184,7 @@ class Handler(CommandHandler):
             if not provider:
                 # Skip as no matching provider
                 self.print(
-                    "skipping attribution '{organization.attribution}' " +
+                    f"skipping attribution '{organization.attribution}' " +
                     "as no matching provider was found"
                 )
                 continue
