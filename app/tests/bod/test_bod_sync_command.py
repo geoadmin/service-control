@@ -48,7 +48,7 @@ def fixture_bod_dataset(bod_contact_organisation):
 def test_command_imports(bod_dataset):
     out = StringIO()
     call_command(
-        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
     )
     assert "Added provider 'Federal Office for the Environment'" in out.getvalue()
     assert "1 provider(s) added" in out.getvalue()
@@ -92,7 +92,7 @@ def test_command_imports(bod_dataset):
 def test_command_does_not_need_to_import(db):
     out = StringIO()
     call_command(
-        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
     )
     assert 'nothing to be done, already in sync' in out.getvalue()
 
@@ -100,7 +100,7 @@ def test_command_does_not_need_to_import(db):
 def test_command_no_flag_set(bod_dataset):
     out = StringIO()
     call_command(
-        "bod_migrate", providers=False, attributions=False, datasets=False, verbosity=2, stdout=out
+        "bod_sync", providers=False, attributions=False, datasets=False, verbosity=2, stdout=out
     )
     assert 'no option provided, nothing changed' in out.getvalue()
 
@@ -108,7 +108,7 @@ def test_command_no_flag_set(bod_dataset):
 def test_command_imports_providers(bod_dataset):
     out = StringIO()
     call_command(
-        "bod_migrate", providers=True, attributions=False, datasets=False, verbosity=2, stdout=out
+        "bod_sync", providers=True, attributions=False, datasets=False, verbosity=2, stdout=out
     )
 
     assert "Added provider 'Federal Office for the Environment'" in out.getvalue()
@@ -134,7 +134,7 @@ def test_command_imports_providers(bod_dataset):
 def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
     out = StringIO()
     call_command(
-        "bod_migrate", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
+        "bod_sync", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
     )
     assert "skipping attribution 'ch.bafu' as no matching provider was found" in out.getvalue()
     assert 'nothing to be done, already in sync' in out.getvalue()
@@ -153,7 +153,7 @@ def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     call_command(
-        "bod_migrate", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
+        "bod_sync", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
     )
     assert "Added attribution 'ch.bafu'" in out.getvalue()
     assert "1 attribution(s) added" in out.getvalue()
@@ -178,7 +178,7 @@ def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
 def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
     out = StringIO()
     call_command(
-        "bod_migrate", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
     )
     assert (
         "skipping dataset 'ch.bafu.auen-vegetationskarten' " +
@@ -211,7 +211,7 @@ def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     call_command(
-        "bod_migrate", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
     )
     assert "Added dataset 'ch.bafu.auen-vegetationskarten'" in out.getvalue()
     assert "1 dataset(s) added" in out.getvalue()
@@ -253,7 +253,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
 
     out = StringIO()
     call_command(
-        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
     )
     assert f"Changed Provider {provider.id} name_de" in out.getvalue()
     assert f"Changed Provider {provider.id} acronym_de" not in out.getvalue()
@@ -346,7 +346,7 @@ def test_command_removes_orphaned_provider(bod_dataset):
 
     out = StringIO()
     call_command(
-        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
     )
     assert "1 provider(s) removed" in out.getvalue()
     assert "1 attribution(s) removed" in out.getvalue()
@@ -392,7 +392,7 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
 
     out = StringIO()
     call_command(
-        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
     )
     assert "provider(s) removed" not in out.getvalue()
     assert "1 attribution(s) removed" in out.getvalue()
@@ -436,7 +436,7 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
 
     out = StringIO()
     call_command(
-        "bod_migrate", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
     )
     assert "provider(s) removed" not in out.getvalue()
     assert "attribution(s) removed" not in out.getvalue()
@@ -454,7 +454,7 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
 def test_command_does_not_import_if_dry_run(bod_dataset):
     out = StringIO()
     call_command(
-        "bod_migrate", providers=True, attributions=True, datasets=True, dry_run=True, stdout=out
+        "bod_sync", providers=True, attributions=True, datasets=True, dry_run=True, stdout=out
     )
     assert "1 provider(s) added" in out.getvalue()
     assert "1 attribution(s) added" in out.getvalue()
@@ -490,7 +490,7 @@ def test_command_clears_existing_data(bod_dataset):
 
     out = StringIO()
     call_command(
-        "bod_migrate", clear=True, providers=True, attributions=True, datasets=True, stdout=out
+        "bod_sync", clear=True, providers=True, attributions=True, datasets=True, stdout=out
     )
     assert "1 provider(s) cleared" in out.getvalue()
     assert "1 attribution(s) cleared" in out.getvalue()
