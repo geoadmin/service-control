@@ -81,15 +81,13 @@ class Handler(CommandHandler):
         for organization in BodContactOrganisation.objects.all():
             if organization.attribution is not None and len(
                 organization.attribution.split('.')
-            ) != 2 or organization.pk_contactorganisation_id == 16:
+            ) != 2:
                 # Skip entries that are not a provider.
                 # BodContactOrganisation (table 'contactorganisation') contains providers and
                 # attributions. Providers are of the format "ch.<short_name>" and only include a
                 # single dot.
-
-                # TODO: There are 2 entries with the same attribution "ch.astra". They are "ASTRA"
-                # and "ASTRA, BPUK". For now the entry "ASTRA, BPUK" with id 16 is ignored.
                 continue
+
             # Keep track of processed organizations for orphan removal
             legacy_id = organization.pk_contactorganisation_id
             processed.add(legacy_id)
@@ -167,10 +165,6 @@ class Handler(CommandHandler):
         processed = set()
 
         for organization in BodContactOrganisation.objects.all():
-            if organization.pk_contactorganisation_id == 16:
-                # TODO: There are 2 entries with the same attribution "ch.astra". They are "ASTRA"
-                # and "ASTRA, BPUK". For now the entry "ASTRA, BPUK" with id 16 is ignored.
-                continue
 
             # Keep track of processed organizations for orphan removal
             legacy_id = organization.pk_contactorganisation_id
