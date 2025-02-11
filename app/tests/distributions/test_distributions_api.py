@@ -18,6 +18,7 @@ def fixture_time_created():
 @fixture(name='provider')
 def fixture_provider(db):
     yield Provider.objects.create(
+        slug="ch.bafu",
         acronym_de="BAFU",
         acronym_fr="OFEV",
         acronym_en="FOEN",
@@ -30,6 +31,7 @@ def fixture_provider(db):
 @fixture(name='attribution')
 def fixture_attribution(provider):
     yield Attribution.objects.create(
+        slug="ch.bafu",
         name_de="BAFU",
         name_fr="OFEV",
         name_en="FOEN",
@@ -59,6 +61,7 @@ def test_attribution_to_response_returns_response_with_language_as_defined(datas
 
     expected = AttributionSchema(
         id=model.id,
+        slug="ch.bafu",
         name="BAFU",
         name_translations=TranslationsSchema(
             de="BAFU",
@@ -93,6 +96,7 @@ def test_attribution_to_response_returns_response_with_default_language_if_undef
 
     expected = AttributionSchema(
         id=model.id,
+        slug="ch.bafu",
         name="FOEN",
         name_translations=TranslationsSchema(
             de="BAFU",
@@ -128,6 +132,7 @@ def test_get_attribution_returns_existing_attribution_with_default_language(
     assert response.status_code == 200
     assert response.json() == {
         "id": attribution_id,
+        "slug": "ch.bafu",
         "name": "FOEN",
         "name_translations": {
             "de": "BAFU",
@@ -161,6 +166,7 @@ def test_get_attribution_returns_attribution_with_language_from_query(
     assert response.status_code == 200
     assert response.json() == {
         "id": attribution_id,
+        "slug": "ch.bafu",
         "name": "BAFU",
         "name_translations": {
             "de": "BAFU",
@@ -211,6 +217,7 @@ def test_get_attribution_skips_translations_that_are_not_available(
     assert response.status_code == 200
     assert response.json() == {
         "id": model.id,
+        "slug": "ch.bafu",
         "name": "FOEN",
         "name_translations": {
             "de": "BAFU",
@@ -242,6 +249,7 @@ def test_get_attribution_returns_attribution_with_language_from_header(
     assert response.status_code == 200
     assert response.json() == {
         "id": attribution_id,
+        "slug": "ch.bafu",
         "name": "BAFU",
         "name_translations": {
             "de": "BAFU",
@@ -277,6 +285,7 @@ def test_get_attribution_returns_attribution_with_language_from_query_param_even
     assert response.status_code == 200
     assert response.json() == {
         "id": attribution_id,
+        "slug": "ch.bafu",
         "name": "OFEV",
         "name_translations": {
             "de": "BAFU",
@@ -310,6 +319,7 @@ def test_get_attribution_returns_attribution_with_default_language_if_header_emp
     assert response.status_code == 200
     assert response.json() == {
         "id": attribution_id,
+        "slug": "ch.bafu",
         "name": "FOEN",
         "name_translations": {
             "de": "BAFU",
@@ -345,6 +355,7 @@ def test_get_attribution_returns_attribution_with_first_known_language_from_head
     assert response.status_code == 200
     assert response.json() == {
         "id": attribution_id,
+        "slug": "ch.bafu",
         "name": "BAFU",
         "name_translations": {
             "de": "BAFU",
@@ -380,6 +391,7 @@ def test_get_attribution_returns_attribution_with_first_language_from_header_ign
     assert response.status_code == 200
     assert response.json() == {
         "id": attribution_id,
+        "slug": "ch.bafu",
         "name": "OFEV",
         "name_translations": {
             "de": "BAFU",
@@ -431,6 +443,7 @@ def test_get_attributions_returns_single_attribution_with_given_language(
     assert response.json() == {
         "items": [{
             "id": Attribution.objects.last().id,
+            "slug": "ch.bafu",
             "name": "OFEV",
             "name_translations": {
                 "de": "BAFU",
@@ -471,6 +484,7 @@ def test_get_attributions_skips_translations_that_are_not_available(
     assert response.json() == {
         "items": [{
             "id": Attribution.objects.last().id,
+            "slug": "ch.bafu",
             "name": "FOEN",
             "name_translations": {
                 "de": "BAFU",
@@ -500,6 +514,7 @@ def test_get_attributions_returns_attribution_with_language_from_header(
     assert response.json() == {
         "items": [{
             "id": Attribution.objects.last().id,
+            "slug": "ch.bafu",
             "name": "BAFU",
             "name_translations": {
                 "de": "BAFU",
@@ -531,6 +546,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
     attribution_id_1 = Attribution.objects.last().id
 
     provider2 = Provider.objects.create(
+        slug="ch.provider2",
         acronym_de="Provider2",
         acronym_fr="Provider2",
         acronym_en="Provider2",
@@ -539,6 +555,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
         name_en="Provider2"
     )
     model_fields = {
+        "slug": "ch.provider2.bav",
         "name_de": "BAV",
         "name_fr": "OFT",
         "name_en": "FOT",
@@ -560,6 +577,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
         "items": [
             {
                 "id": attribution_id_1,
+                "slug": "ch.bafu",
                 "name": "OFEV",
                 "name_translations": {
                     "de": "BAFU",
@@ -580,6 +598,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
             },
             {
                 "id": attribution_id_2,
+                "slug": "ch.provider2.bav",
                 "name": "OFT",
                 "name_translations": {
                     "de": "BAV",
@@ -686,6 +705,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_id(
     client.login(username='test', password='test')
 
     provider2 = Provider.objects.create(
+        slug="ch.provider2",
         acronym_de="Provider2",
         acronym_fr="Provider2",
         acronym_en="Provider2",
@@ -694,6 +714,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_id(
         name_en="Provider2"
     )
     attribution2 = Attribution.objects.create(
+        slug="ch.provider2.attribution2",
         name_de="Attribution2",
         name_fr="Attribution2",
         name_en="Attribution2",

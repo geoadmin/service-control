@@ -25,6 +25,9 @@ class Handler(CommandHandler):
         super().__init__(command, options)
         self.clear = options["clear"]
         self.dry_run = options["dry_run"]
+        self.include_attributions = options["attributions"]
+        self.include_providers = options["providers"]
+        self.include_datasets = options["datasets"]
         self.counts: dict[str, Counter] = {}
 
     def increment_counter(self, model_name: str, operation: Operation, value: int = 1) -> None:
@@ -66,16 +69,25 @@ class Handler(CommandHandler):
         """ Import providers from the old contact organizations table.
 
         This function adds new providers, updates existing ones (with a matching legacy ID) and
-        removes orphans (with a legacy id not found in the BOD). It also ensures one attribution
-        per provider and imports datasets.
+        removes orphans (with a legacy id not found in the BOD).
 
-        In general, each entry in the old organizations table corresponds to one in the new table
-        providers (although with different column names).
+        In general, for each entry in the old organizations table the attribution
+        value is checked and only those contaning exactly 1 period (e.g. ch.bafu)
+        are migrated to the table providers.
 
         """
         processed = set()
 
         for organization in BodContactOrganisation.objects.all():
+            if organization.attribution is not None and len(
+                organization.attribution.split('.')
+            ) != 2:
+                # Skip entries that are not a provider.
+                # BodContactOrganisation (table 'contactorganisation') contains providers and
+                # attributions. Providers are of the format "ch.<short_name>" and only include a
+                # single dot.
+                continue
+
             # Keep track of processed organizations for orphan removal
             legacy_id = organization.pk_contactorganisation_id
             processed.add(legacy_id)
@@ -87,6 +99,7 @@ class Handler(CommandHandler):
                 is_new_model = True
                 provider = Provider.objects.create(
                     _legacy_id=legacy_id,
+                    slug=organization.attribution,  # type:ignore[misc]
                     acronym_de="undefined",
                     acronym_fr="undefined",
                     acronym_en="undefined",
@@ -99,10 +112,6 @@ class Handler(CommandHandler):
 
             self.update_provider(provider, organization, is_new_model)
             provider.save()
-
-            attribution = self.import_attribution(provider, organization, legacy_id)
-
-            self.import_datasets(provider, attribution, legacy_id)
 
         # Remove orphaned providers
         orphans = Provider.objects.filter(_legacy_id__isnull=False
@@ -129,6 +138,7 @@ class Handler(CommandHandler):
             ('acronym_en', 'abkuerzung_en'),
             ('acronym_it', 'abkuerzung_it'),
             ('acronym_rm', 'abkuerzung_rm'),
+            ('slug', 'attribution'),
         ):
             changed = self.update_model(
                 provider,
@@ -140,47 +150,68 @@ class Handler(CommandHandler):
         if any_changed and not is_new_model:
             self.increment_counter('provider', 'updated')
 
-    def import_attribution(
-        self, provider: Provider, organization: BodContactOrganisation, legacy_id: int
-    ) -> Attribution:
-        """ Import the attribution of a provider from the old contact organizations table.
+    def import_attribution(self) -> None:
+        """ Import the attributions from the old contact organizations table.
 
         The BOD stores one attribution per organization in a column of the organizations table with
         translations in the translations table. Here, we create one attribution entry for each
-        provider or remove additional ones.
+        provider or remove additional ones. Each attribution is mapped to a provider by the first
+        part of the attribution identifier (e.g. "ch.bafu.kt" maps to "ch.bafu"). These identifiers
+        are renamed to slug. The slug of an attribution may be the same as the slug of its related
+        provider.
 
         """
 
-        # Get or create attribution
-        is_new_model = False
-        attribution = provider.attribution_set.filter(_legacy_id=legacy_id).first()
-        if not attribution:
-            is_new_model = True
-            attribution = provider.attribution_set.create(
-                _legacy_id=legacy_id,
-                name_de="undefined",
-                name_fr="undefined",
-                name_en="undefined",
-                description_de="undefined",
-                description_fr="undefined",
-                description_en="undefined"
-            )
-            self.increment_counter('attribution', 'added')
-            self.print(f"Added attribution '{organization.attribution}'")
+        processed = set()
 
-        self.update_attribution(attribution, organization, is_new_model)
+        for organization in BodContactOrganisation.objects.all():
 
-        attribution.save()
+            # Keep track of processed organizations for orphan removal
+            legacy_id = organization.pk_contactorganisation_id
+            processed.add(legacy_id)
+
+            # Get related provider
+            provider: Provider | None
+            if organization.attribution is not None:
+                provider_of_attribution = ".".join(organization.attribution.split(".", 2)[:2])
+                provider = Provider.objects.filter(slug=provider_of_attribution).first()
+            if not provider:
+                # Skip as no matching provider
+                self.print(
+                    f"skipping attribution '{organization.attribution}' " +
+                    "as no matching provider was found"
+                )
+                continue
+
+            # Get or create attribution
+            is_new_model = False
+            attribution = provider.attribution_set.filter(_legacy_id=legacy_id).first()
+            if not attribution:
+                is_new_model = True
+                attribution = provider.attribution_set.create(
+                    _legacy_id=legacy_id,
+                    slug=organization.attribution,  # type:ignore[misc]
+                    name_de="undefined",
+                    name_fr="undefined",
+                    name_en="undefined",
+                    description_de="undefined",
+                    description_fr="undefined",
+                    description_en="undefined"
+                )
+                self.increment_counter('attribution', 'added')
+                self.print(f"Added attribution '{organization.attribution}'")
+
+            self.update_attribution(attribution, organization, is_new_model)
+
+            attribution.save()
 
         # Remove orphaned attributions
-        orphans = Attribution.objects.filter(_legacy_id__isnull=False,
-                                             provider=provider).exclude(_legacy_id=legacy_id)
+        orphans = Attribution.objects.filter(_legacy_id__isnull=False
+                                            ).exclude(_legacy_id__in=processed)
         _, removed = orphans.delete()
         for model, count in removed.items():
             model_class = model.split('.')[-1].lower()
             self.increment_counter(model_class, 'removed', count)
-
-        return attribution
 
     def update_attribution(
         self, attribution: Attribution, organization: BodContactOrganisation, is_new_model: bool
@@ -199,7 +230,8 @@ class Handler(CommandHandler):
             ('description_fr', 'fr'),
             ('description_en', 'en'),
             ('description_it', 'it'),
-            ('description_rm', 'rm')
+            ('description_rm', 'rm'),
+            ('slug', '') # will be updated to organization.attribution
         ):
             changed = self.update_model(
                 attribution,
@@ -212,8 +244,8 @@ class Handler(CommandHandler):
         if any_changed and not is_new_model:
             self.increment_counter('attribution', 'updated')
 
-    def import_datasets(self, provider: Provider, attribution: Attribution, legacy_id: int) -> None:
-        """ Import all datasets for a given provider.
+    def import_datasets(self) -> None:
+        """ Import all datasets of legacy providers.
 
         This function adds new datasets, updates existing ones (with a matching legacy ID) and
         removes orphans (with a legacy id not found in the BOD).
@@ -224,10 +256,31 @@ class Handler(CommandHandler):
         """
 
         processed = set()
-        for bod_dataset in BodDataset.objects.filter(fk_contactorganisation_id=legacy_id):
+        for bod_dataset in BodDataset.objects.all():
             # Keep track of processed BOD datasets for orphan removal
             legacy_id = bod_dataset.id
             processed.add(legacy_id)
+
+            # Get related attribution and provider
+            attribution = Attribution.objects.filter(
+                _legacy_id=bod_dataset.fk_contactorganisation_id
+            ).first()
+            if not attribution:
+                # Skip as no matching attribution
+                self.print(
+                    f"skipping dataset '{bod_dataset.id_dataset}' " +
+                    "as no matching attribution was found"
+                )
+                continue
+
+            # Get related provider
+            provider = Provider.objects.filter(id=attribution.provider_id).first()
+            if not provider:
+                # Skip as no matching provider
+                self.print(
+                    f"skipping dataset '{bod_dataset.id_dataset}' as no matching provider was found"
+                )
+                continue
 
             # Get or create dataset
             is_new_model = False
@@ -250,8 +303,7 @@ class Handler(CommandHandler):
             dataset.save()
 
         # Remove orphaned datasets
-        orphans = Dataset.objects.filter(_legacy_id__isnull=False,
-                                         provider=provider).exclude(_legacy_id__in=processed)
+        orphans = Dataset.objects.filter(_legacy_id__isnull=False).exclude(_legacy_id__in=processed)
         _, removed = orphans.delete()
         for model, count in removed.items():
             model_class = model.split('.')[-1].lower()
@@ -279,12 +331,22 @@ class Handler(CommandHandler):
             # Clear data
             if self.clear:
                 self.clear_providers()
-
             # Import data
-            self.import_providers()
+            if self.include_providers:
+                self.import_providers()
+            if self.include_attributions:
+                self.import_attribution()
+            if self.include_datasets:
+                self.import_datasets()
 
             # Print counts
             printed = False
+            if (
+                not self.clear and not self.include_providers and not self.include_attributions and
+                not self.include_datasets
+            ):
+                printed = True
+                self.print_warning("no option provided, nothing changed")
             for model in sorted(self.counts):
                 for operation in sorted(self.counts[model]):
                     count = self.counts[model][cast(Operation, operation)]
@@ -314,6 +376,21 @@ class Command(CustomBaseCommand):
             "--dry-run",
             action="store_true",
             help="Dry run, abort transaction in the end",
+        )
+        parser.add_argument(
+            "--providers",
+            action="store_true",
+            help="Import providers",
+        )
+        parser.add_argument(
+            "--attributions",
+            action="store_true",
+            help="Import attributions",
+        )
+        parser.add_argument(
+            "--datasets",
+            action="store_true",
+            help="Import datasets",
         )
 
     def handle(self, *args: Any, **options: Any) -> None:

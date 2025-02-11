@@ -8,6 +8,7 @@ from schemas import TranslationsSchema
 @fixture(name='provider')
 def fixture_provider(db):
     yield Provider.objects.create(
+        slug="ch.bafu",
         name_de="Bundesamt für Umwelt",
         name_fr="Office fédéral de l'environnement",
         name_en="Federal Office for the Environment",
@@ -26,6 +27,7 @@ def test_provider_to_response_returns_response_with_language_as_defined(provider
 
     expected = ProviderSchema(
         id=provider.id,
+        slug="ch.bafu",
         name="Bundesamt für Umwelt",
         name_translations=TranslationsSchema(
             de="Bundesamt für Umwelt",
@@ -57,6 +59,7 @@ def test_provider_to_response_returns_response_with_default_language_if_undefine
 
     expected = ProviderSchema(
         id=str(provider.id),
+        slug="ch.bafu",
         name="Federal Office for the Environment",
         name_translations=TranslationsSchema(
             de="Bundesamt für Umwelt",
@@ -89,6 +92,7 @@ def test_get_provider_returns_existing_provider_with_default_language(
     assert response.status_code == 200
     assert response.json() == {
         "id": provider.id,
+        "slug": "ch.bafu",
         "name": "Federal Office for the Environment",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -119,6 +123,7 @@ def test_get_provider_returns_provider_with_language_from_query(
     assert response.status_code == 200
     assert response.json() == {
         "id": provider.id,
+        "slug": "ch.bafu",
         "name": "Bundesamt für Umwelt",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -166,6 +171,7 @@ def test_get_provider_skips_translations_that_are_not_available(
     assert response.status_code == 200
     assert response.json() == {
         "id": provider.id,
+        "slug": "ch.bafu",
         "name": "Federal Office for the Environment",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -192,6 +198,7 @@ def test_get_provider_returns_provider_with_language_from_header(
     assert response.status_code == 200
     assert response.json() == {
         "id": provider.id,
+        "slug": "ch.bafu",
         "name": "Bundesamt für Umwelt",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -224,6 +231,7 @@ def test_get_provider_returns_provider_with_language_from_query_param_even_if_he
     assert response.status_code == 200
     assert response.json() == {
         "id": provider.id,
+        "slug": "ch.bafu",
         "name": "Office fédéral de l'environnement",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -254,6 +262,7 @@ def test_get_provider_returns_provider_with_default_language_if_header_empty(
     assert response.status_code == 200
     assert response.json() == {
         "id": provider.id,
+        "slug": "ch.bafu",
         "name": "Federal Office for the Environment",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -286,6 +295,7 @@ def test_get_provider_returns_provider_with_first_known_language_from_header(
     assert response.status_code == 200
     assert response.json() == {
         "id": provider.id,
+        "slug": "ch.bafu",
         "name": "Bundesamt für Umwelt",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -318,6 +328,7 @@ def test_get_provider_returns_provider_with_first_known_language_from_header_ign
     assert response.status_code == 200
     assert response.json() == {
         "id": provider.id,
+        "slug": "ch.bafu",
         "name": "Office fédéral de l'environnement",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -366,6 +377,7 @@ def test_get_providers_returns_single_provider_with_given_language(
     assert response.json() == {
         "items": [{
             "id": Provider.objects.last().id,
+            "slug": "ch.bafu",
             "name": "Office fédéral de l'environnement",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -405,6 +417,7 @@ def test_get_providers_skips_translations_that_are_not_available(
     assert response.json() == {
         "items": [{
             "id": provider.id,
+            "slug": "ch.bafu",
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -433,6 +446,7 @@ def test_get_providers_returns_provider_with_language_from_header(
     assert response.json() == {
         "items": [{
             "id": Provider.objects.last().id,
+            "slug": "ch.bafu",
             "name": "Bundesamt für Umwelt",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -460,6 +474,7 @@ def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
     client.login(username='test', password='test')
 
     provider = {
+        "slug": "ch.bav",
         "name_de": "Bundesamt für Verkehr",
         "name_fr": "Office fédéral des transports",
         "name_en": "Federal Office of Transport",
@@ -480,6 +495,7 @@ def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
         "items": [
             {
                 "id": Provider.objects.first().id,
+                "slug": "ch.bafu",
                 "name": "Office fédéral de l'environnement",
                 "name_translations": {
                     "de": "Bundesamt für Umwelt",
@@ -499,6 +515,7 @@ def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
             },
             {
                 "id": Provider.objects.last().id,
+                "slug": "ch.bav",
                 "name": "Office fédéral des transports",
                 "name_translations": {
                     "de": "Bundesamt für Verkehr",

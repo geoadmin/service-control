@@ -21,6 +21,7 @@ def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
     """
     response = ProviderSchema(
         id=model.id,
+        slug=model.slug,
         name=get_translation(model, "name", lang),
         name_translations=TranslationsSchema(
             de=model.name_de,

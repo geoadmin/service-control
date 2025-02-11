@@ -13,7 +13,11 @@
 - [Local development](#local-development)
   - [Dependencies](#dependencies)
   - [Setup](#setup)
+- [Cognito](#cognito)
+  - [Local Cognito](#local-cognito)
+- [Importing Data from the BOD](#importing-data-from-the-bod)
 - [Local Development](#local-development-1)
+  - [Running tests in parallel](#running-tests-in-parallel)
   - [vs code Integration](#vs-code-integration)
     - [Debug from vs code](#debug-from-vs-code)
     - [Run tests from within vs code](#run-tests-from-within-vs-code)
@@ -89,7 +93,7 @@ You can import a BOD dump and migrate its data:
 ```bash
 make setup-bod
 make import-bod file=dump.sql
-app/manage.py bod_migrate
+app/manage.py bod_sync
 ```
 
 To generate more BOD models, run:

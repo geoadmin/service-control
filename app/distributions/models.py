@@ -14,6 +14,8 @@ class Attribution(models.Model):
     def __str__(self) -> str:
         return str(self.name_en)
 
+    slug = CustomSlugField(_(_context, "Slug"), max_length=100, unique=True, db_index=True)
+
     name_de = models.CharField(_(_context, "Name (German)"))
     name_fr = models.CharField(_(_context, "Name (French)"))
     name_en = models.CharField(_(_context, "Name (English)"))

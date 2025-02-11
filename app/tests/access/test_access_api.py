@@ -11,6 +11,7 @@ from pytest import fixture
 @fixture(name='provider')
 def fixture_provider(db):
     yield Provider.objects.create(
+        slug="ch.bafu",
         acronym_de="BAFU",
         acronym_fr="OFEV",
         acronym_en="FOEN",

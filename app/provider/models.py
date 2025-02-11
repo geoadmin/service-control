@@ -1,5 +1,7 @@
 from typing import Iterable
 
+from utils.fields import CustomSlugField
+
 from django.db import models
 from django.db.models.base import ModelBase
 from django.utils.translation import pgettext_lazy as _
@@ -16,6 +18,8 @@ class Provider(models.Model):
     Note: The "blank=False" for a model field doesn't prevent DB changes.
           It only has an effect on form validation.
     '''
+    slug = CustomSlugField(_(_context, "Slug"), max_length=100, unique=True, db_index=True)
+
     name_de = models.CharField(_(_context, "Name (German)"))
     name_fr = models.CharField(_(_context, "Name (French)"))
     name_en = models.CharField(_(_context, "Name (English)"))
