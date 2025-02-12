@@ -9,7 +9,7 @@ from .models import PackageDistribution
 class AttributionAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     '''Admin View for Attribution'''
 
-    list_display = ('name_en', 'provider')
+    list_display = ('slug', 'name_en', 'provider')
     list_filter = (('provider', admin.RelatedOnlyFieldListFilter),)
 
 
@@ -17,7 +17,7 @@ class AttributionAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
 class DatasetAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     '''Admin View for Dataset'''
 
-    list_display = ('slug', 'provider')
+    list_display = ('slug', 'slug', 'provider')
     list_filter = (('provider', admin.RelatedOnlyFieldListFilter),)
 
 
