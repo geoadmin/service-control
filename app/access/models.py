@@ -2,6 +2,7 @@ from logging import getLogger
 from typing import Iterable
 
 from cognito.utils.client import Client
+from utils.fields import CustomSlugField
 from utils.short_id import generate_short_id
 
 from django.db import models
@@ -43,7 +44,7 @@ class User(models.Model):
     def __str__(self) -> str:
         return f'{self.first_name} {self.last_name}'
 
-    username = models.CharField(_(_context, "User name"), unique=True)
+    username = CustomSlugField(_(_context, "User name"), unique=True, max_length=100)
     user_id = models.CharField(_(_context, "User ID"), unique=True, default=generate_short_id)
     first_name = models.CharField(_(_context, "First name"))
     last_name = models.CharField(_(_context, "Last name"))
