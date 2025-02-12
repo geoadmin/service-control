@@ -7,7 +7,7 @@ class UserSchema(Schema):
     first_name: str
     last_name: str
     email: str
-    provider_id: int
+    provider_id: str
 
 
 class UserListSchema(Schema):

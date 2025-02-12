@@ -78,7 +78,7 @@ def test_attribution_to_response_returns_response_with_language_as_defined(datas
             it="Ufficio federale dell'ambiente",
             rm="Uffizi federal per l'ambient",
         ),
-        provider_id=Provider.objects.last().id
+        provider_id="ch.bafu"
     )
 
     assert actual == expected
@@ -113,7 +113,7 @@ def test_attribution_to_response_returns_response_with_default_language_if_undef
             it=None,
             rm=None,
         ),
-        provider_id=Provider.objects.last().id,
+        provider_id="ch.bafu",
     )
 
     assert actual == expected
@@ -149,7 +149,7 @@ def test_get_attribution_returns_existing_attribution_with_default_language(
             "it": "Ufficio federale dell'ambiente",
             "rm": "Uffizi federal per l'ambient",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -183,7 +183,7 @@ def test_get_attribution_returns_attribution_with_language_from_query(
             "it": "Ufficio federale dell'ambiente",
             "rm": "Uffizi federal per l'ambient",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -230,7 +230,7 @@ def test_get_attribution_skips_translations_that_are_not_available(
             "fr": "Office fédéral de l'environnement",
             "en": "Federal Office for the Environment",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -266,7 +266,7 @@ def test_get_attribution_returns_attribution_with_language_from_header(
             "it": "Ufficio federale dell'ambiente",
             "rm": "Uffizi federal per l'ambient",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -302,7 +302,7 @@ def test_get_attribution_returns_attribution_with_language_from_query_param_even
             "it": "Ufficio federale dell'ambiente",
             "rm": "Uffizi federal per l'ambient",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -336,7 +336,7 @@ def test_get_attribution_returns_attribution_with_default_language_if_header_emp
             "it": "Ufficio federale dell'ambiente",
             "rm": "Uffizi federal per l'ambient",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -372,7 +372,7 @@ def test_get_attribution_returns_attribution_with_first_known_language_from_head
             "it": "Ufficio federale dell'ambiente",
             "rm": "Uffizi federal per l'ambient",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -408,7 +408,7 @@ def test_get_attribution_returns_attribution_with_first_language_from_header_ign
             "it": "Ufficio federale dell'ambiente",
             "rm": "Uffizi federal per l'ambient",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -460,7 +460,7 @@ def test_get_attributions_returns_single_attribution_with_given_language(
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": Provider.objects.last().id,
+            "provider_id": "ch.bafu",
         }]
     }
 
@@ -497,7 +497,7 @@ def test_get_attributions_skips_translations_that_are_not_available(
                 "fr": "Office fédéral de l'environnement",
                 "en": "Federal Office for the Environment",
             },
-            "provider_id": Provider.objects.last().id,
+            "provider_id": "ch.bafu",
         }]
     }
 
@@ -531,7 +531,7 @@ def test_get_attributions_returns_attribution_with_language_from_header(
                 "it": "Ufficio federale dell'ambiente",
                 "rm": "Uffizi federal per l'ambient",
             },
-            "provider_id": Provider.objects.last().id,
+            "provider_id": "ch.bafu",
         }]
     }
 
@@ -594,7 +594,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
                     "it": "Ufficio federale dell'ambiente",
                     "rm": "Uffizi federal per l'ambient",
                 },
-                "provider_id": provider1.id,
+                "provider_id": provider1.slug,
             },
             {
                 "id": attribution_id_2,
@@ -615,7 +615,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
                     "it": "Ufficio federale dei trasporti",
                     "rm": "Uffizi federal da traffic",
                 },
-                "provider_id": provider2.id,
+                "provider_id": provider2.slug,
             },
         ]
     }
@@ -652,7 +652,7 @@ def test_get_dataset_returns_specified_dataset(dataset, client, django_user_fact
         "slug": "ch.bafu.neophyten-haargurke",
         "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
         "attribution_id": Attribution.objects.last().id,
     }
 
@@ -692,7 +692,7 @@ def test_get_datasets_returns_single_dataset_as_expected(
             "slug": "ch.bafu.neophyten-haargurke",
             "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "provider_id": Provider.objects.last().id,
+            "provider_id": "ch.bafu",
             "attribution_id": Attribution.objects.last().id,
         }]
     }
@@ -743,7 +743,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_id(
                 "slug": dataset1.slug,
                 "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "provider_id": Provider.objects.first().id,
+                "provider_id": "ch.bafu",
                 "attribution_id": Attribution.objects.first().id,
             },
             {
@@ -751,7 +751,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_id(
                 "slug": "slug2",
                 "created": dataset2.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": dataset2.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "provider_id": provider2.id,
+                "provider_id": provider2.slug,
                 "attribution_id": attribution2.id,
             },
         ]

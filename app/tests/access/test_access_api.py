@@ -45,7 +45,7 @@ def test_user_to_response_maps_fields_correctly(user):
         first_name="Jeffrey",
         last_name="Lebowski",
         email="dude@bowling.com",
-        provider_id=Provider.objects.last().id,
+        provider_id=user.provider.slug,
     )
 
     assert actual == expected
@@ -63,7 +63,7 @@ def test_get_user_returns_existing_user(user, django_user_factory, client):
         "first_name": "Jeffrey",
         "last_name": "Lebowski",
         "email": "dude@bowling.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
@@ -107,7 +107,7 @@ def test_get_users_returns_single_user(user, django_user_factory, client):
             "first_name": "Jeffrey",
             "last_name": "Lebowski",
             "email": "dude@bowling.com",
-            "provider_id": Provider.objects.last().id,
+            "provider_id": "ch.bafu",
         }]
     }
 
@@ -124,7 +124,7 @@ def test_get_users_returns_users_ordered_by_id(cognito_client, user, django_user
         "first_name": "Walter",
         "last_name": "Sobchak",
         "email": "veteran@bowling.com",
-        "provider": Provider.objects.last(),
+        "provider": user.provider,
     }
     User.objects.create(**model_fields)
 
@@ -138,14 +138,14 @@ def test_get_users_returns_users_ordered_by_id(cognito_client, user, django_user
                 "first_name": "Jeffrey",
                 "last_name": "Lebowski",
                 "email": "dude@bowling.com",
-                "provider_id": Provider.objects.last().id,
+                "provider_id": "ch.bafu",
             },
             {
                 "username": "veteran",
                 "first_name": "Walter",
                 "last_name": "Sobchak",
                 "email": "veteran@bowling.com",
-                "provider_id": Provider.objects.last().id,
+                "provider_id": "ch.bafu",
             },
         ]
     }
@@ -182,7 +182,7 @@ def test_post_users_creates_new_user_in_db_and_returns_it(
         "first_name": "Theodore Donald",
         "last_name": "Kerabatsos",
         "email": "donny@bowling.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.post("/api/v1/users", data=payload, content_type='application/json')
@@ -202,13 +202,12 @@ def test_post_users_returns_404_if_provider_id_does_not_exist(
     django_user_factory('test', 'test', [('access', 'user', 'add_user')])
     client.login(username='test', password='test')
 
-    non_existing_provider_id = Provider.objects.last().id + 1
     payload = {
         "username": "donny",
         "first_name": "Theodore Donald",
         "last_name": "Kerabatsos",
         "email": "donny@bowling.com",
-        "provider_id": non_existing_provider_id,
+        "provider_id": "non_existing_provider_id",
     }
 
     response = client.post("/api/v1/users", data=payload, content_type='application/json')
@@ -233,7 +232,7 @@ def test_post_users_returns_422_if_email_format_invalid(
         "first_name": "Theodore Donald",
         "last_name": "Kerabatsos",
         "email": invalid_email,
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.post("/api/v1/users", data=payload, content_type='application/json')
@@ -257,7 +256,7 @@ def test_post_users_returns_409_if_user_exists_already(
         "first_name": "Theodore Donald",
         "last_name": "Kerabatsos",
         "email": "donny@bowling.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.post("/api/v1/users", data=payload, content_type='application/json')
@@ -284,7 +283,7 @@ def test_post_users_returns_409_and_reports_all_errors_if_multiple_things_amiss(
         "first_name": "Theodore Donald",
         "last_name": "Kerabatsos",
         "email": invalid_email,
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.post("/api/v1/users", data=payload, content_type='application/json')
@@ -311,7 +310,7 @@ def test_post_users_returns_500_if_cognito_inconsistent(
         "first_name": "Theodore Donald",
         "last_name": "Kerabatsos",
         "email": "donny@bowling.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.post("/api/v1/users", data=payload, content_type='application/json')
@@ -336,7 +335,7 @@ def test_post_users_returns_503_if_cognito_down(cognito_client, user, django_use
         "first_name": "Theodore Donald",
         "last_name": "Kerabatsos",
         "email": "donny@bowling.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.post("/api/v1/users", data=payload, content_type='application/json')
@@ -500,16 +499,21 @@ def test_update_user_updates_existing_user_as_expected(
         "first_name": "Jeff",
         "last_name": "Bridges",
         "email": "tron@hollywood.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.put("/api/v1/users/dude", data=payload, content_type='application/json')
 
     assert response.status_code == 200
     assert response.json() == payload
+
     user = User.objects.filter(username="dude").first()
-    for key, value in payload.items():
-        assert getattr(user, key) == value
+    assert user.username == "dude"
+    assert user.first_name == "Jeff"
+    assert user.last_name == "Bridges"
+    assert user.email == "tron@hollywood.com"
+    assert user.provider.slug == "ch.bafu"
+
     assert cognito_client.return_value.update_user.called
 
 
@@ -526,7 +530,7 @@ def test_update_user_returns_404_and_leaves_user_as_is_if_user_nonexistent(
         "first_name": "Jeff",
         "last_name": "Bridges",
         "email": "tron@hollywood.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     nonexistent_username = "maude"
@@ -548,13 +552,12 @@ def test_update_user_returns_400_and_leaves_user_as_is_if_provider_nonexistent(
     client.login(username='test', password='test')
 
     user_before = User.objects.filter(username="dude").first()
-    nonexistent_id = Provider.objects.last().id + 1234
     payload = {
         "username": "dude",
         "first_name": "Jeff",
         "last_name": "Bridges",
         "email": "tron@hollywood.com",
-        "provider_id": nonexistent_id,
+        "provider_id": "nonexistent_id",
     }
 
     response = client.put("/api/v1/users/dude", data=payload, content_type="application/json")
@@ -580,7 +583,7 @@ def test_update_user_returns_500_and_leaves_user_as_is_if_cognito_inconsistent(
         "first_name": "Jeff",
         "last_name": "Bridges",
         "email": "tron@hollywood.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.put("/api/v1/users/dude", data=payload, content_type="application/json")
@@ -609,7 +612,7 @@ def test_update_user_returns_503_and_leaves_user_as_is_if_cognito_down(
         "first_name": "Jeff",
         "last_name": "Bridges",
         "email": "tron@hollywood.com",
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
     response = client.put("/api/v1/users/dude", data=payload, content_type="application/json")

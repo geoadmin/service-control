@@ -11,7 +11,7 @@ class AttributionSchema(Schema):
     name_translations: TranslationsSchema
     description: str
     description_translations: TranslationsSchema
-    provider_id: int
+    provider_id: str
 
 
 class AttributionListSchema(Schema):
@@ -23,7 +23,7 @@ class DatasetSchema(Schema):
     slug: str
     created: datetime
     updated: datetime
-    provider_id: int
+    provider_id: str
     attribution_id: int
 
 
