@@ -15,37 +15,6 @@ def fixture_time_created():
     yield datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
 
 
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        slug="ch.bafu",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment"
-    )
-
-
-@fixture(name='attribution')
-def fixture_attribution(provider):
-    yield Attribution.objects.create(
-        slug="ch.bafu",
-        name_de="BAFU",
-        name_fr="OFEV",
-        name_en="FOEN",
-        name_it="UFAM",
-        name_rm="UFAM",
-        description_de="Bundesamt für Umwelt",
-        description_fr="Office fédéral de l'environnement",
-        description_en="Federal Office for the Environment",
-        description_it="Ufficio federale dell'ambiente",
-        description_rm="Uffizi federal per l'ambient",
-        provider=provider
-    )
-
-
 @fixture(name='dataset')
 def fixture_dataset(attribution, time_created):
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):

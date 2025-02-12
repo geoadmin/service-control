@@ -1,23 +1,8 @@
 from distributions.models import Attribution
-from provider.models import Provider
-from pytest import fixture
 from pytest import raises
 
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
-
-
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        slug="ch.bafu",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment"
-    )
 
 
 def test_object_created_in_db_with_all_fields_defined(provider):

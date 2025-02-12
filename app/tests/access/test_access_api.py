@@ -4,21 +4,7 @@ from access.api import user_to_response
 from access.models import User
 from access.schemas import UserSchema
 from botocore.exceptions import EndpointConnectionError
-from provider.models import Provider
 from pytest import fixture
-
-
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        slug="ch.bafu",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment"
-    )
 
 
 @fixture(name='user')
