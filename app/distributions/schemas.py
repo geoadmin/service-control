@@ -5,8 +5,7 @@ from schemas import TranslationsSchema
 
 
 class AttributionSchema(Schema):
-    id: int
-    slug: str
+    id: str
     name: str
     name_translations: TranslationsSchema
     description: str
@@ -19,12 +18,11 @@ class AttributionListSchema(Schema):
 
 
 class DatasetSchema(Schema):
-    id: int
-    slug: str
+    id: str
     created: datetime
     updated: datetime
     provider_id: str
-    attribution_id: int
+    attribution_id: str
 
 
 class DatasetListSchema(Schema):

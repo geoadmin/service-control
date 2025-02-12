@@ -23,8 +23,7 @@ def attribution_to_response(model: Attribution, lang: LanguageCode) -> Attributi
     Transforms the given model using the given language into a response object.
     """
     response = AttributionSchema(
-        id=model.id,
-        slug=model.slug,
+        id=model.slug,
         name=get_translation(model, "name", lang),
         name_translations=TranslationsSchema(
             de=model.name_de,
@@ -51,12 +50,11 @@ def dataset_to_response(model: Dataset) -> DatasetSchema:
     Maps the given model to the corresponding schema.
     """
     response = DatasetSchema(
-        id=model.id,
-        slug=model.slug,
+        id=model.slug,
         created=model.created,
         updated=model.updated,
         provider_id=model.provider.slug,
-        attribution_id=model.attribution_id,
+        attribution_id=model.attribution.slug,
     )
     return response
 
@@ -69,7 +67,7 @@ def dataset_to_response(model: Dataset) -> DatasetSchema:
 )
 def attribution(
     request: HttpRequest,
-    attribution_id: int,
+    attribution_id: str,
     lang: LanguageCode | None = None
 ) -> AttributionSchema:
     """
@@ -79,7 +77,7 @@ def attribution(
              "description" would take the value of the corresponding translation.
 
                 {
-                    "id": 1,
+                    "id": "ch.bafu,
                     "name": "German",
                     "name_translations": {
                         "de": "German",
@@ -117,7 +115,7 @@ def attribution(
         - Subtags in the header are ignored. So "en-US" is interpreted as "en".
         - Wildcards ("*") are ignored.
     """
-    model = get_object_or_404(Attribution, id=attribution_id)
+    model = get_object_or_404(Attribution, slug=attribution_id)
     lang_to_use = get_language(lang, request.headers)
     response = attribution_to_response(model, lang_to_use)
     return response
@@ -150,11 +148,11 @@ def attributions(request: HttpRequest,
     exclude_none=True,
     auth=PermissionAuth('distributions.view_dataset')
 )
-def dataset(request: HttpRequest, dataset_id: int) -> DatasetSchema:
+def dataset(request: HttpRequest, dataset_id: str) -> DatasetSchema:
     """
     Get the dataset with the given ID.
     """
-    model = get_object_or_404(Dataset, id=dataset_id)
+    model = get_object_or_404(Dataset, slug=dataset_id)
     response = dataset_to_response(model)
     return response
 
@@ -172,7 +170,7 @@ def datasets(request: HttpRequest) -> dict[str, list[DatasetSchema]]:
     For more details on how individual datasets are returned, see the
     corresponding endpoint for a specific attribution.
     """
-    models = Dataset.objects.order_by("id").all()
+    models = Dataset.objects.order_by("slug").all()
 
     responses = [dataset_to_response(model) for model in models]
     return {"items": responses}
