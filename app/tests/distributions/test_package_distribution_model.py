@@ -1,42 +1,9 @@
-from distributions.models import Attribution
 from distributions.models import Dataset
 from distributions.models import PackageDistribution
-from provider.models import Provider
 from pytest import fixture
 from pytest import raises
 
 from django.core.exceptions import ValidationError
-
-
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        slug="ch.bafu",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment"
-    )
-
-
-@fixture(name='attribution')
-def fixture_attribution(provider):
-    yield Attribution.objects.create(
-        slug="ch.bafu",
-        name_de="BAFU",
-        name_fr="OFEV",
-        name_en="FOEN",
-        name_it="UFAM",
-        name_rm="UFAM",
-        description_de="Bundesamt für Umwelt",
-        description_fr="Office fédéral de l'environnement",
-        description_en="Federal Office for the Environment",
-        description_it="Ufficio federale dell'ambiente",
-        description_rm="Uffizi federal per l'ambient",
-        provider=provider
-    )
 
 
 @fixture(name='dataset')

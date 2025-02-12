@@ -1,11 +1,48 @@
 from typing import Any
 
+from distributions.models import Attribution
+from provider.models import Provider
 from pytest import fixture
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+
+
+@fixture(name='provider')
+def fixture_provider(db):
+    yield Provider.objects.create(
+        slug="ch.bafu",
+        acronym_de="BAFU",
+        acronym_fr="OFEV",
+        acronym_en="FOEN",
+        acronym_it="UFAM",
+        acronym_rm="UFAM",
+        name_de="Bundesamt für Umwelt",
+        name_fr="Office fédéral de l'environnement",
+        name_en="Federal Office for the Environment",
+        name_it="Ufficio federale dell'ambiente",
+        name_rm="Uffizi federal per l'ambient",
+    )
+
+
+@fixture(name='attribution')
+def fixture_attribution(provider):
+    yield Attribution.objects.create(
+        slug="ch.bafu",
+        name_de="BAFU",
+        name_fr="OFEV",
+        name_en="FOEN",
+        name_it="UFAM",
+        name_rm="UFAM",
+        description_de="Bundesamt für Umwelt",
+        description_fr="Office fédéral de l'environnement",
+        description_en="Federal Office for the Environment",
+        description_it="Ufficio federale dell'ambiente",
+        description_rm="Uffizi federal per l'ambient",
+        provider=provider
+    )
 
 
 @fixture

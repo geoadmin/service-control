@@ -1,25 +1,7 @@
 from provider.api import provider_to_response
 from provider.models import Provider
 from provider.schemas import ProviderSchema
-from pytest import fixture
 from schemas import TranslationsSchema
-
-
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        slug="ch.bafu",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment",
-        name_it="Ufficio federale dell'ambiente",
-        name_rm="Uffizi federal per l'ambient",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        acronym_it="UFAM",
-        acronym_rm="UFAM"
-    )
 
 
 def test_provider_to_response_returns_response_with_language_as_defined(provider):
