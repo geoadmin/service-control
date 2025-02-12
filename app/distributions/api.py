@@ -5,7 +5,6 @@ from utils.language import LanguageCode
 from utils.language import get_language
 from utils.language import get_translation
 
-from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.shortcuts import get_object_or_404
 
@@ -42,7 +41,22 @@ def attribution_to_response(model: Attribution, lang: LanguageCode) -> Attributi
             it=model.description_it,
             rm=model.description_rm,
         ),
-        provider_id=model.provider.id,
+        provider_id=model.provider.slug,
+    )
+    return response
+
+
+def dataset_to_response(model: Dataset) -> DatasetSchema:
+    """
+    Maps the given model to the corresponding schema.
+    """
+    response = DatasetSchema(
+        id=model.id,
+        slug=model.slug,
+        created=model.created,
+        updated=model.updated,
+        provider_id=model.provider.slug,
+        attribution_id=model.attribution_id,
     )
     return response
 
@@ -82,7 +96,7 @@ def attribution(
                         "it": "IT",
                         "rm": "RM",
                     },
-                    provider_id: 123
+                    provider_id: "ch.bafu"
                 }
 
     The language can be set via
@@ -136,12 +150,13 @@ def attributions(request: HttpRequest,
     exclude_none=True,
     auth=PermissionAuth('distributions.view_dataset')
 )
-def dataset(request: HttpRequest, dataset_id: int) -> Dataset:
+def dataset(request: HttpRequest, dataset_id: int) -> DatasetSchema:
     """
     Get the dataset with the given ID.
     """
     model = get_object_or_404(Dataset, id=dataset_id)
-    return model
+    response = dataset_to_response(model)
+    return response
 
 
 @router.get(
@@ -150,7 +165,7 @@ def dataset(request: HttpRequest, dataset_id: int) -> Dataset:
     exclude_none=True,
     auth=PermissionAuth('distributions.view_dataset')
 )
-def datasets(request: HttpRequest) -> dict[str, QuerySet[Dataset]]:
+def datasets(request: HttpRequest) -> dict[str, list[DatasetSchema]]:
     """
     Get all datasets.
 
@@ -158,4 +173,6 @@ def datasets(request: HttpRequest) -> dict[str, QuerySet[Dataset]]:
     corresponding endpoint for a specific attribution.
     """
     models = Dataset.objects.order_by("id").all()
-    return {"items": models}
+
+    responses = [dataset_to_response(model) for model in models]
+    return {"items": responses}
