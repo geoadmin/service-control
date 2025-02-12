@@ -63,7 +63,7 @@ class Dataset(models.Model):
         return str(self.slug)
 
 
-    slug = CustomSlugField(_(_context, "Slug"), max_length=100)
+    slug = CustomSlugField(_(_context, "Slug"), unique=True, max_length=100)
     created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
     updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
 
@@ -102,7 +102,7 @@ class PackageDistribution(models.Model):
     def __str__(self) -> str:
         return str(self.slug)
 
-    slug = CustomSlugField(_(_context, "Slug"), max_length=100)
+    slug = CustomSlugField(_(_context, "Slug"), unique=True, max_length=100)
     managed_by_stac = models.BooleanField(_(_context, "Managed by STAC"), max_length=100)
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
