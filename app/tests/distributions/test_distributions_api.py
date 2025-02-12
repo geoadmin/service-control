@@ -30,22 +30,22 @@ def test_attribution_to_response_returns_response_with_language_as_defined(attri
     actual = attribution_to_response(attribution, lang="de")
 
     expected = AttributionSchema(
-        id="ch.bafu",
-        name="BAFU",
+        id="ch.bafu.kt",
+        name="BAFU + Kantone",
         name_translations=TranslationsSchema(
-            de="BAFU",
-            fr="OFEV",
-            en="FOEN",
-            it="UFAM",
-            rm="UFAM",
+            de="BAFU + Kantone",
+            fr="OFEV + cantons",
+            en="FOEN + cantons",
+            it="UFAM + cantoni",
+            rm="UFAM + chantuns",
         ),
-        description="Bundesamt für Umwelt",
+        description="Bundesamt für Umwelt und Kantone",
         description_translations=TranslationsSchema(
-            de="Bundesamt für Umwelt",
-            fr="Office fédéral de l'environnement",
-            en="Federal Office for the Environment",
-            it="Ufficio federale dell'ambiente",
-            rm="Uffizi federal per l'ambient",
+            de="Bundesamt für Umwelt und Kantone",
+            fr="Office fédéral de l'environnement et cantons",
+            en="Federal Office for the Environment and cantons",
+            it="Ufficio federale dell'ambiente e cantoni",
+            rm="Uffizi federal per l'ambient e chantuns",
         ),
         provider_id="ch.bafu"
     )
@@ -63,20 +63,20 @@ def test_attribution_to_response_returns_response_with_default_language_if_undef
     actual = attribution_to_response(attribution, lang="it")
 
     expected = AttributionSchema(
-        id="ch.bafu",
-        name="FOEN",
+        id="ch.bafu.kt",
+        name="FOEN + cantons",
         name_translations=TranslationsSchema(
-            de="BAFU",
-            fr="OFEV",
-            en="FOEN",
+            de="BAFU + Kantone",
+            fr="OFEV + cantons",
+            en="FOEN + cantons",
             it=None,
             rm=None,
         ),
-        description="Federal Office for the Environment",
+        description="Federal Office for the Environment and cantons",
         description_translations=TranslationsSchema(
-            de="Bundesamt für Umwelt",
-            fr="Office fédéral de l'environnement",
-            en="Federal Office for the Environment",
+            de="Bundesamt für Umwelt und Kantone",
+            fr="Office fédéral de l'environnement et cantons",
+            en="Federal Office for the Environment and cantons",
             it=None,
             rm=None,
         ),
@@ -96,22 +96,22 @@ def test_get_attribution_returns_existing_attribution_with_default_language(
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "ch.bafu",
-        "name": "FOEN",
+        "id": "ch.bafu.kt",
+        "name": "FOEN + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Federal Office for the Environment",
+        "description": "Federal Office for the Environment and cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
         "provider_id": "ch.bafu",
     }
@@ -127,22 +127,22 @@ def test_get_attribution_returns_attribution_with_language_from_query(
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "ch.bafu",
-        "name": "BAFU",
+        "id": "ch.bafu.kt",
+        "name": "BAFU + Kantone",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Bundesamt für Umwelt",
+        "description": "Bundesamt für Umwelt und Kantone",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
         "provider_id": "ch.bafu",
     }
@@ -174,18 +174,18 @@ def test_get_attribution_skips_translations_that_are_not_available(
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "ch.bafu",
-        "name": "FOEN",
+        "id": "ch.bafu.kt",
+        "name": "FOEN + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
         },
-        "description": "Federal Office for the Environment",
+        "description": "Federal Office for the Environment and cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
         },
         "provider_id": "ch.bafu",
     }
@@ -203,22 +203,22 @@ def test_get_attribution_returns_attribution_with_language_from_header(
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "ch.bafu",
-        "name": "BAFU",
+        "id": "ch.bafu.kt",
+        "name": "BAFU + Kantone",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Bundesamt für Umwelt",
+        "description": "Bundesamt für Umwelt und Kantone",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
         "provider_id": "ch.bafu",
     }
@@ -236,22 +236,22 @@ def test_get_attribution_returns_attribution_with_language_from_query_param_even
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "ch.bafu",
-        "name": "OFEV",
+        "id": "ch.bafu.kt",
+        "name": "OFEV + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Office fédéral de l'environnement",
+        "description": "Office fédéral de l'environnement et cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
         "provider_id": "ch.bafu",
     }
@@ -269,22 +269,22 @@ def test_get_attribution_returns_attribution_with_default_language_if_header_emp
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "ch.bafu",
-        "name": "FOEN",
+        "id": "ch.bafu.kt",
+        "name": "FOEN + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Federal Office for the Environment",
+        "description": "Federal Office for the Environment and cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
         "provider_id": "ch.bafu",
     }
@@ -302,22 +302,22 @@ def test_get_attribution_returns_attribution_with_first_known_language_from_head
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "ch.bafu",
-        "name": "BAFU",
+        "id": "ch.bafu.kt",
+        "name": "BAFU + Kantone",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Bundesamt für Umwelt",
+        "description": "Bundesamt für Umwelt und Kantone",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
         "provider_id": "ch.bafu",
     }
@@ -336,22 +336,22 @@ def test_get_attribution_returns_attribution_with_first_language_from_header_ign
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": "ch.bafu",
-        "name": "OFEV",
+        "id": "ch.bafu.kt",
+        "name": "OFEV + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Office fédéral de l'environnement",
+        "description": "Office fédéral de l'environnement et cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
         "provider_id": "ch.bafu",
     }
@@ -386,22 +386,22 @@ def test_get_attributions_returns_single_attribution_with_given_language(
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": "ch.bafu",
-            "name": "OFEV",
+            "id": "ch.bafu.kt",
+            "name": "OFEV + cantons",
             "name_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
-                "it": "UFAM",
-                "rm": "UFAM",
+                "de": "BAFU + Kantone",
+                "fr": "OFEV + cantons",
+                "en": "FOEN + cantons",
+                "it": "UFAM + cantoni",
+                "rm": "UFAM + chantuns",
             },
-            "description": "Office fédéral de l'environnement",
+            "description": "Office fédéral de l'environnement et cantons",
             "description_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
-                "it": "Ufficio federale dell'ambiente",
-                "rm": "Uffizi federal per l'ambient",
+                "de": "Bundesamt für Umwelt und Kantone",
+                "fr": "Office fédéral de l'environnement et cantons",
+                "en": "Federal Office for the Environment and cantons",
+                "it": "Ufficio federale dell'ambiente e cantoni",
+                "rm": "Uffizi federal per l'ambient e chantuns",
             },
             "provider_id": "ch.bafu",
         }]
@@ -425,18 +425,18 @@ def test_get_attributions_skips_translations_that_are_not_available(
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": "ch.bafu",
-            "name": "FOEN",
+            "id": "ch.bafu.kt",
+            "name": "FOEN + cantons",
             "name_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
+                "de": "BAFU + Kantone",
+                "fr": "OFEV + cantons",
+                "en": "FOEN + cantons",
             },
-            "description": "Federal Office for the Environment",
+            "description": "Federal Office for the Environment and cantons",
             "description_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
+                "de": "Bundesamt für Umwelt und Kantone",
+                "fr": "Office fédéral de l'environnement et cantons",
+                "en": "Federal Office for the Environment and cantons",
             },
             "provider_id": "ch.bafu",
         }]
@@ -454,22 +454,22 @@ def test_get_attributions_returns_attribution_with_language_from_header(
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": "ch.bafu",
-            "name": "BAFU",
+            "id": "ch.bafu.kt",
+            "name": "BAFU + Kantone",
             "name_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
-                "it": "UFAM",
-                "rm": "UFAM",
+                "de": "BAFU + Kantone",
+                "fr": "OFEV + cantons",
+                "en": "FOEN + cantons",
+                "it": "UFAM + cantoni",
+                "rm": "UFAM + chantuns",
             },
-            "description": "Bundesamt für Umwelt",
+            "description": "Bundesamt für Umwelt und Kantone",
             "description_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
-                "it": "Ufficio federale dell'ambiente",
-                "rm": "Uffizi federal per l'ambient",
+                "de": "Bundesamt für Umwelt und Kantone",
+                "fr": "Office fédéral de l'environnement et cantons",
+                "en": "Federal Office for the Environment and cantons",
+                "it": "Ufficio federale dell'ambiente e cantoni",
+                "rm": "Uffizi federal per l'ambient e chantuns",
             },
             "provider_id": "ch.bafu",
         }]
@@ -513,22 +513,22 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
     assert response.json() == {
         "items": [
             {
-                "id": "ch.bafu",
-                "name": "OFEV",
+                "id": "ch.bafu.kt",
+                "name": "OFEV + cantons",
                 "name_translations": {
-                    "de": "BAFU",
-                    "fr": "OFEV",
-                    "en": "FOEN",
-                    "it": "UFAM",
-                    "rm": "UFAM",
+                    "de": "BAFU + Kantone",
+                    "fr": "OFEV + cantons",
+                    "en": "FOEN + cantons",
+                    "it": "UFAM + cantoni",
+                    "rm": "UFAM + chantuns",
                 },
-                "description": "Office fédéral de l'environnement",
+                "description": "Office fédéral de l'environnement et cantons",
                 "description_translations": {
-                    "de": "Bundesamt für Umwelt",
-                    "fr": "Office fédéral de l'environnement",
-                    "en": "Federal Office for the Environment",
-                    "it": "Ufficio federale dell'ambiente",
-                    "rm": "Uffizi federal per l'ambient",
+                    "de": "Bundesamt für Umwelt und Kantone",
+                    "fr": "Office fédéral de l'environnement et cantons",
+                    "en": "Federal Office for the Environment and cantons",
+                    "it": "Ufficio federale dell'ambiente e cantoni",
+                    "rm": "Uffizi federal per l'ambient e chantuns",
                 },
                 "provider_id": "ch.bafu",
             },
@@ -585,7 +585,7 @@ def test_get_dataset_returns_specified_dataset(dataset, client, django_user_fact
         "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "provider_id": "ch.bafu",
-        "attribution_id": "ch.bafu"
+        "attribution_id": "ch.bafu.kt"
     }
 
 
@@ -670,7 +670,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_slug(
                 "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "provider_id": "ch.bafu",
-                "attribution_id": "ch.bafu",
+                "attribution_id": "ch.bafu.kt",
             },
             {
                 "id": "slug2",

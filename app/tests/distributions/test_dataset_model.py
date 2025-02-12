@@ -24,7 +24,7 @@ def test_object_created_in_db_with_all_fields_defined(provider, attribution):
 
     assert dataset.slug == slug
     assert dataset.provider.acronym_de == "BAFU"
-    assert dataset.attribution.name_de == "BAFU"
+    assert dataset.attribution.name_de == "BAFU + Kantone"
 
     assert dataset.created == time_created
     assert dataset.updated == time_created

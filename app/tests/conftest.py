@@ -30,17 +30,17 @@ def fixture_provider(db):
 @fixture(name='attribution')
 def fixture_attribution(provider):
     yield Attribution.objects.create(
-        slug="ch.bafu",
-        name_de="BAFU",
-        name_fr="OFEV",
-        name_en="FOEN",
-        name_it="UFAM",
-        name_rm="UFAM",
-        description_de="Bundesamt für Umwelt",
-        description_fr="Office fédéral de l'environnement",
-        description_en="Federal Office for the Environment",
-        description_it="Ufficio federale dell'ambiente",
-        description_rm="Uffizi federal per l'ambient",
+        slug="ch.bafu.kt",
+        name_de="BAFU + Kantone",
+        name_fr="OFEV + cantons",
+        name_en="FOEN + cantons",
+        name_it="UFAM + cantoni",
+        name_rm="UFAM + chantuns",
+        description_de="Bundesamt für Umwelt und Kantone",
+        description_fr="Office fédéral de l'environnement et cantons",
+        description_en="Federal Office for the Environment and cantons",
+        description_it="Ufficio federale dell'ambiente e cantoni",
+        description_rm="Uffizi federal per l'ambient e chantuns",
         provider=provider
     )
 

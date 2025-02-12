@@ -7,4 +7,4 @@ from .models import Provider
 class ProviderAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     '''Admin View for Provider'''
 
-    list_display = ('acronym_en', 'name_en')
+    list_display = ('slug', 'acronym_en', 'name_en')
