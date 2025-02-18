@@ -12,9 +12,11 @@ class Attribution(models.Model):
     _context = "Attribution Model"
 
     def __str__(self) -> str:
-        return str(self.name_en)
+        return str(self.attribution_id)
 
-    slug = CustomSlugField(_(_context, "Slug"), max_length=100, unique=True, db_index=True)
+    attribution_id = CustomSlugField(
+        _(_context, "External ID"), max_length=100, unique=True, db_index=True
+    )
 
     name_de = models.CharField(_(_context, "Name (German)"))
     name_fr = models.CharField(_(_context, "Name (French)"))
@@ -60,10 +62,10 @@ class Dataset(models.Model):
     _context = "Dataset Model"
 
     def __str__(self) -> str:
-        return str(self.slug)
+        return str(self.dataset_id)
 
 
-    slug = CustomSlugField(_(_context, "Slug"), unique=True, max_length=100)
+    dataset_id = CustomSlugField(_(_context, "External ID"), unique=True, max_length=100)
     created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
     updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
 
@@ -100,9 +102,11 @@ class PackageDistribution(models.Model):
     _context = "Package Distribution Model"
 
     def __str__(self) -> str:
-        return str(self.slug)
+        return str(self.dataset_id)
 
-    slug = CustomSlugField(_(_context, "Slug"), unique=True, max_length=100)
+    package_distribution_id = CustomSlugField(
+        _(_context, "External ID"), unique=True, max_length=100
+    )
     managed_by_stac = models.BooleanField(_(_context, "Managed by STAC"), max_length=100)
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)

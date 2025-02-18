@@ -25,7 +25,7 @@ def user_to_response(model: User) -> UserSchema:
         first_name=model.first_name,
         last_name=model.last_name,
         email=model.email,
-        provider_id=model.provider.slug,
+        provider_id=model.provider.provider_id,
     )
     return response
 
@@ -73,7 +73,7 @@ def create(request: HttpRequest, user_in: UserSchema) -> UserSchema:
         - 500 (Internal Server Error) if there is inconsistency with cognito
         - 503 (Service Unavailable) if cognito cannot be reached
     """
-    provider = get_object_or_404(Provider, slug=user_in.provider_id)
+    provider = get_object_or_404(Provider, provider_id=user_in.provider_id)
 
     user_out = User.objects.create(
         username=user_in.username,
@@ -116,7 +116,7 @@ def update_user(
     """
     user_object = get_object_or_404(User, username=username)
 
-    provider = Provider.objects.filter(slug=user_in.provider_id).first()
+    provider = Provider.objects.filter(provider_id=user_in.provider_id).first()
     if not provider:
         raise HttpError(HTTPStatus.BAD_REQUEST, "Provider does not exist")
 

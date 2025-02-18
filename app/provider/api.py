@@ -20,7 +20,7 @@ def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
     Transforms the given model using the given language into a response object.
     """
     response = ProviderSchema(
-        id=model.slug,
+        id=model.provider_id,
         name=get_translation(model, "name", lang),
         name_translations=TranslationsSchema(
             de=model.name_de,
@@ -94,7 +94,7 @@ def provider(
         - Subtags in the header are ignored. So "en-US" is interpreted as "en".
         - Wildcards ("*") are ignored.
     """
-    model = get_object_or_404(Provider, slug=provider_id)
+    model = get_object_or_404(Provider, provider_id=provider_id)
     lang_to_use = get_language(lang, request.headers)
     response = provider_to_response(model, lang_to_use)
     return response

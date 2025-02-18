@@ -99,7 +99,7 @@ class Handler(CommandHandler):
                 is_new_model = True
                 provider = Provider.objects.create(
                     _legacy_id=legacy_id,
-                    slug=organization.attribution,  # type:ignore[misc]
+                    provider_id=organization.attribution,  # type:ignore[misc]
                     acronym_de="undefined",
                     acronym_fr="undefined",
                     acronym_en="undefined",
@@ -138,7 +138,7 @@ class Handler(CommandHandler):
             ('acronym_en', 'abkuerzung_en'),
             ('acronym_it', 'abkuerzung_it'),
             ('acronym_rm', 'abkuerzung_rm'),
-            ('slug', 'attribution'),
+            ('provider_id', 'attribution'),
         ):
             changed = self.update_model(
                 provider,
@@ -157,8 +157,8 @@ class Handler(CommandHandler):
         translations in the translations table. Here, we create one attribution entry for each
         provider or remove additional ones. Each attribution is mapped to a provider by the first
         part of the attribution identifier (e.g. "ch.bafu.kt" maps to "ch.bafu"). These identifiers
-        are renamed to slug. The slug of an attribution may be the same as the slug of its related
-        provider.
+        are renamed to attribution_id. The attribution_id of an attribution may be the same as the
+        provider_id of its related provider.
 
         """
 
@@ -174,7 +174,7 @@ class Handler(CommandHandler):
             provider: Provider | None
             if organization.attribution is not None:
                 provider_of_attribution = ".".join(organization.attribution.split(".", 2)[:2])
-                provider = Provider.objects.filter(slug=provider_of_attribution).first()
+                provider = Provider.objects.filter(provider_id=provider_of_attribution).first()
             if not provider:
                 # Skip as no matching provider
                 self.print(
@@ -190,7 +190,7 @@ class Handler(CommandHandler):
                 is_new_model = True
                 attribution = provider.attribution_set.create(
                     _legacy_id=legacy_id,
-                    slug=organization.attribution,  # type:ignore[misc]
+                    attribution_id=organization.attribution,  # type:ignore[misc]
                     name_de="undefined",
                     name_fr="undefined",
                     name_en="undefined",
@@ -231,7 +231,7 @@ class Handler(CommandHandler):
             ('description_en', 'en'),
             ('description_it', 'it'),
             ('description_rm', 'rm'),
-            ('slug', '') # will be updated to organization.attribution
+            ('attribution_id', '') # will be updated to organization.attribution
         ):
             changed = self.update_model(
                 attribution,
@@ -293,7 +293,7 @@ class Handler(CommandHandler):
                     provider=provider,
                     attribution=attribution,
                     _legacy_id=legacy_id,
-                    slug='undefined'
+                    dataset_id='undefined'
                 )
                 self.increment_counter('dataset', 'added')
                 self.print(f"Added dataset '{bod_dataset.id_dataset}'")
@@ -313,7 +313,7 @@ class Handler(CommandHandler):
         """ Update the attributes of a dataset. """
 
         any_changed = False
-        for dataset_attribute, bod_dataset_attribute in (('slug', 'id_dataset'),):
+        for dataset_attribute, bod_dataset_attribute in (('dataset_id', 'id_dataset'),):
             changed = self.update_model(
                 dataset,
                 dataset_attribute,

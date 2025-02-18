@@ -42,7 +42,7 @@ class User(models.Model):
     _context = "User model"
 
     def __str__(self) -> str:
-        return f'{self.first_name} {self.last_name}'
+        return str(self.username)
 
     username = CustomSlugField(_(_context, "User name"), unique=True, max_length=100)
     user_id = models.CharField(_(_context, "User ID"), unique=True, default=generate_short_id)

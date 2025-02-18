@@ -13,7 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 @fixture(name='provider')
 def fixture_provider(db):
     yield Provider.objects.create(
-        slug="ch.bafu",
+        provider_id="ch.bafu",
         acronym_de="BAFU",
         acronym_fr="OFEV",
         acronym_en="FOEN",
@@ -30,7 +30,7 @@ def fixture_provider(db):
 @fixture(name='attribution')
 def fixture_attribution(provider):
     yield Attribution.objects.create(
-        slug="ch.bafu.kt",
+        attribution_id="ch.bafu.kt",
         name_de="BAFU + Kantone",
         name_fr="OFEV + cantons",
         name_en="FOEN + cantons",

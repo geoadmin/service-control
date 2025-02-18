@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 @fixture(name='dataset')
 def fixture_dataset(provider, attribution):
     yield Dataset.objects.create(
-        slug="ch.agroscope.feuchtflaechenpotential-kulturlandschaft",
+        dataset_id="ch.agroscope.feuchtflaechenpotential-kulturlandschaft",
         provider=provider,
         attribution=attribution,
     )
@@ -17,7 +17,7 @@ def fixture_dataset(provider, attribution):
 
 def test_create_package_distribution_in_database(dataset):
     PackageDistribution.objects.create(
-        slug="ch.agroscope.feuchtflaechenpotential-kulturlandschaft",
+        package_distribution_id="ch.agroscope.feuchtflaechenpotential-kulturlandschaft",
         managed_by_stac=True,
         dataset=dataset
     )
@@ -28,7 +28,8 @@ def test_create_package_distribution_in_database(dataset):
 
     distribution = distributions[0]
 
-    assert distribution.slug == "ch.agroscope.feuchtflaechenpotential-kulturlandschaft"
+    assert distribution.package_distribution_id == \
+        "ch.agroscope.feuchtflaechenpotential-kulturlandschaft"
     assert distribution.managed_by_stac is True
     assert distribution.dataset == dataset
 

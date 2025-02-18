@@ -7,7 +7,7 @@ from django.forms import ModelForm
 
 def test_object_created_in_db_with_all_fields_defined(db):
     provider_in = {
-        "slug": "ch.bafu",
+        "provider_id": "ch.bafu",
         "name_de": "Bundesamt für Umwelt",
         "name_fr": "Office fédéral de l'environnement",
         "name_en": "Federal Office for the Environment",
@@ -41,7 +41,7 @@ def test_object_created_in_db_with_all_fields_defined(db):
 
 def test_object_created_in_db_with_optional_fields_null(db):
     provider_in = {
-        "slug": "ch.bafu",
+        "provider_id": "ch.bafu",
         "name_de": "Bundesamt für Umwelt",
         "name_fr": "Office fédéral de l'environnement",
         "name_en": "Federal Office for the Environment",
@@ -60,7 +60,7 @@ def test_object_created_in_db_with_optional_fields_null(db):
     assert len(providers) == 1
 
     actual = Provider.objects.last()
-    assert actual.slug == provider_in["slug"]
+    assert actual.provider_id == provider_in["provider_id"]
 
     assert actual.name_de == provider_in["name_de"]
     assert actual.name_fr == provider_in["name_fr"]
@@ -89,7 +89,7 @@ def test_form_valid_for_blank_optional_field(db):
             fields = "__all__"
 
     data = {
-        "slug": "ch.bafu",
+        "provider_id": "ch.bafu",
         "name_de": "Bundesamt für Umwelt",
         "name_fr": "Office fédéral de l'environnement",
         "name_en": "Federal Office for the Environment",
@@ -111,7 +111,7 @@ def test_form_invalid_for_blank_mandatory_field(db):
             fields = "__all__"
 
     data = {
-        "slug": "ch.bafu",
+        "provider_id": "ch.bafu",
         "name_de": "Bundesamt für Umwelt",
         "name_fr": "Office fédéral de l'environnement",
         "name_en": "Federal Office for the Environment",

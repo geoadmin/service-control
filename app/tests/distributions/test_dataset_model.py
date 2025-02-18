@@ -8,11 +8,11 @@ from django.core.exceptions import ValidationError
 
 
 def test_object_created_in_db_with_all_fields_defined(provider, attribution):
-    slug = "ch.bafu.neophyten-haargurke"
+    dataset_id = "ch.bafu.neophyten-haargurke"
     time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
         Dataset.objects.create(
-            slug=slug,
+            dataset_id=dataset_id,
             provider=provider,
             attribution=attribution,
         )
@@ -22,7 +22,7 @@ def test_object_created_in_db_with_all_fields_defined(provider, attribution):
 
     dataset = Dataset.objects.last()
 
-    assert dataset.slug == slug
+    assert dataset.dataset_id == dataset_id
     assert dataset.provider.acronym_de == "BAFU"
     assert dataset.attribution.name_de == "BAFU + Kantone"
 
@@ -34,7 +34,7 @@ def test_field_created_matches_creation_time(provider, attribution):
     time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
         dataset = Dataset.objects.create(
-            slug='xxxx',
+            dataset_id='xxxx',
             provider=provider,
             attribution=attribution,
         )
@@ -42,11 +42,11 @@ def test_field_created_matches_creation_time(provider, attribution):
 
 
 def test_field_updated_matches_update_time(provider, attribution):
-    dataset = Dataset.objects.create(slug='xxxx', provider=provider, attribution=attribution)
+    dataset = Dataset.objects.create(dataset_id='xxxx', provider=provider, attribution=attribution)
 
     time_updated = datetime.datetime(2024, 9, 12, 15, 42, 0, tzinfo=datetime.UTC)
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_updated)):
-        dataset.slug = "ch.bafu.neophyten-goetterbaum"
+        dataset.dataset_id = "ch.bafu.neophyten-goetterbaum"
         dataset.save()
 
     assert dataset.updated == time_updated

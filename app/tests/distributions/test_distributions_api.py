@@ -19,7 +19,7 @@ def fixture_time_created():
 def fixture_dataset(attribution, time_created):
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
         yield Dataset.objects.create(
-            slug="ch.bafu.neophyten-haargurke",
+            dataset_id="ch.bafu.neophyten-haargurke",
             provider=attribution.provider,
             attribution=attribution
         )
@@ -92,7 +92,7 @@ def test_get_attribution_returns_existing_attribution_with_default_language(
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/attributions/{attribution.slug}")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -123,7 +123,7 @@ def test_get_attribution_returns_attribution_with_language_from_query(
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/attributions/{attribution.slug}?lang=de")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}?lang=de")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -170,7 +170,7 @@ def test_get_attribution_skips_translations_that_are_not_available(
     attribution.description_rm = None
     attribution.save()
 
-    response = client.get(f"/api/v1/attributions/{attribution.slug}")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -198,7 +198,7 @@ def test_get_attribution_returns_attribution_with_language_from_header(
     client.login(username='test', password='test')
 
     response = client.get(
-        f"/api/v1/attributions/{attribution.slug}", headers={"Accept-Language": "de"}
+        f"/api/v1/attributions/{attribution.attribution_id}", headers={"Accept-Language": "de"}
     )
 
     assert response.status_code == 200
@@ -231,7 +231,8 @@ def test_get_attribution_returns_attribution_with_language_from_query_param_even
     client.login(username='test', password='test')
 
     response = client.get(
-        f"/api/v1/attributions/{attribution.slug}?lang=fr", headers={"Accept-Language": "de"}
+        f"/api/v1/attributions/{attribution.attribution_id}?lang=fr",
+        headers={"Accept-Language": "de"}
     )
 
     assert response.status_code == 200
@@ -264,7 +265,7 @@ def test_get_attribution_returns_attribution_with_default_language_if_header_emp
     client.login(username='test', password='test')
 
     response = client.get(
-        f"/api/v1/attributions/{attribution.slug}", headers={"Accept-Language": ""}
+        f"/api/v1/attributions/{attribution.attribution_id}", headers={"Accept-Language": ""}
     )
 
     assert response.status_code == 200
@@ -297,7 +298,8 @@ def test_get_attribution_returns_attribution_with_first_known_language_from_head
     client.login(username='test', password='test')
 
     response = client.get(
-        f"/api/v1/attributions/{attribution.slug}", headers={"Accept-Language": "cn, *, de-DE, en"}
+        f"/api/v1/attributions/{attribution.attribution_id}",
+        headers={"Accept-Language": "cn, *, de-DE, en"}
     )
 
     assert response.status_code == 200
@@ -330,7 +332,7 @@ def test_get_attribution_returns_attribution_with_first_language_from_header_ign
     client.login(username='test', password='test')
 
     response = client.get(
-        f"/api/v1/attributions/{attribution.slug}",
+        f"/api/v1/attributions/{attribution.attribution_id}",
         headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
     )
 
@@ -359,7 +361,7 @@ def test_get_attribution_returns_attribution_with_first_language_from_header_ign
 
 def test_get_attribution_returns_401_if_not_logged_in(attribution, client):
 
-    response = client.get(f"/api/v1/attributions/{attribution.slug}")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -369,7 +371,7 @@ def test_get_attribution_returns_403_if_no_permission(attribution, client, djang
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/attributions/{attribution.slug}")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}")
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -483,7 +485,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
     client.login(username='test', password='test')
 
     provider2 = Provider.objects.create(
-        slug="ch.provider2",
+        provider_id="ch.provider2",
         acronym_de="Provider2",
         acronym_fr="Provider2",
         acronym_en="Provider2",
@@ -492,7 +494,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
         name_en="Provider2"
     )
     model_fields = {
-        "slug": "ch.provider2.bav",
+        "attribution_id": "ch.provider2.bav",
         "name_de": "BAV",
         "name_fr": "OFT",
         "name_en": "FOT",
@@ -577,7 +579,7 @@ def test_get_dataset_returns_specified_dataset(dataset, client, django_user_fact
     django_user_factory('test', 'test', [('distributions', 'dataset', 'view_dataset')])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/datasets/{dataset.slug}")
+    response = client.get(f"/api/v1/datasets/{dataset.dataset_id}")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -590,7 +592,7 @@ def test_get_dataset_returns_specified_dataset(dataset, client, django_user_fact
 
 
 def test_get_dataset_returns_401_if_not_logged_in(dataset, client):
-    response = client.get(f"/api/v1/datasets/{dataset.slug}")
+    response = client.get(f"/api/v1/datasets/{dataset.dataset_id}")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -600,7 +602,7 @@ def test_get_dataset_returns_403_if_no_permission(dataset, client, django_user_f
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/datasets/{dataset.slug}")
+    response = client.get(f"/api/v1/datasets/{dataset.dataset_id}")
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -621,19 +623,19 @@ def test_get_datasets_returns_single_dataset_as_expected(
             "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "provider_id": "ch.bafu",
-            "attribution_id": dataset.attribution.slug,
+            "attribution_id": dataset.attribution.attribution_id,
         }]
     }
 
 
-def test_get_datasets_returns_all_datasets_ordered_by_slug(
+def test_get_datasets_returns_all_datasets_ordered_by_dataset_id(
     dataset, client, django_user_factory, time_created
 ):
     django_user_factory('test', 'test', [('distributions', 'dataset', 'view_dataset')])
     client.login(username='test', password='test')
 
     provider2 = Provider.objects.create(
-        slug="ch.provider2",
+        provider_id="ch.provider2",
         acronym_de="Provider2",
         acronym_fr="Provider2",
         acronym_en="Provider2",
@@ -642,7 +644,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_slug(
         name_en="Provider2"
     )
     attribution2 = Attribution.objects.create(
-        slug="ch.provider2.attribution2",
+        attribution_id="ch.provider2.attribution2",
         name_de="Attribution2",
         name_fr="Attribution2",
         name_en="Attribution2",
@@ -652,7 +654,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_slug(
         provider=provider2,
     )
     model_fields2 = {
-        "slug": "slug2",
+        "dataset_id": "ch.provider2.dataset2",
         "provider": provider2,
         "attribution": attribution2,
     }
@@ -673,7 +675,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_slug(
                 "attribution_id": "ch.bafu.kt",
             },
             {
-                "id": "slug2",
+                "id": "ch.provider2.dataset2",
                 "created": dataset2.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": dataset2.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "provider_id": "ch.provider2",

@@ -12,13 +12,15 @@ class Provider(models.Model):
     _context = "Provider model"
 
     def __str__(self) -> str:
-        return str(self.acronym_en)
+        return str(self.provider_id)
 
     '''
     Note: The "blank=False" for a model field doesn't prevent DB changes.
           It only has an effect on form validation.
     '''
-    slug = CustomSlugField(_(_context, "Slug"), max_length=100, unique=True, db_index=True)
+    provider_id = CustomSlugField(
+        _(_context, "External ID"), max_length=100, unique=True, db_index=True
+    )
 
     name_de = models.CharField(_(_context, "Name (German)"))
     name_fr = models.CharField(_(_context, "Name (French)"))

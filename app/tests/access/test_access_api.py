@@ -31,7 +31,7 @@ def test_user_to_response_maps_fields_correctly(user):
         first_name="Jeffrey",
         last_name="Lebowski",
         email="dude@bowling.com",
-        provider_id=user.provider.slug,
+        provider_id=user.provider.provider_id,
     )
 
     assert actual == expected
@@ -498,7 +498,7 @@ def test_update_user_updates_existing_user_as_expected(
     assert user.first_name == "Jeff"
     assert user.last_name == "Bridges"
     assert user.email == "tron@hollywood.com"
-    assert user.provider.slug == "ch.bafu"
+    assert user.provider.provider_id == "ch.bafu"
 
     assert cognito_client.return_value.update_user.called
 

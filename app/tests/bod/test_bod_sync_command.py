@@ -59,7 +59,7 @@ def test_command_imports(bod_dataset):
     assert Dataset.objects.count() == 1
 
     provider = Provider.objects.first()
-    assert provider.slug == "ch.bafu"
+    assert provider.provider_id == "ch.bafu"
     assert provider.name_de == "Bundesamt für Umwelt"
     assert provider.name_fr == "Office fédéral de l'environnement"
     assert provider.name_en == "Federal Office for the Environment"
@@ -72,7 +72,7 @@ def test_command_imports(bod_dataset):
     assert provider.acronym_rm == "UFAM"
 
     attribution = provider.attribution_set.first()
-    assert attribution.slug == "ch.bafu"
+    assert attribution.attribution_id == "ch.bafu"
     assert attribution.name_de == "BAFU"
     assert attribution.name_fr == "OFEV"
     assert attribution.name_en == "FOEN"
@@ -86,7 +86,7 @@ def test_command_imports(bod_dataset):
 
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
-    assert dataset.slug == "ch.bafu.auen-vegetationskarten"
+    assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
 
 
 def test_command_does_not_need_to_import(db):
@@ -118,7 +118,7 @@ def test_command_imports_providers(bod_dataset):
     assert Dataset.objects.count() == 0
 
     provider = Provider.objects.first()
-    assert provider.slug == "ch.bafu"
+    assert provider.provider_id == "ch.bafu"
     assert provider.name_de == "Bundesamt für Umwelt"
     assert provider.name_fr == "Office fédéral de l'environnement"
     assert provider.name_en == "Federal Office for the Environment"
@@ -143,7 +143,7 @@ def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
     assert Dataset.objects.count() == 0
 
     provider = Provider.objects.create(
-        slug="ch.bafu",
+        provider_id="ch.bafu",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -162,7 +162,7 @@ def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
     assert Dataset.objects.count() == 0
 
     attribution = provider.attribution_set.first()
-    assert attribution.slug == "ch.bafu"
+    assert attribution.attribution_id == "ch.bafu"
     assert attribution.name_de == "BAFU"
     assert attribution.name_fr == "OFEV"
     assert attribution.name_en == "FOEN"
@@ -190,7 +190,7 @@ def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
     assert Dataset.objects.count() == 0
 
     provider = Provider.objects.create(
-        slug="ch.bafu",
+        provider_id="ch.bafu",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -200,7 +200,7 @@ def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     attribution = Attribution.objects.create(
-        slug="ch.bafu",
+        attribution_id="ch.bafu",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -221,13 +221,13 @@ def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
 
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
-    assert dataset.slug == "ch.bafu.auen-vegetationskarten"
+    assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
 
 
 def test_command_updates(bod_contact_organisation, bod_dataset):
     # Add objects that will be updated
     provider = Provider.objects.create(
-        slug="ch.bafu",
+        provider_id="ch.bafu",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -237,7 +237,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     attribution = Attribution.objects.create(
-        slug="ch.bafu",
+        attribution_id="ch.bafu",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -248,7 +248,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     dataset = Dataset.objects.create(
-        slug="xxx", provider=provider, attribution=attribution, _legacy_id=bod_dataset.id
+        dataset_id="xxx", provider=provider, attribution=attribution, _legacy_id=bod_dataset.id
     )
 
     out = StringIO()
@@ -261,14 +261,14 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
     assert f"Changed Attribution {attribution.id} name_de" in out.getvalue()
     assert f"Changed Attribution {attribution.id} description_de" not in out.getvalue()
     assert "1 attribution(s) updated" in out.getvalue()
-    assert f"Changed Dataset {dataset.id} slug" in out.getvalue()
+    assert f"Changed Dataset {dataset.id} dataset_id" in out.getvalue()
     assert "1 dataset(s) updated" in out.getvalue()
     assert Provider.objects.count() == 1
     assert Attribution.objects.count() == 1
     assert Dataset.objects.count() == 1
 
     provider = Provider.objects.first()
-    assert provider.slug == "ch.bafu"
+    assert provider.provider_id == "ch.bafu"
     assert provider.name_de == "Bundesamt für Umwelt"
     assert provider.name_fr == "Office fédéral de l'environnement"
     assert provider.name_en == "Federal Office for the Environment"
@@ -281,7 +281,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
     assert provider.acronym_rm == "UFAM"
 
     attribution = provider.attribution_set.first()
-    assert attribution.slug == "ch.bafu"
+    assert attribution.attribution_id == "ch.bafu"
     assert attribution.name_de == "BAFU"
     assert attribution.name_fr == "OFEV"
     assert attribution.name_en == "FOEN"
@@ -294,13 +294,13 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
     assert attribution.description_rm == "UFAM"
 
     dataset = provider.dataset_set.first()
-    assert dataset.slug == "ch.bafu.auen-vegetationskarten"
+    assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
 
 
 def test_command_removes_orphaned_provider(bod_dataset):
     # Add objects which will be removed
     provider = Provider.objects.create(
-        slug="ch.xxx",
+        provider_id="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -310,7 +310,7 @@ def test_command_removes_orphaned_provider(bod_dataset):
         _legacy_id=16
     )
     attribution = Attribution.objects.create(
-        slug="ch.xxx",
+        attribution_id="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -320,11 +320,13 @@ def test_command_removes_orphaned_provider(bod_dataset):
         provider=provider,
         _legacy_id=16
     )
-    Dataset.objects.create(slug="xxx", provider=provider, attribution=attribution, _legacy_id=160)
+    Dataset.objects.create(
+        dataset_id="xxx", provider=provider, attribution=attribution, _legacy_id=160
+    )
 
     # Add objects which will not be removed
     provider = Provider.objects.create(
-        slug="ch.yyy",
+        provider_id="ch.yyy",
         name_de="YYY",
         name_fr="YYY",
         name_en="YYY",
@@ -333,7 +335,7 @@ def test_command_removes_orphaned_provider(bod_dataset):
         acronym_en="YYYY",
     )
     attribution = Attribution.objects.create(
-        slug="ch.yyy",
+        attribution_id="ch.yyy",
         name_de="YYYY",
         name_fr="YYYY",
         name_en="YYYY",
@@ -342,7 +344,7 @@ def test_command_removes_orphaned_provider(bod_dataset):
         description_en="YYY",
         provider=provider
     )
-    Dataset.objects.create(slug="yyyy", provider=provider, attribution=attribution)
+    Dataset.objects.create(dataset_id="yyyy", provider=provider, attribution=attribution)
 
     out = StringIO()
     call_command(
@@ -360,13 +362,13 @@ def test_command_removes_orphaned_provider(bod_dataset):
     assert {'BAFU', 'YYYY'} == set(Provider.objects.values_list('acronym_de', flat=True))
     assert {'BAFU', 'YYYY'} == set(Attribution.objects.values_list('name_de', flat=True))
     assert {'ch.bafu.auen-vegetationskarten',
-            'yyyy'} == set(Dataset.objects.values_list('slug', flat=True))
+            'yyyy'} == set(Dataset.objects.values_list('dataset_id', flat=True))
 
 
 def test_command_removes_orphaned_attribution(bod_contact_organisation):
     # Add objects which will not be removed
     provider = Provider.objects.create(
-        slug="ch.xxx",
+        provider_id="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -378,7 +380,7 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
 
     # Add objects which will be removed
     attribution = Attribution.objects.create(
-        slug="ch.xxx",
+        attribution_id="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -388,7 +390,9 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
         provider=provider,
         _legacy_id=16
     )
-    Dataset.objects.create(slug="xxx", provider=provider, attribution=attribution, _legacy_id=160)
+    Dataset.objects.create(
+        dataset_id="xxx", provider=provider, attribution=attribution, _legacy_id=160
+    )
 
     out = StringIO()
     call_command(
@@ -410,7 +414,7 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
 def test_command_removes_orphaned_dataset(bod_contact_organisation):
     # Add objects which will not be removed
     provider = Provider.objects.create(
-        slug="ch.xxx",
+        provider_id="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -420,7 +424,7 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     attribution = Attribution.objects.create(
-        slug="ch.xxx",
+        attribution_id="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -432,7 +436,9 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
     )
 
     # Add objects which will be removed
-    Dataset.objects.create(slug="xxx", provider=provider, attribution=attribution, _legacy_id=160)
+    Dataset.objects.create(
+        dataset_id="xxx", provider=provider, attribution=attribution, _legacy_id=160
+    )
 
     out = StringIO()
     call_command(
@@ -467,7 +473,7 @@ def test_command_does_not_import_if_dry_run(bod_dataset):
 
 def test_command_clears_existing_data(bod_dataset):
     provider = Provider.objects.create(
-        slug="ch.xxx",
+        provider_id="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -477,7 +483,7 @@ def test_command_clears_existing_data(bod_dataset):
         _legacy_id=150
     )
     attribution = Attribution.objects.create(
-        slug="ch.xxx",
+        attribution_id="ch.xxx",
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
@@ -486,7 +492,7 @@ def test_command_clears_existing_data(bod_dataset):
         description_en="XXX",
         provider=provider
     )
-    Dataset.objects.create(slug="yyyy", provider=provider, attribution=attribution)
+    Dataset.objects.create(dataset_id="yyyy", provider=provider, attribution=attribution)
 
     out = StringIO()
     call_command(
@@ -508,4 +514,4 @@ def test_command_clears_existing_data(bod_dataset):
     assert attribution.name_de == "BAFU"
 
     dataset = provider.dataset_set.first()
-    assert dataset.slug == "ch.bafu.auen-vegetationskarten"
+    assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
