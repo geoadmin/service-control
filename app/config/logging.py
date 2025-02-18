@@ -61,15 +61,17 @@ def generate_log_extra(request: HttpRequest, response: HttpResponse) -> LogExtra
             'request': {
                 'method': request.method or 'UNKNOWN',
                 'header': {
-                    k.lower(): v for k,
-                    v in request.headers.items() if k.lower() in settings.LOG_ALLOWED_HEADERS
+                    k.lower(): v
+                    for k, v in request.headers.items()
+                    if k.lower() in settings.LOG_ALLOWED_HEADERS
                 }
             },
             'response': {
                 'status_code': response.status_code,
                 'header': {
-                    k.lower(): v for k,
-                    v in response.headers.items() if k.lower() in settings.LOG_ALLOWED_HEADERS
+                    k.lower(): v
+                    for k, v in response.headers.items()
+                    if k.lower() in settings.LOG_ALLOWED_HEADERS
                 },
             }
         },
