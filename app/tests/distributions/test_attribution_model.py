@@ -1,28 +1,13 @@
 from distributions.models import Attribution
-from provider.models import Provider
-from pytest import fixture
 from pytest import raises
 
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
 
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        slug="ch.bafu",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment"
-    )
-
-
 def test_object_created_in_db_with_all_fields_defined(provider):
     attribution = {
-        "slug": "ch.bafu",
+        "attribution_id": "ch.bafu",
         "name_de": "BAFU",
         "name_fr": "OFEV",
         "name_en": "FOEN",
@@ -42,7 +27,7 @@ def test_object_created_in_db_with_all_fields_defined(provider):
     assert len(attributions) == 1
 
     actual = Attribution.objects.last()
-    assert actual.slug == attribution["slug"]
+    assert actual.attribution_id == attribution["attribution_id"]
 
     assert actual.name_de == attribution["name_de"]
     assert actual.name_fr == attribution["name_fr"]
@@ -61,7 +46,7 @@ def test_object_created_in_db_with_all_fields_defined(provider):
 
 def test_object_created_in_db_with_optional_fields_null(provider):
     attribution = {
-        "slug": "ch.bafu",
+        "attribution_id": "ch.bafu",
         "name_de": "BAFU",
         "name_fr": "OFEV",
         "name_en": "FOEN",
@@ -81,7 +66,7 @@ def test_object_created_in_db_with_optional_fields_null(provider):
     assert len(attributions) == 1
 
     actual = Attribution.objects.last()
-    assert actual.slug == attribution["slug"]
+    assert actual.attribution_id == attribution["attribution_id"]
 
     assert actual.name_de == attribution["name_de"]
     assert actual.name_fr == attribution["name_fr"]
@@ -110,7 +95,7 @@ def test_form_valid_for_blank_optional_field(provider):
             fields = "__all__"
 
     data = {
-        "slug": "ch.bafu",
+        "attribution_id": "ch.bafu",
         "name_de": "BAFU",
         "name_fr": "OFEV",
         "name_en": "FOEN",
@@ -133,7 +118,7 @@ def test_form_invalid_for_blank_mandatory_field(provider):
             fields = "__all__"
 
     data = {
-        "slug": "ch.bafu",
+        "attribution_id": "ch.bafu",
         "name_de": "BAFU",
         "name_fr": "OFEV",
         "name_en": "FOEN",

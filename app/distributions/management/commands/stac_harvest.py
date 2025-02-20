@@ -48,7 +48,7 @@ class Handler(CommandHandler):
         This function adds new package distributions, updates existing ones and removes orphans.
 
         Each STAC collection corresponds to a package distribution (of a dataset with the same
-        slug).
+        distribution_id).
 
         """
         processed = set()
@@ -56,23 +56,25 @@ class Handler(CommandHandler):
         # Get collections
         client = Client.open(self.url)
         for collection in client.collection_search().collections():
-            slug = collection.id
-            processed.add(slug)
+            collection_id = collection.id
+            processed.add(collection_id)
 
             # Get dataset
-            dataset = Dataset.objects.filter(slug=slug).first()
+            dataset = Dataset.objects.filter(dataset_id=collection_id).first()
             if not dataset:
-                self.print_warning("No dataset for collection id '%s'", slug)
+                self.print_warning("No dataset for collection id '%s'", collection_id)
                 continue
 
             # Get or create package distribution
-            package_distribution = PackageDistribution.objects.filter(slug=slug).first()
+            package_distribution = PackageDistribution.objects.filter(
+                package_distribution_id=collection_id
+            ).first()
             if not package_distribution:
                 package_distribution = PackageDistribution.objects.create(
-                    slug=slug, managed_by_stac=True, dataset=dataset
+                    package_distribution_id=collection_id, managed_by_stac=True, dataset=dataset
                 )
                 self.increment_counter('package_distribution', 'added')
-                self.print(f"Added package distribution '{slug}'")
+                self.print(f"Added package distribution '{collection_id}'")
 
             # Update package distribution
             if not package_distribution.managed_by_stac or package_distribution.dataset != dataset:
@@ -80,13 +82,14 @@ class Handler(CommandHandler):
                 package_distribution.dataset = dataset
                 package_distribution.save()
                 self.increment_counter('package_distribution', 'updated')
-                self.print(f"Updated package distribution '{slug}'")
+                self.print(f"Updated package distribution '{collection_id}'")
 
             self.check_provider(collection, dataset)
 
         # Remove orphaned package distributions
-        orphans = PackageDistribution.objects.filter(managed_by_stac=True
-                                                    ).exclude(slug__in=processed)
+        orphans = PackageDistribution.objects.filter(managed_by_stac=True).exclude(
+            package_distribution_id__in=processed
+        )
         _, removed = orphans.delete()
         for model_class, count in removed.items():
             model_name = model_class.split('.')[-1].lower()
@@ -99,12 +102,12 @@ class Handler(CommandHandler):
         A similarity ratio can be applied to minimize warnings for minor textual variations.
 
         """
-        slug = collection.id
+        collection_id = collection.id
         providers = collection.providers
         if not providers:
-            self.print_warning("Collection '%s' has no providers", slug)
+            self.print_warning("Collection '%s' has no providers", collection_id)
         elif len(providers) > 1:
-            self.print_warning("Collection '%s' has more than one provider", slug)
+            self.print_warning("Collection '%s' has more than one provider", collection_id)
         else:
             name_collection = providers[0].name
             name_dataset = dataset.provider.name_en

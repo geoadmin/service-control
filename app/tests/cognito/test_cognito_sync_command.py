@@ -3,28 +3,10 @@ from unittest.mock import call
 from unittest.mock import patch
 
 from access.models import User
-from provider.models import Provider
 from pytest import fixture
 
 from django.core.management import call_command
 from django.utils import timezone
-
-
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        slug="ch.bafu",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        acronym_it="UFAM",
-        acronym_rm="UFAM",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment",
-        name_it="Ufficio federale dell'ambiente",
-        name_rm="Uffizi federal per l'ambient",
-    )
 
 
 @fixture(name='user')

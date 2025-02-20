@@ -15,181 +15,140 @@ def fixture_time_created():
     yield datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
 
 
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        slug="ch.bafu",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment"
-    )
-
-
-@fixture(name='attribution')
-def fixture_attribution(provider):
-    yield Attribution.objects.create(
-        slug="ch.bafu",
-        name_de="BAFU",
-        name_fr="OFEV",
-        name_en="FOEN",
-        name_it="UFAM",
-        name_rm="UFAM",
-        description_de="Bundesamt für Umwelt",
-        description_fr="Office fédéral de l'environnement",
-        description_en="Federal Office for the Environment",
-        description_it="Ufficio federale dell'ambiente",
-        description_rm="Uffizi federal per l'ambient",
-        provider=provider
-    )
-
-
 @fixture(name='dataset')
-def fixture_dataset(provider, attribution, time_created):
+def fixture_dataset(attribution, time_created):
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
         yield Dataset.objects.create(
-            slug="ch.bafu.neophyten-haargurke", provider=provider, attribution=attribution
+            dataset_id="ch.bafu.neophyten-haargurke",
+            provider=attribution.provider,
+            attribution=attribution
         )
 
 
-def test_attribution_to_response_returns_response_with_language_as_defined(dataset):
+def test_attribution_to_response_returns_response_with_language_as_defined(attribution):
 
-    model = Attribution.objects.last()
-    actual = attribution_to_response(model, lang="de")
+    actual = attribution_to_response(attribution, lang="de")
 
     expected = AttributionSchema(
-        id=model.id,
-        slug="ch.bafu",
-        name="BAFU",
+        id="ch.bafu.kt",
+        name="BAFU + Kantone",
         name_translations=TranslationsSchema(
-            de="BAFU",
-            fr="OFEV",
-            en="FOEN",
-            it="UFAM",
-            rm="UFAM",
+            de="BAFU + Kantone",
+            fr="OFEV + cantons",
+            en="FOEN + cantons",
+            it="UFAM + cantoni",
+            rm="UFAM + chantuns",
         ),
-        description="Bundesamt für Umwelt",
+        description="Bundesamt für Umwelt und Kantone",
         description_translations=TranslationsSchema(
-            de="Bundesamt für Umwelt",
-            fr="Office fédéral de l'environnement",
-            en="Federal Office for the Environment",
-            it="Ufficio federale dell'ambiente",
-            rm="Uffizi federal per l'ambient",
+            de="Bundesamt für Umwelt und Kantone",
+            fr="Office fédéral de l'environnement et cantons",
+            en="Federal Office for the Environment and cantons",
+            it="Ufficio federale dell'ambiente e cantoni",
+            rm="Uffizi federal per l'ambient e chantuns",
         ),
-        provider_id=Provider.objects.last().id
+        provider_id="ch.bafu"
     )
 
     assert actual == expected
 
 
-def test_attribution_to_response_returns_response_with_default_language_if_undefined(dataset):
+def test_attribution_to_response_returns_response_with_default_language_if_undefined(attribution):
 
-    model = Attribution.objects.last()
-    model.name_it = None
-    model.name_rm = None
-    model.description_it = None
-    model.description_rm = None
+    attribution.name_it = None
+    attribution.name_rm = None
+    attribution.description_it = None
+    attribution.description_rm = None
 
-    actual = attribution_to_response(model, lang="it")
+    actual = attribution_to_response(attribution, lang="it")
 
     expected = AttributionSchema(
-        id=model.id,
-        slug="ch.bafu",
-        name="FOEN",
+        id="ch.bafu.kt",
+        name="FOEN + cantons",
         name_translations=TranslationsSchema(
-            de="BAFU",
-            fr="OFEV",
-            en="FOEN",
+            de="BAFU + Kantone",
+            fr="OFEV + cantons",
+            en="FOEN + cantons",
             it=None,
             rm=None,
         ),
-        description="Federal Office for the Environment",
+        description="Federal Office for the Environment and cantons",
         description_translations=TranslationsSchema(
-            de="Bundesamt für Umwelt",
-            fr="Office fédéral de l'environnement",
-            en="Federal Office for the Environment",
+            de="Bundesamt für Umwelt und Kantone",
+            fr="Office fédéral de l'environnement et cantons",
+            en="Federal Office for the Environment and cantons",
             it=None,
             rm=None,
         ),
-        provider_id=Provider.objects.last().id,
+        provider_id="ch.bafu",
     )
 
     assert actual == expected
 
 
 def test_get_attribution_returns_existing_attribution_with_default_language(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    attribution_id = Attribution.objects.last().id
-
-    response = client.get(f"/api/v1/attributions/{attribution_id}")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}")
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": attribution_id,
-        "slug": "ch.bafu",
-        "name": "FOEN",
+        "id": "ch.bafu.kt",
+        "name": "FOEN + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Federal Office for the Environment",
+        "description": "Federal Office for the Environment and cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
 def test_get_attribution_returns_attribution_with_language_from_query(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    attribution_id = Attribution.objects.last().id
-
-    response = client.get(f"/api/v1/attributions/{attribution_id}?lang=de")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}?lang=de")
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": attribution_id,
-        "slug": "ch.bafu",
-        "name": "BAFU",
+        "id": "ch.bafu.kt",
+        "name": "BAFU + Kantone",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Bundesamt für Umwelt",
+        "description": "Bundesamt für Umwelt und Kantone",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
-def test_get_attribution_returns_404_for_nonexisting_attribution(
-    dataset, client, django_user_factory
-):
+def test_get_attribution_returns_404_for_nonexisting_attribution(client, django_user_factory):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
@@ -200,239 +159,226 @@ def test_get_attribution_returns_404_for_nonexisting_attribution(
 
 
 def test_get_attribution_skips_translations_that_are_not_available(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    model = Attribution.objects.last()
-    model.name_it = None
-    model.name_rm = None
-    model.description_it = None
-    model.description_rm = None
-    model.save()
+    attribution.name_it = None
+    attribution.name_rm = None
+    attribution.description_it = None
+    attribution.description_rm = None
+    attribution.save()
 
-    response = client.get(f"/api/v1/attributions/{model.id}")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}")
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": model.id,
-        "slug": "ch.bafu",
-        "name": "FOEN",
+        "id": "ch.bafu.kt",
+        "name": "FOEN + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
         },
-        "description": "Federal Office for the Environment",
+        "description": "Federal Office for the Environment and cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
 def test_get_attribution_returns_attribution_with_language_from_header(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    attribution_id = Attribution.objects.last().id
-
     response = client.get(
-        f"/api/v1/attributions/{attribution_id}", headers={"Accept-Language": "de"}
+        f"/api/v1/attributions/{attribution.attribution_id}", headers={"Accept-Language": "de"}
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": attribution_id,
-        "slug": "ch.bafu",
-        "name": "BAFU",
+        "id": "ch.bafu.kt",
+        "name": "BAFU + Kantone",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Bundesamt für Umwelt",
+        "description": "Bundesamt für Umwelt und Kantone",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
 def test_get_attribution_returns_attribution_with_language_from_query_param_even_if_header_set(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    attribution_id = Attribution.objects.last().id
-
     response = client.get(
-        f"/api/v1/attributions/{attribution_id}?lang=fr", headers={"Accept-Language": "de"}
+        f"/api/v1/attributions/{attribution.attribution_id}?lang=fr",
+        headers={"Accept-Language": "de"}
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": attribution_id,
-        "slug": "ch.bafu",
-        "name": "OFEV",
+        "id": "ch.bafu.kt",
+        "name": "OFEV + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Office fédéral de l'environnement",
+        "description": "Office fédéral de l'environnement et cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
 def test_get_attribution_returns_attribution_with_default_language_if_header_empty(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    attribution_id = Attribution.objects.last().id
-
-    response = client.get(f"/api/v1/attributions/{attribution_id}", headers={"Accept-Language": ""})
+    response = client.get(
+        f"/api/v1/attributions/{attribution.attribution_id}", headers={"Accept-Language": ""}
+    )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": attribution_id,
-        "slug": "ch.bafu",
-        "name": "FOEN",
+        "id": "ch.bafu.kt",
+        "name": "FOEN + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Federal Office for the Environment",
+        "description": "Federal Office for the Environment and cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
 def test_get_attribution_returns_attribution_with_first_known_language_from_header(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    attribution_id = Attribution.objects.last().id
-
     response = client.get(
-        f"/api/v1/attributions/{attribution_id}", headers={"Accept-Language": "cn, *, de-DE, en"}
+        f"/api/v1/attributions/{attribution.attribution_id}",
+        headers={"Accept-Language": "cn, *, de-DE, en"}
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": attribution_id,
-        "slug": "ch.bafu",
-        "name": "BAFU",
+        "id": "ch.bafu.kt",
+        "name": "BAFU + Kantone",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Bundesamt für Umwelt",
+        "description": "Bundesamt für Umwelt und Kantone",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
 def test_get_attribution_returns_attribution_with_first_language_from_header_ignoring_qfactor(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    attribution_id = Attribution.objects.last().id
-
     response = client.get(
-        f"/api/v1/attributions/{attribution_id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
+        f"/api/v1/attributions/{attribution.attribution_id}",
+        headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": attribution_id,
-        "slug": "ch.bafu",
-        "name": "OFEV",
+        "id": "ch.bafu.kt",
+        "name": "OFEV + cantons",
         "name_translations": {
-            "de": "BAFU",
-            "fr": "OFEV",
-            "en": "FOEN",
-            "it": "UFAM",
-            "rm": "UFAM",
+            "de": "BAFU + Kantone",
+            "fr": "OFEV + cantons",
+            "en": "FOEN + cantons",
+            "it": "UFAM + cantoni",
+            "rm": "UFAM + chantuns",
         },
-        "description": "Office fédéral de l'environnement",
+        "description": "Office fédéral de l'environnement et cantons",
         "description_translations": {
-            "de": "Bundesamt für Umwelt",
-            "fr": "Office fédéral de l'environnement",
-            "en": "Federal Office for the Environment",
-            "it": "Ufficio federale dell'ambiente",
-            "rm": "Uffizi federal per l'ambient",
+            "de": "Bundesamt für Umwelt und Kantone",
+            "fr": "Office fédéral de l'environnement et cantons",
+            "en": "Federal Office for the Environment and cantons",
+            "it": "Ufficio federale dell'ambiente e cantoni",
+            "rm": "Uffizi federal per l'ambient e chantuns",
         },
-        "provider_id": Provider.objects.last().id,
+        "provider_id": "ch.bafu",
     }
 
 
-def test_get_attribution_returns_401_if_not_logged_in(dataset, client):
-    attribution_id = Attribution.objects.last().id
-    response = client.get(f"/api/v1/attributions/{attribution_id}")
+def test_get_attribution_returns_401_if_not_logged_in(attribution, client):
+
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
 
 
-def test_get_attribution_returns_403_if_no_permission(dataset, client, django_user_factory):
+def test_get_attribution_returns_403_if_no_permission(attribution, client, django_user_factory):
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    attribution_id = Attribution.objects.last().id
-    response = client.get(f"/api/v1/attributions/{attribution_id}")
+    response = client.get(f"/api/v1/attributions/{attribution.attribution_id}")
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
 
 
 def test_get_attributions_returns_single_attribution_with_given_language(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
@@ -442,68 +388,65 @@ def test_get_attributions_returns_single_attribution_with_given_language(
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": Attribution.objects.last().id,
-            "slug": "ch.bafu",
-            "name": "OFEV",
+            "id": "ch.bafu.kt",
+            "name": "OFEV + cantons",
             "name_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
-                "it": "UFAM",
-                "rm": "UFAM",
+                "de": "BAFU + Kantone",
+                "fr": "OFEV + cantons",
+                "en": "FOEN + cantons",
+                "it": "UFAM + cantoni",
+                "rm": "UFAM + chantuns",
             },
-            "description": "Office fédéral de l'environnement",
+            "description": "Office fédéral de l'environnement et cantons",
             "description_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
-                "it": "Ufficio federale dell'ambiente",
-                "rm": "Uffizi federal per l'ambient",
+                "de": "Bundesamt für Umwelt und Kantone",
+                "fr": "Office fédéral de l'environnement et cantons",
+                "en": "Federal Office for the Environment and cantons",
+                "it": "Ufficio federale dell'ambiente e cantoni",
+                "rm": "Uffizi federal per l'ambient e chantuns",
             },
-            "provider_id": Provider.objects.last().id,
+            "provider_id": "ch.bafu",
         }]
     }
 
 
 def test_get_attributions_skips_translations_that_are_not_available(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    model = Attribution.objects.last()
-    model.name_it = None
-    model.name_rm = None
-    model.description_it = None
-    model.description_rm = None
-    model.save()
+    attribution.name_it = None
+    attribution.name_rm = None
+    attribution.description_it = None
+    attribution.description_rm = None
+    attribution.save()
 
     response = client.get("/api/v1/attributions")
 
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": Attribution.objects.last().id,
-            "slug": "ch.bafu",
-            "name": "FOEN",
+            "id": "ch.bafu.kt",
+            "name": "FOEN + cantons",
             "name_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
+                "de": "BAFU + Kantone",
+                "fr": "OFEV + cantons",
+                "en": "FOEN + cantons",
             },
-            "description": "Federal Office for the Environment",
+            "description": "Federal Office for the Environment and cantons",
             "description_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
+                "de": "Bundesamt für Umwelt und Kantone",
+                "fr": "Office fédéral de l'environnement et cantons",
+                "en": "Federal Office for the Environment and cantons",
             },
-            "provider_id": Provider.objects.last().id,
+            "provider_id": "ch.bafu",
         }]
     }
 
 
 def test_get_attributions_returns_attribution_with_language_from_header(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
@@ -513,40 +456,36 @@ def test_get_attributions_returns_attribution_with_language_from_header(
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": Attribution.objects.last().id,
-            "slug": "ch.bafu",
-            "name": "BAFU",
+            "id": "ch.bafu.kt",
+            "name": "BAFU + Kantone",
             "name_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
-                "it": "UFAM",
-                "rm": "UFAM",
+                "de": "BAFU + Kantone",
+                "fr": "OFEV + cantons",
+                "en": "FOEN + cantons",
+                "it": "UFAM + cantoni",
+                "rm": "UFAM + chantuns",
             },
-            "description": "Bundesamt für Umwelt",
+            "description": "Bundesamt für Umwelt und Kantone",
             "description_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
-                "it": "Ufficio federale dell'ambiente",
-                "rm": "Uffizi federal per l'ambient",
+                "de": "Bundesamt für Umwelt und Kantone",
+                "fr": "Office fédéral de l'environnement et cantons",
+                "en": "Federal Office for the Environment and cantons",
+                "it": "Ufficio federale dell'ambiente e cantoni",
+                "rm": "Uffizi federal per l'ambient e chantuns",
             },
-            "provider_id": Provider.objects.last().id,
+            "provider_id": "ch.bafu",
         }]
     }
 
 
 def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_language(
-    dataset, client, django_user_factory
+    attribution, client, django_user_factory
 ):
     django_user_factory('test', 'test', [('distributions', 'attribution', 'view_attribution')])
     client.login(username='test', password='test')
 
-    provider1 = Provider.objects.last()
-    attribution_id_1 = Attribution.objects.last().id
-
     provider2 = Provider.objects.create(
-        slug="ch.provider2",
+        provider_id="ch.provider2",
         acronym_de="Provider2",
         acronym_fr="Provider2",
         acronym_en="Provider2",
@@ -555,7 +494,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
         name_en="Provider2"
     )
     model_fields = {
-        "slug": "ch.provider2.bav",
+        "attribution_id": "ch.provider2.bav",
         "name_de": "BAV",
         "name_fr": "OFT",
         "name_en": "FOT",
@@ -568,7 +507,7 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
         "description_rm": "Uffizi federal da traffic",
         "provider": provider2,
     }
-    attribution_id_2 = Attribution.objects.create(**model_fields).id
+    Attribution.objects.create(**model_fields)
 
     response = client.get("/api/v1/attributions?lang=fr")
 
@@ -576,29 +515,27 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
     assert response.json() == {
         "items": [
             {
-                "id": attribution_id_1,
-                "slug": "ch.bafu",
-                "name": "OFEV",
+                "id": "ch.bafu.kt",
+                "name": "OFEV + cantons",
                 "name_translations": {
-                    "de": "BAFU",
-                    "fr": "OFEV",
-                    "en": "FOEN",
-                    "it": "UFAM",
-                    "rm": "UFAM",
+                    "de": "BAFU + Kantone",
+                    "fr": "OFEV + cantons",
+                    "en": "FOEN + cantons",
+                    "it": "UFAM + cantoni",
+                    "rm": "UFAM + chantuns",
                 },
-                "description": "Office fédéral de l'environnement",
+                "description": "Office fédéral de l'environnement et cantons",
                 "description_translations": {
-                    "de": "Bundesamt für Umwelt",
-                    "fr": "Office fédéral de l'environnement",
-                    "en": "Federal Office for the Environment",
-                    "it": "Ufficio federale dell'ambiente",
-                    "rm": "Uffizi federal per l'ambient",
+                    "de": "Bundesamt für Umwelt und Kantone",
+                    "fr": "Office fédéral de l'environnement et cantons",
+                    "en": "Federal Office for the Environment and cantons",
+                    "it": "Ufficio federale dell'ambiente e cantoni",
+                    "rm": "Uffizi federal per l'ambient e chantuns",
                 },
-                "provider_id": provider1.id,
+                "provider_id": "ch.bafu",
             },
             {
-                "id": attribution_id_2,
-                "slug": "ch.provider2.bav",
+                "id": "ch.provider2.bav",
                 "name": "OFT",
                 "name_translations": {
                     "de": "BAV",
@@ -615,20 +552,20 @@ def test_get_attributions_returns_all_attributions_ordered_by_id_with_given_lang
                     "it": "Ufficio federale dei trasporti",
                     "rm": "Uffizi federal da traffic",
                 },
-                "provider_id": provider2.id,
+                "provider_id": "ch.provider2",
             },
         ]
     }
 
 
-def test_get_attributions_returns_401_if_not_logged_in(dataset, client, django_user_factory):
+def test_get_attributions_returns_401_if_not_logged_in(attribution, client, django_user_factory):
     response = client.get("/api/v1/providers")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
 
 
-def test_get_attributions_returns_403_if_no_permission(dataset, client, django_user_factory):
+def test_get_attributions_returns_403_if_no_permission(attribution, client, django_user_factory):
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
@@ -642,24 +579,20 @@ def test_get_dataset_returns_specified_dataset(dataset, client, django_user_fact
     django_user_factory('test', 'test', [('distributions', 'dataset', 'view_dataset')])
     client.login(username='test', password='test')
 
-    dataset_id = Dataset.objects.last().id
-
-    response = client.get(f"/api/v1/datasets/{dataset_id}")
+    response = client.get(f"/api/v1/datasets/{dataset.dataset_id}")
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": dataset_id,
-        "slug": "ch.bafu.neophyten-haargurke",
+        "id": "ch.bafu.neophyten-haargurke",
         "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "provider_id": Provider.objects.last().id,
-        "attribution_id": Attribution.objects.last().id,
+        "provider_id": "ch.bafu",
+        "attribution_id": "ch.bafu.kt"
     }
 
 
 def test_get_dataset_returns_401_if_not_logged_in(dataset, client):
-    dataset_id = Dataset.objects.last().id
-    response = client.get(f"/api/v1/datasets/{dataset_id}")
+    response = client.get(f"/api/v1/datasets/{dataset.dataset_id}")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -669,8 +602,7 @@ def test_get_dataset_returns_403_if_no_permission(dataset, client, django_user_f
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    dataset_id = Dataset.objects.last().id
-    response = client.get(f"/api/v1/datasets/{dataset_id}")
+    response = client.get(f"/api/v1/datasets/{dataset.dataset_id}")
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -684,28 +616,26 @@ def test_get_datasets_returns_single_dataset_as_expected(
 
     response = client.get("/api/v1/datasets")
 
-    dataset = Dataset.objects.last()
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": dataset.id,
-            "slug": "ch.bafu.neophyten-haargurke",
+            "id": "ch.bafu.neophyten-haargurke",
             "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "provider_id": Provider.objects.last().id,
-            "attribution_id": Attribution.objects.last().id,
+            "provider_id": "ch.bafu",
+            "attribution_id": dataset.attribution.attribution_id,
         }]
     }
 
 
-def test_get_datasets_returns_all_datasets_ordered_by_id(
+def test_get_datasets_returns_all_datasets_ordered_by_dataset_id(
     dataset, client, django_user_factory, time_created
 ):
     django_user_factory('test', 'test', [('distributions', 'dataset', 'view_dataset')])
     client.login(username='test', password='test')
 
     provider2 = Provider.objects.create(
-        slug="ch.provider2",
+        provider_id="ch.provider2",
         acronym_de="Provider2",
         acronym_fr="Provider2",
         acronym_en="Provider2",
@@ -714,7 +644,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_id(
         name_en="Provider2"
     )
     attribution2 = Attribution.objects.create(
-        slug="ch.provider2.attribution2",
+        attribution_id="ch.provider2.attribution2",
         name_de="Attribution2",
         name_fr="Attribution2",
         name_en="Attribution2",
@@ -724,7 +654,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_id(
         provider=provider2,
     )
     model_fields2 = {
-        "slug": "slug2",
+        "dataset_id": "ch.provider2.dataset2",
         "provider": provider2,
         "attribution": attribution2,
     }
@@ -734,25 +664,22 @@ def test_get_datasets_returns_all_datasets_ordered_by_id(
 
     response = client.get("/api/v1/datasets")
 
-    dataset1 = Dataset.objects.first()
     assert response.status_code == 200
     assert response.json() == {
         "items": [
             {
-                "id": dataset1.id,
-                "slug": dataset1.slug,
+                "id": "ch.bafu.neophyten-haargurke",
                 "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "provider_id": Provider.objects.first().id,
-                "attribution_id": Attribution.objects.first().id,
+                "provider_id": "ch.bafu",
+                "attribution_id": "ch.bafu.kt",
             },
             {
-                "id": dataset2.id,
-                "slug": "slug2",
+                "id": "ch.provider2.dataset2",
                 "created": dataset2.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": dataset2.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "provider_id": provider2.id,
-                "attribution_id": attribution2.id,
+                "provider_id": "ch.provider2",
+                "attribution_id": "ch.provider2.attribution2",
             },
         ]
     }

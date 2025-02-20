@@ -5,13 +5,12 @@ from schemas import TranslationsSchema
 
 
 class AttributionSchema(Schema):
-    id: int
-    slug: str
+    id: str
     name: str
     name_translations: TranslationsSchema
     description: str
     description_translations: TranslationsSchema
-    provider_id: int
+    provider_id: str
 
 
 class AttributionListSchema(Schema):
@@ -19,12 +18,11 @@ class AttributionListSchema(Schema):
 
 
 class DatasetSchema(Schema):
-    id: int
-    slug: str
+    id: str
     created: datetime
     updated: datetime
-    provider_id: int
-    attribution_id: int
+    provider_id: str
+    attribution_id: str
 
 
 class DatasetListSchema(Schema):

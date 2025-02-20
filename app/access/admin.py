@@ -10,7 +10,7 @@ from .models import User
 class UserAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     '''Admin View for User'''
 
-    list_display = ('user_id', 'username', 'deleted_at', 'provider')
+    list_display = ('user_id', 'username', 'last_name', 'first_name', 'deleted_at', 'provider')
     list_filter = ('deleted_at', ('provider', admin.RelatedOnlyFieldListFilter))
     actions = ('disable',)
 
