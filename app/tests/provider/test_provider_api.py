@@ -1,31 +1,14 @@
 from provider.api import provider_to_response
 from provider.models import Provider
 from provider.schemas import ProviderSchema
-from pytest import fixture
 from schemas import TranslationsSchema
-
-
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment",
-        name_it="Ufficio federale dell'ambiente",
-        name_rm="Uffizi federal per l'ambient",
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        acronym_it="UFAM",
-        acronym_rm="UFAM"
-    )
 
 
 def test_provider_to_response_returns_response_with_language_as_defined(provider):
     actual = provider_to_response(provider, lang="de")
 
     expected = ProviderSchema(
-        id=provider.id,
+        id="ch.bafu",
         name="Bundesamt für Umwelt",
         name_translations=TranslationsSchema(
             de="Bundesamt für Umwelt",
@@ -56,7 +39,7 @@ def test_provider_to_response_returns_response_with_default_language_if_undefine
     actual = provider_to_response(provider, lang="it")
 
     expected = ProviderSchema(
-        id=str(provider.id),
+        id="ch.bafu",
         name="Federal Office for the Environment",
         name_translations=TranslationsSchema(
             de="Bundesamt für Umwelt",
@@ -84,11 +67,11 @@ def test_get_provider_returns_existing_provider_with_default_language(
     django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/providers/{provider.id}")
+    response = client.get(f"/api/v1/providers/{provider.provider_id}")
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": provider.id,
+        "id": "ch.bafu",
         "name": "Federal Office for the Environment",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -114,11 +97,11 @@ def test_get_provider_returns_provider_with_language_from_query(
     django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/providers/{provider.id}?lang=de")
+    response = client.get(f"/api/v1/providers/{provider.provider_id}?lang=de")
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": provider.id,
+        "id": "ch.bafu",
         "name": "Bundesamt für Umwelt",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -161,11 +144,11 @@ def test_get_provider_skips_translations_that_are_not_available(
     provider.acronym_rm = None
     provider.save()
 
-    response = client.get(f"/api/v1/providers/{provider.id}")
+    response = client.get(f"/api/v1/providers/{provider.provider_id}")
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": provider.id,
+        "id": "ch.bafu",
         "name": "Federal Office for the Environment",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -187,11 +170,13 @@ def test_get_provider_returns_provider_with_language_from_header(
     django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/providers/{provider.id}", headers={"Accept-Language": "de"})
+    response = client.get(
+        f"/api/v1/providers/{provider.provider_id}", headers={"Accept-Language": "de"}
+    )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": provider.id,
+        "id": "ch.bafu",
         "name": "Bundesamt für Umwelt",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -218,12 +203,12 @@ def test_get_provider_returns_provider_with_language_from_query_param_even_if_he
     client.login(username='test', password='test')
 
     response = client.get(
-        f"/api/v1/providers/{provider.id}?lang=fr", headers={"Accept-Language": "de"}
+        f"/api/v1/providers/{provider.provider_id}?lang=fr", headers={"Accept-Language": "de"}
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": provider.id,
+        "id": "ch.bafu",
         "name": "Office fédéral de l'environnement",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -249,11 +234,13 @@ def test_get_provider_returns_provider_with_default_language_if_header_empty(
     django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/providers/{provider.id}", headers={"Accept-Language": ""})
+    response = client.get(
+        f"/api/v1/providers/{provider.provider_id}", headers={"Accept-Language": ""}
+    )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": provider.id,
+        "id": "ch.bafu",
         "name": "Federal Office for the Environment",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -280,12 +267,13 @@ def test_get_provider_returns_provider_with_first_known_language_from_header(
     client.login(username='test', password='test')
 
     response = client.get(
-        f"/api/v1/providers/{provider.id}", headers={"Accept-Language": "cn, *, de-DE, en"}
+        f"/api/v1/providers/{provider.provider_id}",
+        headers={"Accept-Language": "cn, *, de-DE, en"}
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": provider.id,
+        "id": "ch.bafu",
         "name": "Bundesamt für Umwelt",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -312,12 +300,13 @@ def test_get_provider_returns_provider_with_first_known_language_from_header_ign
     client.login(username='test', password='test')
 
     response = client.get(
-        f"/api/v1/providers/{provider.id}", headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
+        f"/api/v1/providers/{provider.provider_id}",
+        headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
     )
 
     assert response.status_code == 200
     assert response.json() == {
-        "id": provider.id,
+        "id": "ch.bafu",
         "name": "Office fédéral de l'environnement",
         "name_translations": {
             "de": "Bundesamt für Umwelt",
@@ -338,7 +327,7 @@ def test_get_provider_returns_provider_with_first_known_language_from_header_ign
 
 
 def test_get_provider_returns_401_if_not_logged_in(provider, client):
-    response = client.get(f"/api/v1/providers/{provider.id}")
+    response = client.get(f"/api/v1/providers/{provider.provider_id}")
 
     assert response.status_code == 401
     assert response.json() == {"code": 401, "description": "Unauthorized"}
@@ -348,7 +337,7 @@ def test_get_provider_returns_403_if_no_permission(provider, client, django_user
     django_user_factory('test', 'test', [])
     client.login(username='test', password='test')
 
-    response = client.get(f"/api/v1/providers/{provider.id}")
+    response = client.get(f"/api/v1/providers/{provider.provider_id}")
 
     assert response.status_code == 403
     assert response.json() == {"code": 403, "description": "Forbidden"}
@@ -365,7 +354,7 @@ def test_get_providers_returns_single_provider_with_given_language(
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": Provider.objects.last().id,
+            "id": "ch.bafu",
             "name": "Office fédéral de l'environnement",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -404,7 +393,7 @@ def test_get_providers_skips_translations_that_are_not_available(
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": provider.id,
+            "id": "ch.bafu",
             "name": "Federal Office for the Environment",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -432,7 +421,7 @@ def test_get_providers_returns_provider_with_language_from_header(
     assert response.status_code == 200
     assert response.json() == {
         "items": [{
-            "id": Provider.objects.last().id,
+            "id": "ch.bafu",
             "name": "Bundesamt für Umwelt",
             "name_translations": {
                 "de": "Bundesamt für Umwelt",
@@ -460,6 +449,7 @@ def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
     client.login(username='test', password='test')
 
     provider = {
+        "provider_id": "ch.bav",
         "name_de": "Bundesamt für Verkehr",
         "name_fr": "Office fédéral des transports",
         "name_en": "Federal Office of Transport",
@@ -479,7 +469,7 @@ def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
     assert response.json() == {
         "items": [
             {
-                "id": Provider.objects.first().id,
+                "id": "ch.bafu",
                 "name": "Office fédéral de l'environnement",
                 "name_translations": {
                     "de": "Bundesamt für Umwelt",
@@ -498,7 +488,7 @@ def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
                 }
             },
             {
-                "id": Provider.objects.last().id,
+                "id": "ch.bav",
                 "name": "Office fédéral des transports",
                 "name_translations": {
                     "de": "Bundesamt für Verkehr",

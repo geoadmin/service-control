@@ -1,22 +1,9 @@
 from unittest.mock import patch
 
 from access.models import User
-from provider.models import Provider
 from pytest import fixture
 
 from django.urls import reverse
-
-
-@fixture(name='provider')
-def fixture_provider(db):
-    yield Provider.objects.create(
-        acronym_de="BAFU",
-        acronym_fr="OFEV",
-        acronym_en="FOEN",
-        name_de="Bundesamt für Umwelt",
-        name_fr="Office fédéral de l'environnement",
-        name_en="Federal Office for the Environment"
-    )
 
 
 @fixture(name='user')

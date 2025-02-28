@@ -5,7 +5,6 @@
 | develop | ![Build Status](https://codebuild.eu-central-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiZk43RFNPWm5aNldBYmE3NU95MkFWNVg0aG5oMk1VRlhVcHNmdEVGOGFwc05zRW1lVG4zaU40dnBtSUFsd2dxd0tESlNYN1VkSS9pbkpFWDJ1ajQ0dkhrPSIsIml2UGFyYW1ldGVyU3BlYyI6IktHVHNJL21aN0NKKzg0V2YiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=develop) |
 | master | ![Build Status](https://codebuild.eu-central-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiZk43RFNPWm5aNldBYmE3NU95MkFWNVg0aG5oMk1VRlhVcHNmdEVGOGFwc05zRW1lVG4zaU40dnBtSUFsd2dxd0tESlNYN1VkSS9pbkpFWDJ1ajQ0dkhrPSIsIml2UGFyYW1ldGVyU3BlYyI6IktHVHNJL21aN0NKKzg0V2YiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master) |
 
-
 ## Table of Content
 
 - [Table of Content](#table-of-content)
@@ -13,7 +12,11 @@
 - [Local development](#local-development)
   - [Dependencies](#dependencies)
   - [Setup](#setup)
+- [Cognito](#cognito)
+  - [Local Cognito](#local-cognito)
+- [Importing Data from the BOD](#importing-data-from-the-bod)
 - [Local Development](#local-development-1)
+  - [Running tests in parallel](#running-tests-in-parallel)
   - [vs code Integration](#vs-code-integration)
     - [Debug from vs code](#debug-from-vs-code)
     - [Run tests from within vs code](#run-tests-from-within-vs-code)
@@ -89,7 +92,7 @@ You can import a BOD dump and migrate its data:
 ```bash
 make setup-bod
 make import-bod file=dump.sql
-app/manage.py bod_migrate
+app/manage.py bod_sync
 ```
 
 To generate more BOD models, run:
