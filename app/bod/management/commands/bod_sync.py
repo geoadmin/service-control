@@ -79,9 +79,7 @@ class Handler(CommandHandler):
         processed = set()
 
         for organization in BodContactOrganisation.objects.all():
-            if organization.attribution is not None and len(
-                organization.attribution.split('.')
-            ) != 2:
+            if not organization.attribution or len(organization.attribution.split('.')) != 2:
                 # Skip entries that are not a provider.
                 # BodContactOrganisation (table 'contactorganisation') contains providers and
                 # attributions. Providers are of the format "ch.<short_name>" and only include a
@@ -99,7 +97,7 @@ class Handler(CommandHandler):
                 is_new_model = True
                 provider = Provider.objects.create(
                     _legacy_id=legacy_id,
-                    provider_id=organization.attribution,  # type:ignore[misc]
+                    provider_id=organization.attribution,
                     acronym_de="undefined",
                     acronym_fr="undefined",
                     acronym_en="undefined",
@@ -171,8 +169,8 @@ class Handler(CommandHandler):
             processed.add(legacy_id)
 
             # Get related provider
-            provider: Provider | None
-            if organization.attribution is not None:
+            provider = None
+            if organization.attribution:
                 provider_of_attribution = ".".join(organization.attribution.split(".", 2)[:2])
                 provider = Provider.objects.filter(provider_id=provider_of_attribution).first()
             if not provider:
@@ -273,24 +271,15 @@ class Handler(CommandHandler):
                 )
                 continue
 
-            # Get related provider
-            provider = Provider.objects.filter(id=attribution.provider_id).first()
-            if not provider:
-                # Skip as no matching provider
-                self.print(
-                    f"skipping dataset '{bod_dataset.id_dataset}' as no matching provider was found"
-                )
-                continue
-
             # Get or create dataset
             is_new_model = False
             dataset = Dataset.objects.filter(
-                provider=provider, attribution=attribution, _legacy_id=legacy_id
+                provider=attribution.provider, attribution=attribution, _legacy_id=legacy_id
             ).first()
             if not dataset:
                 is_new_model = True
                 dataset = Dataset.objects.create(
-                    provider=provider,
+                    provider=attribution.provider,
                     attribution=attribution,
                     _legacy_id=legacy_id,
                     dataset_id='undefined'
