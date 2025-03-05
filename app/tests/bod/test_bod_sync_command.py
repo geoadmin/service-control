@@ -131,17 +131,22 @@ def test_command_imports_providers(bod_dataset):
     assert provider.acronym_rm == "UFAM"
 
 
-def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
-    out = StringIO()
-    call_command(
-        "bod_sync", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
-    )
-    assert "skipping attribution 'ch.bafu' as no matching provider was found" in out.getvalue()
-    assert 'nothing to be done, already in sync' in out.getvalue()
-    assert Provider.objects.count() == 0
-    assert Attribution.objects.count() == 0
-    assert Dataset.objects.count() == 0
+def test_command_skips_invalid_providers(bod_contact_organisation, bod_dataset):
+    for attribution in ("somethingelse", "", None):
+        bod_contact_organisation.attribution = attribution
+        bod_contact_organisation.save()
 
+        out = StringIO()
+        call_command(
+            "bod_sync", providers=True, attributions=False, datasets=False, verbosity=2, stdout=out
+        )
+        assert "nothing to be done" in out.getvalue()
+        assert Provider.objects.count() == 0
+        assert Attribution.objects.count() == 0
+        assert Dataset.objects.count() == 0
+
+
+def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
     provider = Provider.objects.create(
         provider_id="ch.bafu",
         name_de="XXX",
@@ -152,6 +157,8 @@ def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
         acronym_en="XXX",
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
+
+    out = StringIO()
     call_command(
         "bod_sync", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
     )
@@ -175,20 +182,24 @@ def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
     assert attribution.description_rm == "UFAM"
 
 
-def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
-    out = StringIO()
-    call_command(
-        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
-    )
-    assert (
-        "skipping dataset 'ch.bafu.auen-vegetationskarten' " +
-        "as no matching attribution was found"
-    ) in out.getvalue()
-    assert 'nothing to be done, already in sync' in out.getvalue()
-    assert Provider.objects.count() == 0
-    assert Attribution.objects.count() == 0
-    assert Dataset.objects.count() == 0
+def test_command_skips_invalid_attributions(bod_contact_organisation, bod_dataset):
+    for attribution in (bod_contact_organisation.attribution, "", None):
+        bod_contact_organisation.attribution = attribution
+        bod_contact_organisation.save()
 
+        out = StringIO()
+        call_command(
+            "bod_sync", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
+        )
+        assert (f"skipping attribution '{attribution}' as no matching provider was found"
+               ) in out.getvalue()
+        assert 'nothing to be done, already in sync' in out.getvalue()
+        assert Provider.objects.count() == 0
+        assert Attribution.objects.count() == 0
+        assert Dataset.objects.count() == 0
+
+
+def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
     provider = Provider.objects.create(
         provider_id="ch.bafu",
         name_de="XXX",
@@ -210,6 +221,8 @@ def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
         provider=provider,
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
+
+    out = StringIO()
     call_command(
         "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
     )
@@ -222,6 +235,21 @@ def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+
+
+def test_command_skips_invalid_datasets(bod_contact_organisation, bod_dataset):
+    out = StringIO()
+    call_command(
+        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+    )
+    assert (
+        "skipping dataset 'ch.bafu.auen-vegetationskarten' " +
+        "as no matching attribution was found"
+    ) in out.getvalue()
+    assert 'nothing to be done, already in sync' in out.getvalue()
+    assert Provider.objects.count() == 0
+    assert Attribution.objects.count() == 0
+    assert Dataset.objects.count() == 0
 
 
 def test_command_updates(bod_contact_organisation, bod_dataset):
