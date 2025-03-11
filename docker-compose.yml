@@ -31,6 +31,20 @@ services:
         echo '{}' > /app/.cognito/db/${COGNITO_POOL_ID}.json
         node /app/start.js;
       "
+
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    command: ["-jar", "DynamoDBLocal.jar", "-dbPath", "/var/db", "-sharedDb"]
+    volumes:
+      - source: ${PWD}/.volumes/dynamodb
+        target: /var/db
+        type: bind
+        bind:
+          create_host_path: true
+    ports:
+      - "${DYNAMODB_PORT}:8000"
+    user: root
+
   bod:
     image: postgis/postgis:13-3.4
     environment:

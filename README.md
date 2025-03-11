@@ -80,6 +80,21 @@ You can also use the AWS CLI together with `cognito-local` by specifying the loc
 aws --endpoint $COGNITO_ENDPOINT_URL cognito-idp list-users --user-pool-id $COGNITO_POOL_ID
 ```
 
+## DynamoDB
+
+This project uses DynamoDB for storing permissions.
+
+### Local DynamoDB
+
+For local testing the connection to DynamoDB, [dynamodb-local](https://hub.docker.com/r/amazon/dynamodb-local) is used.
+`dynamodb-local` stores all of its data into a SQLite3 database in its volume (`.volumes/dynamodb/shared-local-instance.db`).
+
+You can also use the AWS CLI together with `dynamodb-local` by specifying the local endpoint, for example:
+
+```bash
+aws --endpoint $DYNAMODB_ENDPOINT_URL dynamodb list-tables
+```
+
 ## Importing Data from the BOD
 
 The "Betriebsobjekte Datenbank" (BOD) is a central database for running and configuring the map
