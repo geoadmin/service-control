@@ -41,7 +41,8 @@ def fixture_bod_dataset(bod_contact_organisation):
     yield BodDataset.objects.create(
         id=170,
         id_dataset="ch.bafu.auen-vegetationskarten",
-        fk_contactorganisation_id=bod_contact_organisation.pk_contactorganisation_id
+        fk_contactorganisation_id=bod_contact_organisation.pk_contactorganisation_id,
+        staging="prod"
     )
 
 
@@ -237,7 +238,7 @@ def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
 
 
-def test_command_skips_invalid_datasets(bod_contact_organisation, bod_dataset):
+def test_command_skips_invalid_datasets(bod_dataset):
     out = StringIO()
     call_command(
         "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
@@ -246,6 +247,19 @@ def test_command_skips_invalid_datasets(bod_contact_organisation, bod_dataset):
         "skipping dataset 'ch.bafu.auen-vegetationskarten' " +
         "as no matching attribution was found"
     ) in out.getvalue()
+    assert 'nothing to be done, already in sync' in out.getvalue()
+    assert Provider.objects.count() == 0
+    assert Attribution.objects.count() == 0
+    assert Dataset.objects.count() == 0
+
+
+def test_command_skips_non_prod_datasets(bod_dataset):
+    bod_dataset.staging = 'test'
+
+    out = StringIO()
+    call_command(
+        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+    )
     assert 'nothing to be done, already in sync' in out.getvalue()
     assert Provider.objects.count() == 0
     assert Attribution.objects.count() == 0

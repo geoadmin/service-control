@@ -254,7 +254,7 @@ class Handler(CommandHandler):
         """
 
         processed = set()
-        for bod_dataset in BodDataset.objects.all():
+        for bod_dataset in BodDataset.objects.filter(staging='prod').all():
             # Keep track of processed BOD datasets for orphan removal
             legacy_id = bod_dataset.id
             processed.add(legacy_id)
