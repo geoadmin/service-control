@@ -45,12 +45,28 @@ def attribution_to_response(model: Attribution, lang: LanguageCode) -> Attributi
     return response
 
 
-def dataset_to_response(model: Dataset) -> DatasetSchema:
+def dataset_to_response(model: Dataset, lang: LanguageCode) -> DatasetSchema:
     """
-    Maps the given model to the corresponding schema.
+    Transforms the given model using the given language into a response object.
     """
     response = DatasetSchema(
         id=model.dataset_id,
+        title=get_translation(model, "title", lang),
+        title_translations=TranslationsSchema(
+            de=model.title_de,
+            fr=model.title_fr,
+            en=model.title_en,
+            it=model.title_it,
+            rm=model.title_rm,
+        ),
+        description=get_translation(model, "description", lang),
+        description_translations=TranslationsSchema(
+            de=model.description_de,
+            fr=model.description_fr,
+            en=model.description_en,
+            it=model.description_it,
+            rm=model.description_rm,
+        ),
         created=model.created,
         updated=model.updated,
         provider_id=model.provider.provider_id,
@@ -148,12 +164,15 @@ def attributions(request: HttpRequest,
     exclude_none=True,
     auth=PermissionAuth('distributions.view_dataset')
 )
-def dataset(request: HttpRequest, dataset_id: str) -> DatasetSchema:
+def dataset(
+    request: HttpRequest, dataset_id: str, lang: LanguageCode | None = None
+) -> DatasetSchema:
     """
     Get the dataset with the given ID.
     """
     model = get_object_or_404(Dataset, dataset_id=dataset_id)
-    response = dataset_to_response(model)
+    lang_to_use = get_language(lang, request.headers)
+    response = dataset_to_response(model, lang_to_use)
     return response
 
 
@@ -163,7 +182,8 @@ def dataset(request: HttpRequest, dataset_id: str) -> DatasetSchema:
     exclude_none=True,
     auth=PermissionAuth('distributions.view_dataset')
 )
-def datasets(request: HttpRequest) -> dict[str, list[DatasetSchema]]:
+def datasets(request: HttpRequest,
+             lang: LanguageCode | None = None) -> dict[str, list[DatasetSchema]]:
     """
     Get all datasets.
 
@@ -171,6 +191,6 @@ def datasets(request: HttpRequest) -> dict[str, list[DatasetSchema]]:
     corresponding endpoint for a specific attribution.
     """
     models = Dataset.objects.order_by("dataset_id").all()
-
-    responses = [dataset_to_response(model) for model in models]
+    lang_to_use = get_language(lang, request.headers)
+    responses = [dataset_to_response(model, lang_to_use) for model in models]
     return {"items": responses}

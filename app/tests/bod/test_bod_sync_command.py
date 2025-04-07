@@ -2,6 +2,7 @@ from io import StringIO
 
 from bod.models import BodContactOrganisation
 from bod.models import BodDataset
+from bod.models import BodGeocatPublish
 from bod.models import BodTranslations
 from distributions.models import Attribution
 from distributions.models import Dataset
@@ -46,7 +47,37 @@ def fixture_bod_dataset(bod_contact_organisation):
     )
 
 
-def test_command_imports(bod_dataset):
+@fixture(name='bod_geocat_publish')
+def fixture_bod_geocat_publish(bod_dataset):
+    yield BodGeocatPublish.objects.create(
+        bgdi_id=170,
+        fk_id_dataset="ch.bafu.auen-vegetationskarten",
+        bezeichnung_de="vegetationskarten_de",
+        bezeichnung_fr="vegetationskarten_fr",
+        bezeichnung_it="vegetationskarten_it",
+        bezeichnung_rm="vegetationskarten_rm",
+        bezeichnung_en="vegetationskarten_en",
+        abstract_de="abstract_vegetationskarten_de",
+        abstract_fr="abstract_vegetationskarten_fr",
+        abstract_it="abstract_vegetationskarten_it",
+        abstract_rm="abstract_vegetationskarten_rm",
+        abstract_en="abstract_vegetationskarten_en"
+    )
+
+
+@fixture(name='bod_geocat_publish_missing_english')
+def fixture_bod_geocat_publish_missing_english(bod_dataset):
+    yield BodGeocatPublish.objects.create(
+        bgdi_id=170,
+        fk_id_dataset="ch.bafu.auen-vegetationskarten",
+        bezeichnung_de="vegetationskarten_de",
+        bezeichnung_fr="vegetationskarten_fr",
+        abstract_de="abstract_vegetationskarten_de",
+        abstract_fr="abstract_vegetationskarten_fr",
+    )
+
+
+def test_command_imports(bod_geocat_publish):
     out = StringIO()
     call_command(
         "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
@@ -88,6 +119,16 @@ def test_command_imports(bod_dataset):
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.title_de == "vegetationskarten_de"
+    assert dataset.title_fr == "vegetationskarten_fr"
+    assert dataset.title_it == "vegetationskarten_it"
+    assert dataset.title_rm == "vegetationskarten_rm"
+    assert dataset.title_en == "vegetationskarten_en"
+    assert dataset.description_de == "abstract_vegetationskarten_de"
+    assert dataset.description_fr == "abstract_vegetationskarten_fr"
+    assert dataset.description_it == "abstract_vegetationskarten_it"
+    assert dataset.description_rm == "abstract_vegetationskarten_rm"
+    assert dataset.description_en == "abstract_vegetationskarten_en"
 
 
 def test_command_does_not_need_to_import(db):
@@ -98,7 +139,7 @@ def test_command_does_not_need_to_import(db):
     assert 'nothing to be done, already in sync' in out.getvalue()
 
 
-def test_command_no_flag_set(bod_dataset):
+def test_command_no_flag_set(bod_geocat_publish):
     out = StringIO()
     call_command(
         "bod_sync", providers=False, attributions=False, datasets=False, verbosity=2, stdout=out
@@ -106,7 +147,7 @@ def test_command_no_flag_set(bod_dataset):
     assert 'no option provided, nothing changed' in out.getvalue()
 
 
-def test_command_imports_providers(bod_dataset):
+def test_command_imports_providers(bod_geocat_publish):
     out = StringIO()
     call_command(
         "bod_sync", providers=True, attributions=False, datasets=False, verbosity=2, stdout=out
@@ -132,7 +173,7 @@ def test_command_imports_providers(bod_dataset):
     assert provider.acronym_rm == "UFAM"
 
 
-def test_command_skips_invalid_providers(bod_contact_organisation, bod_dataset):
+def test_command_skips_invalid_providers(bod_contact_organisation, bod_geocat_publish):
     for attribution in ("somethingelse", "", None):
         bod_contact_organisation.attribution = attribution
         bod_contact_organisation.save()
@@ -147,7 +188,7 @@ def test_command_skips_invalid_providers(bod_contact_organisation, bod_dataset):
         assert Dataset.objects.count() == 0
 
 
-def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
+def test_command_imports_attributions(bod_contact_organisation, bod_geocat_publish):
     provider = Provider.objects.create(
         provider_id="ch.bafu",
         name_de="XXX",
@@ -183,7 +224,7 @@ def test_command_imports_attributions(bod_contact_organisation, bod_dataset):
     assert attribution.description_rm == "UFAM"
 
 
-def test_command_skips_invalid_attributions(bod_contact_organisation, bod_dataset):
+def test_command_skips_invalid_attributions(bod_contact_organisation, bod_geocat_publish):
     for attribution in (bod_contact_organisation.attribution, "", None):
         bod_contact_organisation.attribution = attribution
         bod_contact_organisation.save()
@@ -200,7 +241,7 @@ def test_command_skips_invalid_attributions(bod_contact_organisation, bod_datase
         assert Dataset.objects.count() == 0
 
 
-def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
+def test_command_imports_datasets(bod_contact_organisation, bod_geocat_publish):
     provider = Provider.objects.create(
         provider_id="ch.bafu",
         name_de="XXX",
@@ -236,9 +277,117 @@ def test_command_imports_datasets(bod_contact_organisation, bod_dataset):
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.title_de == "vegetationskarten_de"
+    assert dataset.title_fr == "vegetationskarten_fr"
+    assert dataset.title_it == "vegetationskarten_it"
+    assert dataset.title_rm == "vegetationskarten_rm"
+    assert dataset.title_en == "vegetationskarten_en"
+    assert dataset.description_de == "abstract_vegetationskarten_de"
+    assert dataset.description_fr == "abstract_vegetationskarten_fr"
+    assert dataset.description_it == "abstract_vegetationskarten_it"
+    assert dataset.description_rm == "abstract_vegetationskarten_rm"
+    assert dataset.description_en == "abstract_vegetationskarten_en"
 
 
-def test_command_skips_invalid_datasets(bod_dataset):
+def test_command_imports_datasets_missing_english(
+    bod_contact_organisation, bod_geocat_publish_missing_english
+):
+    provider = Provider.objects.create(
+        provider_id="ch.bafu",
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        acronym_de="BAFU",
+        acronym_fr="XXX",
+        acronym_en="XXX",
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+    attribution = Attribution.objects.create(
+        attribution_id="ch.bafu",
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        description_de="BAFU",
+        description_fr="XXX",
+        description_en="XXX",
+        provider=provider,
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+
+    out = StringIO()
+    call_command(
+        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+    )
+    assert "Added dataset 'ch.bafu.auen-vegetationskarten'" in out.getvalue()
+    assert "1 dataset(s) added" in out.getvalue()
+    assert Provider.objects.count() == 1
+    assert Attribution.objects.count() == 1
+    assert Dataset.objects.count() == 1
+
+    dataset = provider.dataset_set.first()
+    assert dataset.attribution == attribution
+    assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.title_de == "vegetationskarten_de"
+    assert dataset.title_fr == "vegetationskarten_fr"
+    assert dataset.title_it is None
+    assert dataset.title_rm is None
+    assert dataset.title_en == "vegetationskarten_de"
+    assert dataset.description_de == "abstract_vegetationskarten_de"
+    assert dataset.description_fr == "abstract_vegetationskarten_fr"
+    assert dataset.description_it is None
+    assert dataset.description_rm is None
+    assert dataset.description_en == "abstract_vegetationskarten_de"
+
+
+def test_command_imports_datasets_missing_geocat(bod_contact_organisation, bod_dataset):
+    provider = Provider.objects.create(
+        provider_id="ch.bafu",
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        acronym_de="BAFU",
+        acronym_fr="XXX",
+        acronym_en="XXX",
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+    attribution = Attribution.objects.create(
+        attribution_id="ch.bafu",
+        name_de="XXX",
+        name_fr="XXX",
+        name_en="XXX",
+        description_de="BAFU",
+        description_fr="XXX",
+        description_en="XXX",
+        provider=provider,
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+    )
+
+    out = StringIO()
+    call_command(
+        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+    )
+    assert "Added dataset 'ch.bafu.auen-vegetationskarten'" in out.getvalue()
+    assert "1 dataset(s) added" in out.getvalue()
+    assert Provider.objects.count() == 1
+    assert Attribution.objects.count() == 1
+    assert Dataset.objects.count() == 1
+
+    dataset = provider.dataset_set.first()
+    assert dataset.attribution == attribution
+    assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.title_de == "#Missing"
+    assert dataset.title_fr == "#Missing"
+    assert dataset.title_it is None
+    assert dataset.title_rm is None
+    assert dataset.title_en == "#Missing"
+    assert dataset.description_de == "#Missing"
+    assert dataset.description_fr == "#Missing"
+    assert dataset.description_it is None
+    assert dataset.description_rm is None
+    assert dataset.description_en == "#Missing"
+
+
+def test_command_skips_invalid_datasets(bod_geocat_publish):
     out = StringIO()
     call_command(
         "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
@@ -253,7 +402,7 @@ def test_command_skips_invalid_datasets(bod_dataset):
     assert Dataset.objects.count() == 0
 
 
-def test_command_skips_non_prod_datasets(bod_dataset):
+def test_command_skips_non_prod_datasets(bod_dataset, bod_geocat_publish):
     bod_dataset.staging = 'test'
 
     out = StringIO()
@@ -266,7 +415,8 @@ def test_command_skips_non_prod_datasets(bod_dataset):
     assert Dataset.objects.count() == 0
 
 
-def test_command_updates(bod_contact_organisation, bod_dataset):
+#pylint: disable=too-many-statements
+def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publish):
     # Add objects that will be updated
     provider = Provider.objects.create(
         provider_id="ch.bafu",
@@ -290,7 +440,16 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
     dataset = Dataset.objects.create(
-        dataset_id="xxx", provider=provider, attribution=attribution, _legacy_id=bod_dataset.id
+        dataset_id="xxx",
+        title_de="xxx",
+        title_fr="xxx",
+        title_en="xxx",
+        description_de="xxx",
+        description_fr="xxx",
+        description_en="xxx",
+        provider=provider,
+        attribution=attribution,
+        _legacy_id=bod_dataset.id
     )
 
     out = StringIO()
@@ -337,9 +496,19 @@ def test_command_updates(bod_contact_organisation, bod_dataset):
 
     dataset = provider.dataset_set.first()
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.title_de == "vegetationskarten_de"
+    assert dataset.title_fr == "vegetationskarten_fr"
+    assert dataset.title_it == "vegetationskarten_it"
+    assert dataset.title_rm == "vegetationskarten_rm"
+    assert dataset.title_en == "vegetationskarten_en"
+    assert dataset.description_de == "abstract_vegetationskarten_de"
+    assert dataset.description_fr == "abstract_vegetationskarten_fr"
+    assert dataset.description_it == "abstract_vegetationskarten_it"
+    assert dataset.description_rm == "abstract_vegetationskarten_rm"
+    assert dataset.description_en == "abstract_vegetationskarten_en"
 
 
-def test_command_removes_orphaned_provider(bod_dataset):
+def test_command_removes_orphaned_provider(bod_geocat_publish):
     # Add objects which will be removed
     provider = Provider.objects.create(
         provider_id="ch.xxx",
@@ -363,7 +532,16 @@ def test_command_removes_orphaned_provider(bod_dataset):
         _legacy_id=16
     )
     Dataset.objects.create(
-        dataset_id="xxx", provider=provider, attribution=attribution, _legacy_id=160
+        dataset_id="xxx",
+        title_de="xxx",
+        title_fr="xxx",
+        title_en="xxx",
+        description_de="xxx",
+        description_fr="xxx",
+        description_en="xxx",
+        provider=provider,
+        attribution=attribution,
+        _legacy_id=160
     )
 
     # Add objects which will not be removed
@@ -386,7 +564,17 @@ def test_command_removes_orphaned_provider(bod_dataset):
         description_en="YYY",
         provider=provider
     )
-    Dataset.objects.create(dataset_id="yyyy", provider=provider, attribution=attribution)
+    Dataset.objects.create(
+        dataset_id="yyyy",
+        title_de="yyyy",
+        title_fr="yyyy",
+        title_en="yyyy",
+        description_de="yyyy",
+        description_fr="yyyy",
+        description_en="yyyy",
+        provider=provider,
+        attribution=attribution
+    )
 
     out = StringIO()
     call_command(
@@ -433,7 +621,16 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
         _legacy_id=16
     )
     Dataset.objects.create(
-        dataset_id="xxx", provider=provider, attribution=attribution, _legacy_id=160
+        dataset_id="xxx",
+        title_de="xxx",
+        title_fr="xxx",
+        title_en="xxx",
+        description_de="xxx",
+        description_fr="xxx",
+        description_en="xxx",
+        provider=provider,
+        attribution=attribution,
+        _legacy_id=160
     )
 
     out = StringIO()
@@ -479,7 +676,16 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
 
     # Add objects which will be removed
     Dataset.objects.create(
-        dataset_id="xxx", provider=provider, attribution=attribution, _legacy_id=160
+        dataset_id="xxx",
+        title_de="xxx",
+        title_fr="xxx",
+        title_en="xxx",
+        description_de="xxx",
+        description_fr="xxx",
+        description_en="xxx",
+        provider=provider,
+        attribution=attribution,
+        _legacy_id=160
     )
 
     out = StringIO()
@@ -499,7 +705,7 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
     assert {'BAFU'} == set(Attribution.objects.values_list('name_de', flat=True))
 
 
-def test_command_does_not_import_if_dry_run(bod_dataset):
+def test_command_does_not_import_if_dry_run(bod_geocat_publish):
     out = StringIO()
     call_command(
         "bod_sync", providers=True, attributions=True, datasets=True, dry_run=True, stdout=out
@@ -513,7 +719,7 @@ def test_command_does_not_import_if_dry_run(bod_dataset):
     assert Dataset.objects.count() == 0
 
 
-def test_command_clears_existing_data(bod_dataset):
+def test_command_clears_existing_data(bod_geocat_publish):
     provider = Provider.objects.create(
         provider_id="ch.xxx",
         name_de="XXX",
@@ -534,7 +740,17 @@ def test_command_clears_existing_data(bod_dataset):
         description_en="XXX",
         provider=provider
     )
-    Dataset.objects.create(dataset_id="yyyy", provider=provider, attribution=attribution)
+    Dataset.objects.create(
+        dataset_id="yyyy",
+        title_de="yyyy",
+        title_fr="yyyy",
+        title_en="yyyy",
+        description_de="yyyy",
+        description_fr="yyyy",
+        description_en="yyyy",
+        provider=provider,
+        attribution=attribution
+    )
 
     out = StringIO()
     call_command(

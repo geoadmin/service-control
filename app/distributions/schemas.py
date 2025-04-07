@@ -19,6 +19,10 @@ class AttributionListSchema(Schema):
 
 class DatasetSchema(Schema):
     id: str
+    title: str
+    title_translations: TranslationsSchema
+    description: str
+    description_translations: TranslationsSchema
     created: datetime
     updated: datetime
     provider_id: str
