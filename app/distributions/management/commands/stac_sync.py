@@ -1,13 +1,17 @@
 from difflib import SequenceMatcher
+from re import split
 from typing import Any
 from typing import Literal
 from typing import TypedDict
 from typing import cast
+from urllib.parse import urljoin
 
+from bs4 import BeautifulSoup
 from distributions.models import Dataset
 from distributions.models import PackageDistribution
 from pystac.collection import Collection
 from pystac_client import Client
+from requests import get
 from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
@@ -26,6 +30,7 @@ class Handler(CommandHandler):
         self.dry_run = options['dry_run']
         self.similarity = options['similarity']
         self.url = options['url']
+        self.endpoint = options['endpoint']
         self.counts: dict[str, Counter] = {}
 
     def increment_counter(self, model_name: str, operation: Operation, value: int = 1) -> None:
@@ -37,10 +42,49 @@ class Handler(CommandHandler):
     def clear_package_distributions(self) -> None:
         """ Remove existing package distributions previously imported from STAC. """
 
-        _, cleared = PackageDistribution.objects.filter(managed_by_stac=True).delete()
+        _, cleared = PackageDistribution.objects.filter(_legacy_imported=True).delete()
         for model_class, count in cleared.items():
             model_name = model_class.split('.')[-1].lower()
             self.increment_counter(model_name, 'cleared', count)
+
+    def update_package_distribution(
+        self, collection_id: str, managed_by_stac: bool
+    ) -> Dataset | None:
+        """ Create or update the package distribution with the given ID. """
+        managed = 'managed' if managed_by_stac else 'unmanaged'
+
+        # Get dataset
+        dataset = Dataset.objects.filter(dataset_id=collection_id).first()
+        if not dataset:
+            self.print_warning("No dataset for collection id '%s'", collection_id)
+            return None
+
+        # Get or create package distribution
+        package_distribution = PackageDistribution.objects.filter(
+            package_distribution_id=collection_id, _legacy_imported=True
+        ).first()
+        if not package_distribution:
+            package_distribution = PackageDistribution.objects.create(
+                package_distribution_id=collection_id,
+                _legacy_imported=True,
+                managed_by_stac=managed_by_stac,
+                dataset=dataset
+            )
+            self.increment_counter('package_distribution', 'added')
+            self.print(f"Added package distribution '{collection_id}' ({managed})")
+
+        # Update package distribution
+        if (
+            package_distribution.managed_by_stac != managed_by_stac or
+            package_distribution.dataset != dataset
+        ):
+            package_distribution.managed_by_stac = managed_by_stac
+            package_distribution.dataset = dataset
+            package_distribution.save()
+            self.increment_counter('package_distribution', 'updated')
+            self.print(f"Updated package distribution '{collection_id}' ({managed})")
+
+        return dataset
 
     def import_package_distributions(self) -> None:
         """ Import package distributions from STAC.
@@ -53,43 +97,42 @@ class Handler(CommandHandler):
         """
         processed = set()
 
-        # Get collections
-        client = Client.open(self.url)
+        # Get managed collections from STAC API
+        client = Client.open(urljoin(self.url, self.endpoint))
         for collection in client.collection_search().collections():
             collection_id = collection.id
             processed.add(collection_id)
 
-            # Get dataset
-            dataset = Dataset.objects.filter(dataset_id=collection_id).first()
-            if not dataset:
-                self.print_warning("No dataset for collection id '%s'", collection_id)
+            dataset = self.update_package_distribution(collection_id, True)
+            if dataset:
+                self.check_provider(collection, dataset)
+
+        # Get unmanaged collections from the HTML root
+        response = get(self.url, timeout=60)
+        element = BeautifulSoup(response.text, 'html.parser').find('div', id="data")
+        if not element:
+            raise ValueError(f"Error parsing {self.url}")
+
+        for line in split(r'\r?\n', element.text.strip()):
+            if not line.strip():
                 continue
 
-            # Get or create package distribution
-            package_distribution = PackageDistribution.objects.filter(
-                package_distribution_id=collection_id
-            ).first()
-            if not package_distribution:
-                package_distribution = PackageDistribution.objects.create(
-                    package_distribution_id=collection_id, managed_by_stac=True, dataset=dataset
-                )
-                self.increment_counter('package_distribution', 'added')
-                self.print(f"Added package distribution '{collection_id}'")
+            values = line.split(' ')
+            if len(values) == 0:
+                continue
 
-            # Update package distribution
-            if not package_distribution.managed_by_stac or package_distribution.dataset != dataset:
-                package_distribution.managed_by_stac = True
-                package_distribution.dataset = dataset
-                package_distribution.save()
-                self.increment_counter('package_distribution', 'updated')
-                self.print(f"Updated package distribution '{collection_id}'")
+            collection_id = values[0]
+            if collection_id in processed:
+                continue
 
-            self.check_provider(collection, dataset)
+            processed.add(collection_id)
+
+            self.update_package_distribution(collection_id, False)
 
         # Remove orphaned package distributions
-        orphans = PackageDistribution.objects.filter(managed_by_stac=True).exclude(
-            package_distribution_id__in=processed
-        )
+        orphans = PackageDistribution.objects.filter(
+            _legacy_imported=True
+        ).exclude(package_distribution_id__in=processed,)
         _, removed = orphans.delete()
         for model_class, count in removed.items():
             model_name = model_class.split('.')[-1].lower()
@@ -166,9 +209,8 @@ class Command(CustomBaseCommand):
             default=1.0,
             help="Similarity threshold to use when comparing providers"
         )
-        parser.add_argument(
-            "--url", type=str, default="https://data.geo.admin.ch/api/stac/v0.9", help="STAC URL"
-        )
+        parser.add_argument("--url", type=str, default="https://data.geo.admin.ch", help="STAC URL")
+        parser.add_argument("--endpoint", type=str, default="/api/stac/v0.9", help="STAC endpoint")
 
     def handle(self, *args: Any, **options: Any) -> None:
         Handler(self, options).run()
