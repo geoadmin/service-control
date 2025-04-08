@@ -9,7 +9,7 @@ from pystac.provider import Provider as StacProvider
 from django.core.management import call_command
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_imports(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
@@ -38,7 +38,7 @@ def test_command_imports(stac_client, provider, attribution):
     ]
 
     out = StringIO()
-    call_command("stac_harvest", verbosity=2, stdout=out)
+    call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
     assert "Added package distribution 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "1 package_distribution(s) added" in out
@@ -49,7 +49,7 @@ def test_command_imports(stac_client, provider, attribution):
     assert package_distribution.dataset == dataset
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_fails_to_import_if_dataset_is_missing(stac_client, provider, attribution):
     stac_client.open.return_value.collection_search.return_value.collections.return_value = [
         Collection(
@@ -61,13 +61,13 @@ def test_command_fails_to_import_if_dataset_is_missing(stac_client, provider, at
     ]
 
     out = StringIO()
-    call_command("stac_harvest", verbosity=2, stdout=out)
+    call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
     assert "No dataset for collection id 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert PackageDistribution.objects.count() == 0
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_does_not_need_to_import(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
@@ -101,12 +101,12 @@ def test_command_does_not_need_to_import(stac_client, provider, attribution):
     ]
 
     out = StringIO()
-    call_command("stac_harvest", verbosity=2, stdout=out)
+    call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
     assert "nothing to be done, already up to date" in out
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_updates(stac_client, provider, attribution):
     dataset_old = Dataset.objects.create(
         dataset_id="ch.bafu.amphibienwanderung-verkehrskonflikte",
@@ -156,7 +156,7 @@ def test_command_updates(stac_client, provider, attribution):
     ]
 
     out = StringIO()
-    call_command("stac_harvest", verbosity=2, stdout=out)
+    call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
     assert "Updated package distribution 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "package_distribution(s) updated" in out
@@ -167,7 +167,7 @@ def test_command_updates(stac_client, provider, attribution):
     assert package_distribution.dataset == dataset_new
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_removes_orphans(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
@@ -199,7 +199,7 @@ def test_command_removes_orphans(stac_client, provider, attribution):
     stac_client.open.return_value.collection_search.return_value.collections.return_value = []
 
     out = StringIO()
-    call_command("stac_harvest", verbosity=2, stdout=out)
+    call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
     assert "1 packagedistribution(s) removed" in out
 
@@ -208,7 +208,7 @@ def test_command_removes_orphans(stac_client, provider, attribution):
     assert package_distribution.package_distribution_id == 'ch.bafu.alpweiden-herdenschutzhunde.1'
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_clears(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
@@ -240,7 +240,7 @@ def test_command_clears(stac_client, provider, attribution):
     stac_client.open.return_value.collection_search.return_value.collections.return_value = []
 
     out = StringIO()
-    call_command("stac_harvest", clear=True, verbosity=2, stdout=out)
+    call_command("stac_sync", clear=True, verbosity=2, stdout=out)
     out = out.getvalue()
 
     assert "1 packagedistribution(s) cleared" in out
@@ -250,7 +250,7 @@ def test_command_clears(stac_client, provider, attribution):
     ).package_distribution_id == 'ch.bafu.alpweiden-herdenschutzhunde.1'
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_runs_dry(stac_client, provider, attribution):
     dataset_old = Dataset.objects.create(
         dataset_id="ch.bafu.amphibienwanderung-verkehrskonflikte",
@@ -306,7 +306,7 @@ def test_command_runs_dry(stac_client, provider, attribution):
     ]
 
     out = StringIO()
-    call_command("stac_harvest", dry_run=True, verbosity=2, stdout=out)
+    call_command("stac_sync", dry_run=True, verbosity=2, stdout=out)
     out = out.getvalue()
     assert "Updated package distribution 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "package_distribution(s) updated" in out
@@ -319,7 +319,7 @@ def test_command_runs_dry(stac_client, provider, attribution):
     assert package_distribution.dataset == dataset_old
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_warns_about_missing_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
@@ -344,7 +344,7 @@ def test_command_warns_about_missing_provider(stac_client, provider, attribution
     ]
 
     out = StringIO()
-    call_command("stac_harvest", verbosity=2, stdout=out)
+    call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
     assert "Added package distribution 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "1 package_distribution(s) added" in out
@@ -352,7 +352,7 @@ def test_command_warns_about_missing_provider(stac_client, provider, attribution
     assert PackageDistribution.objects.first()
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_warns_about_multiple_providers(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
@@ -383,7 +383,7 @@ def test_command_warns_about_multiple_providers(stac_client, provider, attributi
     ]
 
     out = StringIO()
-    call_command("stac_harvest", verbosity=2, stdout=out)
+    call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
     assert "Added package distribution 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "1 package_distribution(s) added" in out
@@ -391,7 +391,7 @@ def test_command_warns_about_multiple_providers(stac_client, provider, attributi
     assert PackageDistribution.objects.first()
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_warns_about_unknown_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
@@ -419,7 +419,7 @@ def test_command_warns_about_unknown_provider(stac_client, provider, attribution
     ]
 
     out = StringIO()
-    call_command("stac_harvest", verbosity=2, stdout=out)
+    call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
     assert "Added package distribution 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "1 package_distribution(s) added" in out
@@ -427,7 +427,7 @@ def test_command_warns_about_unknown_provider(stac_client, provider, attribution
     assert PackageDistribution.objects.first()
 
 
-@patch('distributions.management.commands.stac_harvest.Client')
+@patch('distributions.management.commands.stac_sync.Client')
 def test_command_does_not_warn_about_similar_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
@@ -455,7 +455,7 @@ def test_command_does_not_warn_about_similar_provider(stac_client, provider, att
     ]
 
     out = StringIO()
-    call_command("stac_harvest", similarity=0.5, verbosity=2, stdout=out)
+    call_command("stac_sync", similarity=0.5, verbosity=2, stdout=out)
     out = out.getvalue()
     assert "Added package distribution 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "1 package_distribution(s) added" in out
