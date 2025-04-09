@@ -4,7 +4,7 @@ disable_existing_loggers: False
 root:
   handlers:
     - console
-  level: DEBUG
+  level: INFO
   propagate: True
 
 # configure loggers per app
