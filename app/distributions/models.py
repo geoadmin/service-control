@@ -80,6 +80,7 @@ class Dataset(models.Model):
     description_it = models.CharField(_(_context, "Description (Italian)"), null=True, blank=True)
     description_rm = models.CharField(_(_context, "Description (Romansh)"), null=True, blank=True)
 
+    geocat_id = models.CharField(_(_context, "Geocat ID"), unique=True, max_length=100)
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
     attribution = models.ForeignKey(Attribution, on_delete=models.CASCADE)
 

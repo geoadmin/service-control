@@ -13,6 +13,7 @@ from django.core.management import call_command
 def test_command_imports(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -70,6 +71,7 @@ def test_command_fails_to_import_if_dataset_is_missing(stac_client, provider, at
 def test_command_does_not_need_to_import(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -108,6 +110,7 @@ def test_command_does_not_need_to_import(stac_client, provider, attribution):
 def test_command_updates(stac_client, provider, attribution):
     dataset_old = Dataset.objects.create(
         dataset_id="ch.bafu.amphibienwanderung-verkehrskonflikte",
+        geocat_id="8dc1e2a5-eab0-467a-a570-d994830f8340",
         title_de="Amphibienwanderungen mit Konflikten",
         title_fr="Migration d‘amphibiens - Conflits liés au trafic",
         title_en="Amphibian migration conflicts",
@@ -123,6 +126,7 @@ def test_command_updates(stac_client, provider, attribution):
     )
     dataset_new = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -167,6 +171,7 @@ def test_command_updates(stac_client, provider, attribution):
 def test_command_removes_orphans(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -207,6 +212,7 @@ def test_command_removes_orphans(stac_client, provider, attribution):
 def test_command_clears(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -248,6 +254,7 @@ def test_command_clears(stac_client, provider, attribution):
 def test_command_runs_dry(stac_client, provider, attribution):
     dataset_old = Dataset.objects.create(
         dataset_id="ch.bafu.amphibienwanderung-verkehrskonflikte",
+        geocat_id="8dc1e2a5-eab0-467a-a570-d994830f8340",
         title_de="Amphibienwanderungen mit Konflikten",
         title_fr="Migration d'amphibiens - Conflits liés au trafic",
         title_en="Amphibian migration conflicts",
@@ -263,6 +270,7 @@ def test_command_runs_dry(stac_client, provider, attribution):
     )
     dataset_new = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -315,6 +323,7 @@ def test_command_runs_dry(stac_client, provider, attribution):
 def test_command_warns_about_missing_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -347,6 +356,7 @@ def test_command_warns_about_missing_provider(stac_client, provider, attribution
 def test_command_warns_about_multiple_providers(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -385,6 +395,7 @@ def test_command_warns_about_multiple_providers(stac_client, provider, attributi
 def test_command_warns_about_unknown_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",
@@ -420,6 +431,7 @@ def test_command_warns_about_unknown_provider(stac_client, provider, attribution
 def test_command_does_not_warn_about_similar_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
         title_de="Alpweiden mit Herdenschutzhunden",
         title_fr="Alpages protégés par des chiens",
         title_en="Alps with livestock guardian dogs",

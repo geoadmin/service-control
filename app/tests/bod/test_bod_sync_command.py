@@ -42,6 +42,7 @@ def fixture_bod_dataset(bod_contact_organisation):
     yield BodDataset.objects.create(
         id=170,
         id_dataset="ch.bafu.auen-vegetationskarten",
+        fk_geocat="ab76361f-657d-4705-9053-95f89ecab126",
         fk_contactorganisation_id=bod_contact_organisation.pk_contactorganisation_id,
         staging="prod"
     )
@@ -119,6 +120,7 @@ def test_command_imports(bod_geocat_publish):
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.geocat_id == "ab76361f-657d-4705-9053-95f89ecab126"
     assert dataset.title_de == "vegetationskarten_de"
     assert dataset.title_fr == "vegetationskarten_fr"
     assert dataset.title_it == "vegetationskarten_it"
@@ -277,6 +279,7 @@ def test_command_imports_datasets(bod_contact_organisation, bod_geocat_publish):
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.geocat_id == "ab76361f-657d-4705-9053-95f89ecab126"
     assert dataset.title_de == "vegetationskarten_de"
     assert dataset.title_fr == "vegetationskarten_fr"
     assert dataset.title_it == "vegetationskarten_it"
@@ -327,6 +330,7 @@ def test_command_imports_datasets_missing_english(
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.geocat_id == "ab76361f-657d-4705-9053-95f89ecab126"
     assert dataset.title_de == "vegetationskarten_de"
     assert dataset.title_fr == "vegetationskarten_fr"
     assert dataset.title_it is None
@@ -375,6 +379,7 @@ def test_command_imports_datasets_missing_geocat(bod_contact_organisation, bod_d
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.geocat_id == "ab76361f-657d-4705-9053-95f89ecab126"
     assert dataset.title_de == "#Missing"
     assert dataset.title_fr == "#Missing"
     assert dataset.title_it is None
@@ -441,6 +446,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publi
     )
     dataset = Dataset.objects.create(
         dataset_id="xxx",
+        geocat_id="xxx",
         title_de="xxx",
         title_fr="xxx",
         title_en="xxx",
@@ -496,6 +502,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publi
 
     dataset = provider.dataset_set.first()
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"
+    assert dataset.geocat_id == "ab76361f-657d-4705-9053-95f89ecab126"
     assert dataset.title_de == "vegetationskarten_de"
     assert dataset.title_fr == "vegetationskarten_fr"
     assert dataset.title_it == "vegetationskarten_it"
@@ -533,6 +540,7 @@ def test_command_removes_orphaned_provider(bod_geocat_publish):
     )
     Dataset.objects.create(
         dataset_id="xxx",
+        geocat_id="xxx",
         title_de="xxx",
         title_fr="xxx",
         title_en="xxx",
@@ -566,6 +574,7 @@ def test_command_removes_orphaned_provider(bod_geocat_publish):
     )
     Dataset.objects.create(
         dataset_id="yyyy",
+        geocat_id="yyyy",
         title_de="yyyy",
         title_fr="yyyy",
         title_en="yyyy",
@@ -622,6 +631,7 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
     )
     Dataset.objects.create(
         dataset_id="xxx",
+        geocat_id="xxx",
         title_de="xxx",
         title_fr="xxx",
         title_en="xxx",
@@ -677,6 +687,7 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
     # Add objects which will be removed
     Dataset.objects.create(
         dataset_id="xxx",
+        geocat_id="xxx",
         title_de="xxx",
         title_fr="xxx",
         title_en="xxx",
@@ -742,6 +753,7 @@ def test_command_clears_existing_data(bod_geocat_publish):
     )
     Dataset.objects.create(
         dataset_id="yyyy",
+        geocat_id="yyyy",
         title_de="yyyy",
         title_fr="yyyy",
         title_en="yyyy",

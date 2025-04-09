@@ -272,6 +272,14 @@ class Handler(CommandHandler):
                 )
                 continue
 
+            if legacy_id in (1485, 1486):
+                # Skip datasets ch.swisstopo.konsultation-lk10-flurnamen (1485) and
+                # ch.swisstopo.konsultation-lk10-siedlungsnamen (1486) as they have the same
+                # geocat_id as ch.swisstopo.landeskarte-farbe-10 (952)
+                # geocat_id is cb0f8401-c49a-4bdf-aff6-40a7015ba43a
+                self.print(f"skipping dataset '{bod_dataset.id_dataset}'")
+                continue
+
             # Get meta information title and description
             bod_meta = BodGeocatPublish.objects.filter(fk_id_dataset=bod_dataset.id_dataset).first()
             if not bod_meta:
@@ -301,6 +309,7 @@ class Handler(CommandHandler):
                 dataset = Dataset.objects.create(
                     provider=attribution.provider,
                     attribution=attribution,
+                    geocat_id=bod_dataset.fk_geocat,
                     title_de=bod_meta.bezeichnung_de,
                     title_fr=bod_meta.bezeichnung_fr,
                     title_en=bod_meta.bezeichnung_en,
@@ -338,7 +347,8 @@ class Handler(CommandHandler):
         """ Update the attributes of a dataset. """
 
         any_changed = False
-        for dataset_attribute, bod_dataset_attribute in (('dataset_id', 'id_dataset'),):
+        for dataset_attribute, bod_dataset_attribute in (('dataset_id', 'id_dataset'),
+            ('geocat_id', 'fk_geocat'),):
             changed = self.update_model(
                 dataset,
                 dataset_attribute,
