@@ -13,6 +13,16 @@ from django.core.management import call_command
 def test_command_imports(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -60,6 +70,16 @@ def test_command_fails_to_import_if_dataset_is_missing(stac_client, provider, at
 def test_command_does_not_need_to_import(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -88,11 +108,31 @@ def test_command_does_not_need_to_import(stac_client, provider, attribution):
 def test_command_updates(stac_client, provider, attribution):
     dataset_old = Dataset.objects.create(
         dataset_id="ch.bafu.amphibienwanderung-verkehrskonflikte",
+        title_de="Amphibienwanderungen mit Konflikten",
+        title_fr="Migration d‘amphibiens - Conflits liés au trafic",
+        title_en="Amphibian migration conflicts",
+        title_it="Migrazioni di anfibi con conflitti",
+        title_rm="Migraziun d'amfibis cun conflicts",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
     dataset_new = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -127,6 +167,16 @@ def test_command_updates(stac_client, provider, attribution):
 def test_command_removes_orphans(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -157,6 +207,16 @@ def test_command_removes_orphans(stac_client, provider, attribution):
 def test_command_clears(stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -188,11 +248,31 @@ def test_command_clears(stac_client, provider, attribution):
 def test_command_runs_dry(stac_client, provider, attribution):
     dataset_old = Dataset.objects.create(
         dataset_id="ch.bafu.amphibienwanderung-verkehrskonflikte",
+        title_de="Amphibienwanderungen mit Konflikten",
+        title_fr="Migration d'amphibiens - Conflits liés au trafic",
+        title_en="Amphibian migration conflicts",
+        title_it="Migrazioni di anfibi con conflitti",
+        title_rm="Migraziun d'amfibis cun conflicts",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
     dataset_new = Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -235,6 +315,16 @@ def test_command_runs_dry(stac_client, provider, attribution):
 def test_command_warns_about_missing_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -257,6 +347,16 @@ def test_command_warns_about_missing_provider(stac_client, provider, attribution
 def test_command_warns_about_multiple_providers(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -285,6 +385,16 @@ def test_command_warns_about_multiple_providers(stac_client, provider, attributi
 def test_command_warns_about_unknown_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )
@@ -310,6 +420,16 @@ def test_command_warns_about_unknown_provider(stac_client, provider, attribution
 def test_command_does_not_warn_about_similar_provider(stac_client, provider, attribution):
     Dataset.objects.create(
         dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
         provider=provider,
         attribution=attribution,
     )

@@ -10,6 +10,12 @@ from django.core.exceptions import ValidationError
 def fixture_dataset(provider, attribution):
     yield Dataset.objects.create(
         dataset_id="ch.agroscope.feuchtflaechenpotential-kulturlandschaft",
+        title_de="Feuchtflächenpotential Agrarland",
+        title_fr="Potentiel des surfaces humides",
+        title_en="Wetness potential agricultural land",
+        description_de="Feuchtflächenpotential Agrarland",
+        description_fr="Potentiel des surfaces humides",
+        description_en="Wetness potential agricultural land",
         provider=provider,
         attribution=attribution,
     )

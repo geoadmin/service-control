@@ -17,7 +17,7 @@ class AttributionAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
 class DatasetAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     '''Admin View for Dataset'''
 
-    list_display = ('dataset_id', 'provider')
+    list_display = ('dataset_id', 'title_en', 'provider')
     list_filter = (('provider', admin.RelatedOnlyFieldListFilter),)
 
 
