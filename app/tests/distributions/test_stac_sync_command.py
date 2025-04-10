@@ -30,6 +30,17 @@ def test_command_imports(get, stac_client, provider, attribution):
     )
     dataset_2 = Dataset.objects.create(
         dataset_id="ch.bafu.hydrologie-hintergrundkarte",
+        geocat_id="bbc6aedb-019f-4a49-8a6c-437264b3bd37",
+        title_de="Generalisierte Hintergrundkarte zur Darstellung hydrologischer Daten",
+        title_fr="Fond cartographique pour la présentation des données hydrologiques ",
+        title_en="Generalised background map for the representation of hydrological data ",
+        title_it="Carta base generalizzata per la rappresentazione di dati idrologici ",
+        title_rm="",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="",
         provider=provider,
         attribution=attribution,
     )
@@ -69,6 +80,17 @@ def test_command_imports(get, stac_client, provider, attribution):
 def test_command_imports_to_default_dataset(get, stac_client, provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id="default",
+        geocat_id="none",
+        title_de="default",
+        title_fr="default",
+        title_en="default",
+        title_it="default",
+        title_rm="default",
+        description_de="default",
+        description_fr="default",
+        description_en="default",
+        description_it="default",
+        description_rm="default",
         provider=provider,
         attribution=attribution,
     )
@@ -167,6 +189,17 @@ def test_command_does_not_need_to_import(get, stac_client, provider, attribution
     )
     dataset_2 = Dataset.objects.create(
         dataset_id="ch.bafu.hydrologie-hintergrundkarte",
+        geocat_id="bbc6aedb-019f-4a49-8a6c-437264b3bd37",
+        title_de="Generalisierte Hintergrundkarte zur Darstellung hydrologischer Daten",
+        title_fr="Fond cartographique pour la présentation des données hydrologiques ",
+        title_en="Generalised background map for the representation of hydrological data ",
+        title_it="Carta base generalizzata per la rappresentazione di dati idrologici ",
+        title_rm="",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="",
         provider=provider,
         attribution=attribution,
     )
@@ -236,11 +269,33 @@ def test_command_updates(get, stac_client, provider, attribution):
     )
     dataset_new_2 = Dataset.objects.create(
         dataset_id="ch.bafu.hydrologie-hintergrundkarte",
+        geocat_id="bbc6aedb-019f-4a49-8a6c-437264b3bd37",
+        title_de="Generalisierte Hintergrundkarte zur Darstellung hydrologischer Daten",
+        title_fr="Fond cartographique pour la présentation des données hydrologiques ",
+        title_en="Generalised background map for the representation of hydrological data ",
+        title_it="Carta base generalizzata per la rappresentazione di dati idrologici ",
+        title_rm="",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="",
         provider=provider,
         attribution=attribution,
     )
     dataset_new_3 = Dataset.objects.create(
         dataset_id="default",
+        geocat_id="none",
+        title_de="default",
+        title_fr="default",
+        title_en="default",
+        title_it="default",
+        title_rm="default",
+        description_de="default",
+        description_fr="default",
+        description_en="default",
+        description_it="default",
+        description_rm="default",
         provider=provider,
         attribution=attribution,
     )
@@ -445,6 +500,17 @@ def test_command_runs_dry(get, stac_client, provider, attribution):
     )
     Dataset.objects.create(
         dataset_id="ch.bafu.hydrologie-hintergrundkarte",
+        geocat_id="bbc6aedb-019f-4a49-8a6c-437264b3bd37",
+        title_de="Generalisierte Hintergrundkarte zur Darstellung hydrologischer Daten",
+        title_fr="Fond cartographique pour la présentation des données hydrologiques ",
+        title_en="Generalised background map for the representation of hydrological data ",
+        title_it="Carta base generalizzata per la rappresentazione di dati idrologici ",
+        title_rm="",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="",
         provider=provider,
         attribution=attribution,
     )
