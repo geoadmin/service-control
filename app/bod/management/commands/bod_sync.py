@@ -272,6 +272,17 @@ class Handler(CommandHandler):
                 )
                 continue
 
+            if legacy_id in (1485, 1486):
+                # Skip the following datasets as they are hidden in public BGDI services:
+                # - ch.swisstopo.konsultation-lk10-flurnamen (1485)
+                # - ch.swisstopo.konsultation-lk10-siedlungsnamen (1486)
+                # They were used for name verifications of the cantons in the context of the KONAM
+                # project and are to be deleted.
+                # Layer ch.swisstopo.landeskarte-farbe-10 (952) has the same
+                # geocat_id ("cb0f8401-c49a-4bdf-aff6-40a7015ba43a").
+                self.print(f"skipping dataset '{bod_dataset.id_dataset}'")
+                continue
+
             # Get meta information title and description
             bod_meta = BodGeocatPublish.objects.filter(fk_id_dataset=bod_dataset.id_dataset).first()
             if not bod_meta:
@@ -301,6 +312,7 @@ class Handler(CommandHandler):
                 dataset = Dataset.objects.create(
                     provider=attribution.provider,
                     attribution=attribution,
+                    geocat_id=bod_dataset.fk_geocat,
                     title_de=bod_meta.bezeichnung_de,
                     title_fr=bod_meta.bezeichnung_fr,
                     title_en=bod_meta.bezeichnung_en,
@@ -338,7 +350,8 @@ class Handler(CommandHandler):
         """ Update the attributes of a dataset. """
 
         any_changed = False
-        for dataset_attribute, bod_dataset_attribute in (('dataset_id', 'id_dataset'),):
+        for dataset_attribute, bod_dataset_attribute in (('dataset_id', 'id_dataset'),
+            ('geocat_id', 'fk_geocat'),):
             changed = self.update_model(
                 dataset,
                 dataset_attribute,

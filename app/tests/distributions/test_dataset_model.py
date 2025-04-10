@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 # pylint: disable=too-many-locals
 def test_object_created_in_db_with_all_fields_defined(provider, attribution):
     dataset_id = "ch.bafu.neophyten-haargurke"
+    geocat_id = "ab76361f-657d-4705-9053-95f89ecab126"
     time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
     title_de = "Invasive gebietsfremde Pflanzen - Potentialkarte Haargurke"
     title_fr = "Plantes exotiques envahissantes - Carte de distribution potentiel Sicyos anguleux"
@@ -24,6 +25,7 @@ def test_object_created_in_db_with_all_fields_defined(provider, attribution):
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
         Dataset.objects.create(
             dataset_id=dataset_id,
+            geocat_id=geocat_id,
             title_de=title_de,
             title_fr=title_fr,
             title_en=title_en,
@@ -44,6 +46,7 @@ def test_object_created_in_db_with_all_fields_defined(provider, attribution):
     dataset = Dataset.objects.last()
 
     assert dataset.dataset_id == dataset_id
+    assert dataset.geocat_id == geocat_id
     assert dataset.provider.acronym_de == "BAFU"
     assert dataset.attribution.name_de == "BAFU + Kantone"
 
@@ -67,6 +70,7 @@ def test_field_created_matches_creation_time(provider, attribution):
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
         dataset = Dataset.objects.create(
             dataset_id='xxxx',
+            geocat_id='xxxx',
             title_de="xxxx",
             title_fr="xxxx",
             title_en="xxxx",
@@ -82,6 +86,7 @@ def test_field_created_matches_creation_time(provider, attribution):
 def test_field_updated_matches_update_time(provider, attribution):
     dataset = Dataset.objects.create(
         dataset_id='xxxx',
+        geocat_id='xxxx',
         title_de="xxxx",
         title_fr="xxxx",
         title_en="xxxx",

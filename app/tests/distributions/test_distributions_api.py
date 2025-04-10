@@ -20,6 +20,7 @@ def fixture_dataset(attribution, time_created):
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
         yield Dataset.objects.create(
             dataset_id="ch.bafu.neophyten-haargurke",
+            geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
             title_de="Invasive gebietsfremde Pflanzen - Potentialkarte Haargurke",
             title_fr=
             "Plantes exotiques envahissantes - Carte de distribution potentiel Sicyos anguleux",
@@ -708,6 +709,7 @@ def test_get_datasets_returns_all_datasets_ordered_by_dataset_id(
     )
     model_fields2 = {
         "dataset_id": "ch.provider2.dataset2",
+        "geocat_id": "dataset2",
         "title_de": "dataset2",
         "title_fr": "dataset2",
         "title_en": "dataset2",
