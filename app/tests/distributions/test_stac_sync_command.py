@@ -66,6 +66,45 @@ def test_command_imports(get, stac_client, provider, attribution):
 
 @patch('distributions.management.commands.stac_sync.Client')
 @patch('distributions.management.commands.stac_sync.get')
+def test_command_imports_to_default_dataset(get, stac_client, provider, attribution):
+    dataset = Dataset.objects.create(
+        dataset_id="default",
+        provider=provider,
+        attribution=attribution,
+    )
+
+    stac_client.open.return_value.collection_search.return_value.collections.return_value = [
+        Collection(
+            id='ch.bafu.alpweiden-herdenschutzhunde',
+            description=None,
+            extent=None,
+            providers=[StacProvider(name='Federal Office for the Environment')]
+        )
+    ]
+    get.return_value.text = '<div id="data">ch.bafu.hydrologie-hintergrundkarte</div>'
+
+    out = StringIO()
+    call_command("stac_sync", default_dataset='default', verbosity=2, stdout=out)
+    out = out.getvalue()
+    assert "Added package distribution 'ch.bafu.alpweiden-herdenschutzhunde' (managed)" in out
+    assert "Added package distribution 'ch.bafu.hydrologie-hintergrundkarte' (unmanaged)" in out
+    assert "2 package_distribution(s) added" in out
+
+    package_distribution = PackageDistribution.objects.get(
+        package_distribution_id='ch.bafu.alpweiden-herdenschutzhunde'
+    )
+    assert package_distribution.managed_by_stac is True
+    assert package_distribution.dataset == dataset
+
+    package_distribution = PackageDistribution.objects.get(
+        package_distribution_id='ch.bafu.hydrologie-hintergrundkarte'
+    )
+    assert package_distribution.managed_by_stac is False
+    assert package_distribution.dataset == dataset
+
+
+@patch('distributions.management.commands.stac_sync.Client')
+@patch('distributions.management.commands.stac_sync.get')
 def test_command_fails_to_import_if_dataset_is_missing(get, stac_client, provider, attribution):
     stac_client.open.return_value.collection_search.return_value.collections.return_value = [
         Collection(
@@ -82,6 +121,28 @@ def test_command_fails_to_import_if_dataset_is_missing(get, stac_client, provide
     out = out.getvalue()
     assert "No dataset for collection id 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "No dataset for collection id 'ch.bafu.hydrologie-hintergrundkarte'" in out
+    assert PackageDistribution.objects.count() == 0
+
+
+@patch('distributions.management.commands.stac_sync.Client')
+@patch('distributions.management.commands.stac_sync.get')
+def test_command_fails_if_default_dataset_is_missing(get, stac_client, provider, attribution):
+    stac_client.open.return_value.collection_search.return_value.collections.return_value = [
+        Collection(
+            id='ch.bafu.alpweiden-herdenschutzhunde',
+            description=None,
+            extent=None,
+            providers=[StacProvider(name='Federal Office for the Environment')]
+        )
+    ]
+    get.return_value.text = '<div id="data">ch.bafu.hydrologie-hintergrundkarte</div>'
+
+    out = StringIO()
+    call_command("stac_sync", default_dataset='default', verbosity=2, stdout=out)
+    out = out.getvalue()
+    assert "No dataset for collection id 'ch.bafu.alpweiden-herdenschutzhunde'" in out
+    assert "No dataset for collection id 'ch.bafu.hydrologie-hintergrundkarte'" in out
+    assert "Default dataset 'default' does not exist" in out
     assert PackageDistribution.objects.count() == 0
 
 
@@ -178,6 +239,11 @@ def test_command_updates(get, stac_client, provider, attribution):
         provider=provider,
         attribution=attribution,
     )
+    dataset_new_3 = Dataset.objects.create(
+        dataset_id="default",
+        provider=provider,
+        attribution=attribution,
+    )
     PackageDistribution.objects.create(
         package_distribution_id='ch.bafu.alpweiden-herdenschutzhunde',
         managed_by_stac=False,
@@ -186,6 +252,12 @@ def test_command_updates(get, stac_client, provider, attribution):
     )
     PackageDistribution.objects.create(
         package_distribution_id='ch.bafu.hydrologie-hintergrundkarte',
+        managed_by_stac=True,
+        dataset=dataset_old,
+        _legacy_imported=True,
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='ch.bafu.laerm-bahnlaerm_tag',
         managed_by_stac=True,
         dataset=dataset_old,
         _legacy_imported=True,
@@ -199,13 +271,19 @@ def test_command_updates(get, stac_client, provider, attribution):
             providers=[StacProvider(name='Federal Office for the Environment')]
         )
     ]
-    get.return_value.text = '<div id="data">ch.bafu.hydrologie-hintergrundkarte</div>'
+    get.return_value.text = """
+        <div id="data">
+            ch.bafu.hydrologie-hintergrundkarte
+            ch.bafu.laerm-bahnlaerm_tag
+        </div>
+    """
 
     out = StringIO()
-    call_command("stac_sync", verbosity=2, stdout=out)
+    call_command("stac_sync", default_dataset='default', verbosity=2, stdout=out)
     out = out.getvalue()
     assert "Updated package distribution 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "Updated package distribution 'ch.bafu.hydrologie-hintergrundkarte'" in out
+    assert "Updated package distribution 'ch.bafu.laerm-bahnlaerm_tag'" in out
     assert "package_distribution(s) updated" in out
 
     package_distribution = PackageDistribution.objects.get(
@@ -219,6 +297,12 @@ def test_command_updates(get, stac_client, provider, attribution):
     )
     assert package_distribution.managed_by_stac is False
     assert package_distribution.dataset == dataset_new_2
+
+    package_distribution = PackageDistribution.objects.get(
+        package_distribution_id='ch.bafu.laerm-bahnlaerm_tag'
+    )
+    assert package_distribution.managed_by_stac is False
+    assert package_distribution.dataset == dataset_new_3
 
 
 @patch('distributions.management.commands.stac_sync.Client')

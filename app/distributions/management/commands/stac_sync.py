@@ -31,6 +31,7 @@ class Handler(CommandHandler):
         self.similarity = options['similarity']
         self.url = options['url']
         self.endpoint = options['endpoint']
+        self.default_dataset = options['default_dataset']
         self.counts: dict[str, Counter] = {}
 
     def increment_counter(self, model_name: str, operation: Operation, value: int = 1) -> None:
@@ -54,9 +55,14 @@ class Handler(CommandHandler):
         managed = 'managed' if managed_by_stac else 'unmanaged'
 
         # Get dataset
-        dataset = Dataset.objects.filter(dataset_id=collection_id).first()
+        dataset = (
+            Dataset.objects.filter(dataset_id=collection_id).first() or
+            Dataset.objects.filter(dataset_id=self.default_dataset).first()
+        )
         if not dataset:
             self.print_warning("No dataset for collection id '%s'", collection_id)
+            if self.default_dataset:
+                self.print_warning("Default dataset '%s' does not exist", self.default_dataset)
             return None
 
         # Get or create package distribution
@@ -114,7 +120,8 @@ class Handler(CommandHandler):
             raise ValueError(f"Error parsing {self.url}")
 
         for line in split(r'\r?\n', element.text.strip()):
-            if not line.strip():
+            line = line.strip()
+            if not line:
                 continue
 
             values = line.split(' ')
@@ -211,6 +218,12 @@ class Command(CustomBaseCommand):
         )
         parser.add_argument("--url", type=str, default="https://data.geo.admin.ch", help="STAC URL")
         parser.add_argument("--endpoint", type=str, default="/api/stac/v0.9", help="STAC endpoint")
+        parser.add_argument(
+            "--default-dataset",
+            type=str,
+            default="",
+            help="Add packages with missing dataset to this dataset"
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         Handler(self, options).run()
