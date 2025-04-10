@@ -273,10 +273,13 @@ class Handler(CommandHandler):
                 continue
 
             if legacy_id in (1485, 1486):
-                # Skip datasets ch.swisstopo.konsultation-lk10-flurnamen (1485) and
-                # ch.swisstopo.konsultation-lk10-siedlungsnamen (1486) as they have the same
-                # geocat_id as ch.swisstopo.landeskarte-farbe-10 (952)
-                # geocat_id is cb0f8401-c49a-4bdf-aff6-40a7015ba43a
+                # Skip the following datasets as they are hidden in public BGDI services:
+                # - ch.swisstopo.konsultation-lk10-flurnamen (1485)
+                # - ch.swisstopo.konsultation-lk10-siedlungsnamen (1486)
+                # They were used for name verifications of the cantons in the context of the KONAM
+                # project and are to be deleted.
+                # Layer ch.swisstopo.landeskarte-farbe-10 (952) has the same
+                # geocat_id ("cb0f8401-c49a-4bdf-aff6-40a7015ba43a").
                 self.print(f"skipping dataset '{bod_dataset.id_dataset}'")
                 continue
 

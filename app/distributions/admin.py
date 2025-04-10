@@ -32,15 +32,14 @@ class DatasetAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
         **kwargs: Any
     ) -> Any:
         form = super().get_form(request, obj=obj, change=change, **kwargs)
-        self.add_geocat_url_help_text(form, obj)
+        if obj is not None:
+            self._add_geocat_url_help_text(form, obj.geocat_id)
         return form
 
-    def add_geocat_url_help_text(self, form: Any, obj: Dataset | None = None) -> None:
-        if not obj:
-            return
+    def _add_geocat_url_help_text(self, form: Any, geocat_id: str) -> None:
         form.base_fields["geocat_id"].help_text = format_html(
             "<a href='{url}'>{url}</a>",
-            url=f"https://www.geocat.ch/datahub/dataset/{obj.geocat_id}",
+            url=f"https://www.geocat.ch/datahub/dataset/{geocat_id}",
         )
 
 
