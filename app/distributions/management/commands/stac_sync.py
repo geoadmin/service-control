@@ -217,7 +217,7 @@ class Command(CustomBaseCommand):
             help="Similarity threshold to use when comparing providers"
         )
         parser.add_argument("--url", type=str, default="https://data.geo.admin.ch", help="STAC URL")
-        parser.add_argument("--endpoint", type=str, default="/api/stac/v0.9", help="STAC endpoint")
+        parser.add_argument("--endpoint", type=str, default="/api/stac/v1", help="STAC endpoint")
         parser.add_argument(
             "--default-dataset",
             type=str,
