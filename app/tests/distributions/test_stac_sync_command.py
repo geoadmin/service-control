@@ -379,36 +379,214 @@ def test_command_removes_orphans(get, stac_client, provider, attribution):
         provider=provider,
         attribution=attribution,
     )
+    dataset_keep_html = Dataset.objects.create(
+        dataset_id="keep_html",
+        geocat_id="keep_html",
+        title_de="keep_html",
+        title_fr="keep_html",
+        title_en="keep_html",
+        description_de="keep_html",
+        description_fr="keep_html",
+        description_en="keep_html",
+        provider=provider,
+        attribution=attribution,
+    )
+    dataset_keep_stac = Dataset.objects.create(
+        dataset_id="keep_stac",
+        geocat_id="keep_stac",
+        title_de="keep_stac",
+        title_fr="keep_stac",
+        title_en="keep_stac",
+        description_de="keep_stac",
+        description_fr="keep_stac",
+        description_en="keep_stac",
+        provider=provider,
+        attribution=attribution,
+    )
     PackageDistribution.objects.create(
-        package_distribution_id='ch.bafu.alpweiden-herdenschutzhunde.1',
+        package_distribution_id='remove_missing_in_html',
         managed_by_stac=False,
         dataset=dataset,
         _legacy_imported=True
     )
     PackageDistribution.objects.create(
-        package_distribution_id='ch.bafu.alpweiden-herdenschutzhunde.2',
+        package_distribution_id='remove_missing_in_stac',
         managed_by_stac=True,
         dataset=dataset,
         _legacy_imported=True
     )
     PackageDistribution.objects.create(
-        package_distribution_id='ch.bafu.alpweiden-herdenschutzhunde.3',
+        package_distribution_id='remove_missing_dataset_html',
+        managed_by_stac=False,
+        dataset=dataset,
+        _legacy_imported=True
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='remove_missing_dataset_stac',
+        managed_by_stac=True,
+        dataset=dataset,
+        _legacy_imported=True
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='keep_not_legacy',
         managed_by_stac=True,
         dataset=dataset,
         _legacy_imported=False
     )
+    PackageDistribution.objects.create(
+        package_distribution_id='keep_html',
+        managed_by_stac=False,
+        dataset=dataset_keep_html,
+        _legacy_imported=True
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='keep_stac',
+        managed_by_stac=True,
+        dataset=dataset_keep_stac,
+        _legacy_imported=True
+    )
 
-    stac_client.open.return_value.collection_search.return_value.collections.return_value = []
-    get.return_value.text = '<div id="data"></div>'
+    stac_client.open.return_value.collection_search.return_value.collections.return_value = [
+        Collection(
+            id='remove_missing_dataset_stac',
+            description=None,
+            extent=None,
+            providers=[StacProvider(name='remove_missing_dataset_provider')]
+        ),
+        Collection(
+            id='keep_stac',
+            description=None,
+            extent=None,
+            providers=[StacProvider(name='remove_missing_dataset_provider')]
+        )
+    ]
+    get.return_value.text = '<div id="data">remove_missing_dataset_html\nkeep_html</div>'
 
     out = StringIO()
     call_command("stac_sync", verbosity=2, stdout=out)
     out = out.getvalue()
+    assert "4 packagedistribution(s) removed" in out
+
+    assert PackageDistribution.objects.count() == 3
+    assert {p.package_distribution_id for p in PackageDistribution.objects.all()
+           } == {'keep_html', 'keep_stac', 'keep_not_legacy'}
+
+
+@patch('distributions.management.commands.stac_sync.Client')
+@patch('distributions.management.commands.stac_sync.get')
+def test_command_removes_orphans_default_datset(get, stac_client, provider, attribution):
+    dataset = Dataset.objects.create(
+        dataset_id="ch.bafu.alpweiden-herdenschutzhunde",
+        geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
+        title_de="Alpweiden mit Herdenschutzhunden",
+        title_fr="Alpages protégés par des chiens",
+        title_en="Alps with livestock guardian dogs",
+        title_it="Alpeggi con cani da guardiania",
+        title_rm="Pastgiras d'alp cun chauns prot.",
+        description_de="Beschreibung",
+        description_fr="Description",
+        description_en="Description",
+        description_it="Descrizione",
+        description_rm="Descripziun",
+        provider=provider,
+        attribution=attribution,
+    )
+    dataset_keep_html = Dataset.objects.create(
+        dataset_id="keep_html",
+        geocat_id="keep_html",
+        title_de="keep_html",
+        title_fr="keep_html",
+        title_en="keep_html",
+        description_de="keep_html",
+        description_fr="keep_html",
+        description_en="keep_html",
+        provider=provider,
+        attribution=attribution,
+    )
+    dataset_keep_stac = Dataset.objects.create(
+        dataset_id="keep_stac",
+        geocat_id="keep_stac",
+        title_de="keep_stac",
+        title_fr="keep_stac",
+        title_en="keep_stac",
+        description_de="keep_stac",
+        description_fr="keep_stac",
+        description_en="keep_stac",
+        provider=provider,
+        attribution=attribution,
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='remove_missing_in_html',
+        managed_by_stac=False,
+        dataset=dataset,
+        _legacy_imported=True
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='remove_missing_in_stac',
+        managed_by_stac=True,
+        dataset=dataset,
+        _legacy_imported=True
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='keep_missing_dataset_html',
+        managed_by_stac=False,
+        dataset=dataset,
+        _legacy_imported=True
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='keep_missing_dataset_stac',
+        managed_by_stac=True,
+        dataset=dataset,
+        _legacy_imported=True
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='keep_not_legacy',
+        managed_by_stac=True,
+        dataset=dataset,
+        _legacy_imported=False
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='keep_html',
+        managed_by_stac=False,
+        dataset=dataset_keep_html,
+        _legacy_imported=True
+    )
+    PackageDistribution.objects.create(
+        package_distribution_id='keep_stac',
+        managed_by_stac=True,
+        dataset=dataset_keep_stac,
+        _legacy_imported=True
+    )
+
+    stac_client.open.return_value.collection_search.return_value.collections.return_value = [
+        Collection(
+            id='keep_missing_dataset_stac',
+            description=None,
+            extent=None,
+            providers=[StacProvider(name='keep_missing_dataset_provider')]
+        ),
+        Collection(
+            id='keep_stac',
+            description=None,
+            extent=None,
+            providers=[StacProvider(name='keep_missing_dataset_provider')]
+        )
+    ]
+    get.return_value.text = '<div id="data">keep_missing_dataset_html\nkeep_html</div>'
+
+    out = StringIO()
+    call_command("stac_sync", verbosity=2, stdout=out, default_dataset=dataset.dataset_id)
+    out = out.getvalue()
     assert "2 packagedistribution(s) removed" in out
 
-    assert PackageDistribution.objects.count() == 1
-    package_distribution = PackageDistribution.objects.first()
-    assert package_distribution.package_distribution_id == 'ch.bafu.alpweiden-herdenschutzhunde.3'
+    assert PackageDistribution.objects.count() == 5
+    assert {p.package_distribution_id for p in PackageDistribution.objects.all()} == {
+        'keep_html',
+        'keep_stac',
+        'keep_not_legacy',
+        'keep_missing_dataset_html',
+        'keep_missing_dataset_stac'
+    }
 
 
 @patch('distributions.management.commands.stac_sync.Client')

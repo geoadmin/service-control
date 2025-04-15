@@ -107,11 +107,13 @@ class Handler(CommandHandler):
         client = Client.open(urljoin(self.url, self.endpoint))
         for collection in client.collection_search().collections():
             collection_id = collection.id
-            processed.add(collection_id)
 
             dataset = self.update_package_distribution(collection_id, True)
-            if dataset:
-                self.check_provider(collection, dataset)
+            if not dataset:
+                continue
+
+            self.check_provider(collection, dataset)
+            processed.add(collection_id)
 
         # Get unmanaged collections from the HTML root
         response = get(self.url, timeout=60)
@@ -132,9 +134,11 @@ class Handler(CommandHandler):
             if collection_id in processed:
                 continue
 
-            processed.add(collection_id)
+            dataset = self.update_package_distribution(collection_id, False)
+            if not dataset:
+                continue
 
-            self.update_package_distribution(collection_id, False)
+            processed.add(collection_id)
 
         # Remove orphaned package distributions
         orphans = PackageDistribution.objects.filter(
