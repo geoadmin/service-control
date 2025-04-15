@@ -119,7 +119,14 @@ class PackageDistribution(models.Model):
     package_distribution_id = CustomSlugField(
         _(_context, "External ID"), unique=True, max_length=100
     )
-    managed_by_stac = models.BooleanField(_(_context, "Managed by STAC"), max_length=100)
+    managed_by_stac = models.BooleanField(_(_context, "Managed by STAC"))
+
+    _legacy_imported = models.BooleanField(
+        _(_context, "Legacy Imported"),
+        db_index=False,
+        default=False,
+        help_text="This field is used to track objects imported from STAC"
+    )
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
 

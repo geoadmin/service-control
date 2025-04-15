@@ -48,4 +48,7 @@ class PackageDistributionAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
     '''Admin View for Package Distribution'''
 
     list_display = ('package_distribution_id', 'managed_by_stac', 'dataset')
-    list_filter = ('managed_by_stac',)
+    list_filter = (
+        'managed_by_stac',
+        ('dataset__provider', admin.RelatedOnlyFieldListFilter),
+    )
