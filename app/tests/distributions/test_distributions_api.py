@@ -20,6 +20,19 @@ def fixture_dataset(attribution, time_created):
     with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
         yield Dataset.objects.create(
             dataset_id="ch.bafu.neophyten-haargurke",
+            geocat_id="ab76361f-657d-4705-9053-95f89ecab126",
+            title_de="Invasive gebietsfremde Pflanzen - Potentialkarte Haargurke",
+            title_fr=
+            "Plantes exotiques envahissantes - Carte de distribution potentiel Sicyos anguleux",
+            title_en="Invasive alien plants - map of the potential area Sicyos angulatus",
+            title_it="Piante esotiche invasive - carte di distribuzione potenziale Sicios angoloso",
+            title_rm=
+            "Plantas exoticas invasivas - Charta da la derasaziun potenziala dal sichius angulus",
+            description_de="Beschreibung Haargurke",
+            description_fr="Description Sicyos anguleux",
+            description_en="Description Sicyos angulatus",
+            description_it="Descrizione Sicios angoloso",
+            description_rm="Descripziun Sicyos angulatus",
             provider=attribution.provider,
             attribution=attribution
         )
@@ -584,6 +597,25 @@ def test_get_dataset_returns_specified_dataset(dataset, client, django_user_fact
     assert response.status_code == 200
     assert response.json() == {
         "id": "ch.bafu.neophyten-haargurke",
+        "title": "Invasive alien plants - map of the potential area Sicyos angulatus",
+        "title_translations": {
+            "de": "Invasive gebietsfremde Pflanzen - Potentialkarte Haargurke",
+            "fr":
+                "Plantes exotiques envahissantes - Carte de distribution potentiel Sicyos anguleux",
+            "en": "Invasive alien plants - map of the potential area Sicyos angulatus",
+            "it": "Piante esotiche invasive - carte di distribuzione potenziale Sicios angoloso",
+            "rm":
+                "Plantas exoticas invasivas - Charta da " +
+                "la derasaziun potenziala dal sichius angulus",
+        },
+        "description": "Description Sicyos angulatus",
+        "description_translations": {
+            "de": "Beschreibung Haargurke",
+            "fr": "Description Sicyos anguleux",
+            "en": "Description Sicyos angulatus",
+            "it": "Descrizione Sicios angoloso",
+            "rm": "Descripziun Sicyos angulatus",
+        },
         "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "provider_id": "ch.bafu",
@@ -620,6 +652,28 @@ def test_get_datasets_returns_single_dataset_as_expected(
     assert response.json() == {
         "items": [{
             "id": "ch.bafu.neophyten-haargurke",
+            "title": "Invasive alien plants - map of the potential area Sicyos angulatus",
+            "title_translations": {
+                "de": "Invasive gebietsfremde Pflanzen - Potentialkarte Haargurke",
+                "fr":
+                    "Plantes exotiques envahissantes - " +
+                    "Carte de distribution potentiel Sicyos anguleux",
+                "en": "Invasive alien plants - map of the potential area Sicyos angulatus",
+                "it":
+                    "Piante esotiche invasive - carte " +
+                    "di distribuzione potenziale Sicios angoloso",
+                "rm":
+                    "Plantas exoticas invasivas - Charta " +
+                    "da la derasaziun potenziala dal sichius angulus",
+            },
+            "description": "Description Sicyos angulatus",
+            "description_translations": {
+                "de": "Beschreibung Haargurke",
+                "fr": "Description Sicyos anguleux",
+                "en": "Description Sicyos angulatus",
+                "it": "Descrizione Sicios angoloso",
+                "rm": "Descripziun Sicyos angulatus",
+            },
             "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "provider_id": "ch.bafu",
@@ -655,6 +709,13 @@ def test_get_datasets_returns_all_datasets_ordered_by_dataset_id(
     )
     model_fields2 = {
         "dataset_id": "ch.provider2.dataset2",
+        "geocat_id": "dataset2",
+        "title_de": "dataset2",
+        "title_fr": "dataset2",
+        "title_en": "dataset2",
+        "description_de": "dataset2",
+        "description_fr": "dataset2",
+        "description_en": "dataset2",
         "provider": provider2,
         "attribution": attribution2,
     }
@@ -669,6 +730,28 @@ def test_get_datasets_returns_all_datasets_ordered_by_dataset_id(
         "items": [
             {
                 "id": "ch.bafu.neophyten-haargurke",
+                "title": "Invasive alien plants - map of the potential area Sicyos angulatus",
+                "title_translations": {
+                    "de": "Invasive gebietsfremde Pflanzen - Potentialkarte Haargurke",
+                    "fr":
+                        "Plantes exotiques envahissantes - " +
+                        "Carte de distribution potentiel Sicyos anguleux",
+                    "en": "Invasive alien plants - map of the potential area Sicyos angulatus",
+                    "it":
+                        "Piante esotiche invasive - carte di" +
+                        " distribuzione potenziale Sicios angoloso",
+                    "rm":
+                        "Plantas exoticas invasivas - Charta " +
+                        "da la derasaziun potenziala dal sichius angulus",
+                },
+                "description": "Description Sicyos angulatus",
+                "description_translations": {
+                    "de": "Beschreibung Haargurke",
+                    "fr": "Description Sicyos anguleux",
+                    "en": "Description Sicyos angulatus",
+                    "it": "Descrizione Sicios angoloso",
+                    "rm": "Descripziun Sicyos angulatus",
+                },
                 "created": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": time_created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "provider_id": "ch.bafu",
@@ -676,6 +759,18 @@ def test_get_datasets_returns_all_datasets_ordered_by_dataset_id(
             },
             {
                 "id": "ch.provider2.dataset2",
+                "title": "dataset2",
+                "title_translations": {
+                    "de": "dataset2",
+                    "fr": "dataset2",
+                    "en": "dataset2",
+                },
+                "description": "dataset2",
+                "description_translations": {
+                    "de": "dataset2",
+                    "fr": "dataset2",
+                    "en": "dataset2",
+                },
                 "created": dataset2.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "updated": dataset2.updated.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "provider_id": "ch.provider2",

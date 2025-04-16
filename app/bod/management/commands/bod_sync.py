@@ -5,6 +5,7 @@ from typing import cast
 
 from bod.models import BodContactOrganisation
 from bod.models import BodDataset
+from bod.models import BodGeocatPublish
 from bod.models import BodTranslations
 from distributions.models import Attribution
 from distributions.models import Dataset
@@ -271,6 +272,36 @@ class Handler(CommandHandler):
                 )
                 continue
 
+            if legacy_id in (1485, 1486):
+                # Skip the following datasets as they are hidden in public BGDI services:
+                # - ch.swisstopo.konsultation-lk10-flurnamen (1485)
+                # - ch.swisstopo.konsultation-lk10-siedlungsnamen (1486)
+                # They were used for name verifications of the cantons in the context of the KONAM
+                # project and are to be deleted.
+                # Layer ch.swisstopo.landeskarte-farbe-10 (952) has the same
+                # geocat_id ("cb0f8401-c49a-4bdf-aff6-40a7015ba43a").
+                self.print(f"skipping dataset '{bod_dataset.id_dataset}'")
+                continue
+
+            # Get meta information title and description
+            bod_meta = BodGeocatPublish.objects.filter(fk_id_dataset=bod_dataset.id_dataset).first()
+            if not bod_meta:
+                bod_meta = BodGeocatPublish()
+
+            if not bod_meta.bezeichnung_de:
+                bod_meta.bezeichnung_de = "#Missing"
+            if not bod_meta.bezeichnung_fr:
+                bod_meta.bezeichnung_fr = "#Missing"
+            if not bod_meta.abstract_de:
+                bod_meta.abstract_de = "#Missing"
+            if not bod_meta.abstract_fr:
+                bod_meta.abstract_fr = "#Missing"
+            # If english is missing, geocat defaults to german translation
+            if not bod_meta.bezeichnung_en:
+                bod_meta.bezeichnung_en = bod_meta.bezeichnung_de
+            if not bod_meta.abstract_en:
+                bod_meta.abstract_en = bod_meta.abstract_de
+
             # Get or create dataset
             is_new_model = False
             dataset = Dataset.objects.filter(
@@ -281,13 +312,24 @@ class Handler(CommandHandler):
                 dataset = Dataset.objects.create(
                     provider=attribution.provider,
                     attribution=attribution,
+                    geocat_id=bod_dataset.fk_geocat,
+                    title_de=bod_meta.bezeichnung_de,
+                    title_fr=bod_meta.bezeichnung_fr,
+                    title_en=bod_meta.bezeichnung_en,
+                    title_it=bod_meta.bezeichnung_it,
+                    title_rm=bod_meta.bezeichnung_rm,
+                    description_de=bod_meta.abstract_de,
+                    description_fr=bod_meta.abstract_fr,
+                    description_en=bod_meta.abstract_en,
+                    description_it=bod_meta.abstract_it,
+                    description_rm=bod_meta.abstract_rm,
                     _legacy_id=legacy_id,
                     dataset_id='undefined'
                 )
                 self.increment_counter('dataset', 'added')
                 self.print(f"Added dataset '{bod_dataset.id_dataset}'")
 
-            self.update_dataset(dataset, bod_dataset, is_new_model)
+            self.update_dataset(dataset, bod_dataset, bod_meta, is_new_model)
 
             dataset.save()
 
@@ -298,16 +340,37 @@ class Handler(CommandHandler):
             model_class = model.split('.')[-1].lower()
             self.increment_counter(model_class, 'removed', count)
 
-    def update_dataset(self, dataset: Dataset, bod_dataset: BodDataset, is_new_model: bool) -> None:
+    def update_dataset(
+        self,
+        dataset: Dataset,
+        bod_dataset: BodDataset,
+        bod_meta: BodGeocatPublish,
+        is_new_model: bool
+    ) -> None:
         """ Update the attributes of a dataset. """
 
         any_changed = False
-        for dataset_attribute, bod_dataset_attribute in (('dataset_id', 'id_dataset'),):
+        for dataset_attribute, bod_dataset_attribute in (('dataset_id', 'id_dataset'),
+            ('geocat_id', 'fk_geocat'),):
             changed = self.update_model(
                 dataset,
                 dataset_attribute,
                 getattr(bod_dataset, bod_dataset_attribute),
                 is_new_model
+            )
+            any_changed = any_changed or changed
+        for dataset_attribute, bod_dataset_attribute in (('title_de', 'bezeichnung_de'),
+            ('title_fr', 'bezeichnung_fr'),
+            ('title_en', 'bezeichnung_en'),
+            ('title_it', 'bezeichnung_it'),
+            ('title_rm', 'bezeichnung_rm'),
+            ('description_de', 'abstract_de'),
+            ('description_fr', 'abstract_fr'),
+            ('description_en', 'abstract_en'),
+            ('description_it', 'abstract_it'),
+            ('description_rm', 'abstract_rm'),):
+            changed = self.update_model(
+                dataset, dataset_attribute, getattr(bod_meta, bod_dataset_attribute), is_new_model
             )
             any_changed = any_changed or changed
         if any_changed and not is_new_model:

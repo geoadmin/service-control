@@ -27,6 +27,7 @@ class BodContactOrganisation(models.Model):
 class BodDataset(models.Model):
     id = models.AutoField(unique=True, primary_key=True)
     id_dataset = models.TextField()
+    fk_geocat = models.TextField()
     fk_contactorganisation_id = models.IntegerField(blank=True, null=True)
     staging = models.TextField(blank=True, null=True)
 
@@ -47,3 +48,24 @@ class BodTranslations(models.Model):
     class Meta:
         managed = settings.TESTING
         db_table = 'translations'
+
+
+class BodGeocatPublish(models.Model):
+    bgdi_id = models.AutoField(unique=True, primary_key=True)
+    fk_id_dataset = models.TextField()
+
+    bezeichnung_de = models.CharField(max_length=5000, blank=True, null=True)
+    bezeichnung_fr = models.CharField(max_length=5000, blank=True, null=True)
+    bezeichnung_it = models.CharField(max_length=5000, blank=True, null=True)
+    bezeichnung_rm = models.CharField(max_length=5000, blank=True, null=True)
+    bezeichnung_en = models.CharField(max_length=5000, blank=True, null=True)
+
+    abstract_de = models.CharField(max_length=5000, blank=True, null=True)
+    abstract_fr = models.CharField(max_length=5000, blank=True, null=True)
+    abstract_it = models.CharField(max_length=5000, blank=True, null=True)
+    abstract_rm = models.CharField(max_length=5000, blank=True, null=True)
+    abstract_en = models.CharField(max_length=5000, blank=True, null=True)
+
+    class Meta:
+        managed = settings.TESTING
+        db_table = 'geocat_publish'
