@@ -52,6 +52,9 @@ DOCKER_IMG_LOCAL_TAG := $(DOCKER_REGISTRY)/$(SERVICE_NAME):local-$(USER)-$(GIT_H
 # AWS variables
 AWS_DEFAULT_REGION = eu-central-1
 
+# Env file for dockerrun, defaults to .env.local / .env
+ENV_FILE ?= $(if $(wildcard .env.local),.env.local,.env)
+
 .PHONY: ci
 ci:
 	# Create virtual env with all packages for development using the Pipfile.lock
@@ -118,15 +121,14 @@ dockerpush: dockerbuild ## Push to the docker registry
 
 
 .PHONY: dockerrun
-dockerrun: clean_logs dockerbuild $(LOGS_DIR) ## Run the locally built docker image
+dockerrun: dockerbuild ## Run the locally built docker image
 	docker run \
 		-it -p $(HTTP_PORT):8080 \
-		--env-file=${PWD}/${ENV_FILE} \
-		--env LOGS_DIR=/logs \
-		--env SCRIPT_NAME=$(ROUTE_PREFIX) \
-		--mount type=bind,source="${LOGS_DIR}",target=/logs \
-		$(DOCKER_IMG_LOCAL_TAG)
-
+		--env-file=${ENV_FILE} \
+		--env DJANGO_SETTINGS_MODULE=config.settings_prod \
+		--env ALLOWED_HOSTS=127.0.0.1 \
+		--net=host \
+		$(DOCKER_IMG_LOCAL_TAG) ./wsgi.py
 
 # make sure that the code conforms to the style guide. Note that
 # - the DJANGO_SETTINGS module must be made available to pylint
