@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import Any
 from typing import Iterable
 
 from cognito.utils.client import Client
@@ -63,6 +64,7 @@ class User(models.Model):
 
     def save(
         self,
+        *args: Any,
         force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
         using: str | None = None,
