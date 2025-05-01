@@ -32,7 +32,7 @@ services:
         node /app/start.js;
       "
   bod:
-    image: postgis/postgis:13-3.4
+    image: postgis/postgis:16-3.5
     environment:
       - POSTGRES_USER=${BOD_USER}
       - POSTGRES_PASSWORD=${BOD_PW}
