@@ -19,21 +19,27 @@ class Handler(CommandHandler):
 
     def run(self) -> None:
         User = get_user_model()  # pylint: disable=invalid-name
-        username = env.str('DJANGO_SUPERUSER_USERNAME')
-        email = env.str('DJANGO_SUPERUSER_EMAIL')
-        password = env.str('DJANGO_SUPERUSER_PASSWORD')
+        username = env.str('DJANGO_SUPERUSER_USERNAME', default='').strip()
+        email = env.str('DJANGO_SUPERUSER_EMAIL', default='').strip()
+        password = env.str('DJANGO_SUPERUSER_PASSWORD', default='').strip()
+
+        if not username or not email or not password:
+            self.print_error('Environment variables not set or empty')
+            return
 
         try:
             admin = User.objects.get(username=username)
             operation = 'Updated'
         except User.DoesNotExist:
-            admin = User.objects.create(
-                username=username, email=email, is_staff=True, is_superuser=True
-            )
+            admin = User.objects.create(username=username)
             operation = 'Created'
 
         admin.set_password(password)
+        admin.email = email
+        admin.is_staff = True
+        admin.is_superuser = True
         admin.save()
+
         self.print_success('%s the superuser %s', operation, username)
 
 
