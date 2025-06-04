@@ -180,7 +180,7 @@ def get_logging_config() -> dict[str, object]:
     log_config = {}
     with open(BASE_DIR / log_config_file, 'rt', encoding="utf-8") as fd:
         log_config = yaml.safe_load(os.path.expandvars(fd.read()))
-    return log_config
+    return log_config or {}
 
 
 LOGGING = get_logging_config()
