@@ -47,6 +47,8 @@ class User(models.Model):
 
     username = CustomSlugField(_(_context, "User name"), unique=True, max_length=100)
     user_id = models.CharField(_(_context, "User ID"), unique=True, default=generate_short_id)
+    created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
+    updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
     first_name = models.CharField(_(_context, "First name"))
     last_name = models.CharField(_(_context, "Last name"))
     email = models.EmailField(_(_context, "Email"))

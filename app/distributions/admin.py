@@ -15,6 +15,7 @@ class AttributionAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
 
     list_display = ('attribution_id', 'name_en', 'provider')
     list_filter = (('provider', admin.RelatedOnlyFieldListFilter),)
+    readonly_fields = ('created', 'updated')
 
 
 @admin.register(Dataset)
@@ -23,6 +24,7 @@ class DatasetAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
 
     list_display = ('dataset_id', 'title_en', 'provider')
     list_filter = (('provider', admin.RelatedOnlyFieldListFilter),)
+    readonly_fields = ('created', 'updated')
 
     def get_form(
         self,
@@ -52,3 +54,4 @@ class PackageDistributionAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
         'managed_by_stac',
         ('dataset__provider', admin.RelatedOnlyFieldListFilter),
     )
+    readonly_fields = ('created', 'updated')
