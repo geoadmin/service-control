@@ -160,12 +160,59 @@ def test_command_fails_if_default_dataset_is_missing(get, stac_client, provider,
     get.return_value.text = '<div id="data">ch.bafu.hydrologie-hintergrundkarte</div>'
 
     out = StringIO()
-    call_command("stac_sync", default_dataset='default', verbosity=2, stdout=out)
+    call_command(
+        "stac_sync",
+        default_dataset='default',
+        no_create_default_dataset=True,
+        verbosity=2,
+        stdout=out
+    )
     out = out.getvalue()
     assert "No dataset for collection id 'ch.bafu.alpweiden-herdenschutzhunde'" in out
     assert "No dataset for collection id 'ch.bafu.hydrologie-hintergrundkarte'" in out
     assert "Default dataset 'default' does not exist" in out
     assert PackageDistribution.objects.count() == 0
+
+
+@patch('distributions.management.commands.stac_sync.Client')
+@patch('distributions.management.commands.stac_sync.get')
+def test_command_creates_default_dataset(get, stac_client, provider, attribution):
+    stac_client.open.return_value.collection_search.return_value.collections.return_value = [
+        Collection(
+            id='ch.bafu.alpweiden-herdenschutzhunde',
+            description=None,
+            extent=None,
+            providers=[StacProvider(name='Federal Office for the Environment')]
+        )
+    ]
+    get.return_value.text = '<div id="data">ch.bafu.hydrologie-hintergrundkarte</div>'
+
+    out = StringIO()
+    call_command("stac_sync", default_dataset='default', verbosity=2, stdout=out)
+    out = out.getvalue()
+
+    assert "Added provider 'default' for default dataset" in out
+    assert "Added attribution 'default' for default dataset" in out
+    assert "Added default dataset 'default'" in out
+    assert "Added package distribution 'ch.bafu.alpweiden-herdenschutzhunde' (managed)" in out
+    assert "Added package distribution 'ch.bafu.hydrologie-hintergrundkarte' (unmanaged)" in out
+    assert "2 package_distribution(s) added" in out
+
+    default_dataset = Dataset.objects.get(dataset_id='default')
+    assert default_dataset.provider.provider_id == 'default'
+    assert default_dataset.attribution.attribution_id == 'default'
+
+    package_distribution = PackageDistribution.objects.get(
+        package_distribution_id='ch.bafu.alpweiden-herdenschutzhunde'
+    )
+    assert package_distribution.managed_by_stac is True
+    assert package_distribution.dataset == default_dataset
+
+    package_distribution = PackageDistribution.objects.get(
+        package_distribution_id='ch.bafu.hydrologie-hintergrundkarte'
+    )
+    assert package_distribution.managed_by_stac is False
+    assert package_distribution.dataset == default_dataset
 
 
 @patch('distributions.management.commands.stac_sync.Client')
