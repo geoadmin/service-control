@@ -22,6 +22,8 @@ class Provider(models.Model):
     provider_id = CustomSlugField(
         _(_context, "External ID"), max_length=100, unique=True, db_index=True
     )
+    created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
+    updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
 
     name_de = models.CharField(_(_context, "Name (German)"))
     name_fr = models.CharField(_(_context, "Name (French)"))

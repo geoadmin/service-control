@@ -7,8 +7,10 @@ from typing import cast
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
+from distributions.models import Attribution
 from distributions.models import Dataset
 from distributions.models import PackageDistribution
+from provider.models import Provider
 from pystac.collection import Collection
 from pystac_client import Client
 from requests import get
@@ -32,6 +34,7 @@ class Handler(CommandHandler):
         self.url = options['url']
         self.endpoint = options['endpoint']
         self.default_dataset = options['default_dataset']
+        self.create_default_dataset = not options['no_create_default_dataset']
         self.counts: dict[str, Counter] = {}
 
     def increment_counter(self, model_name: str, operation: Operation, value: int = 1) -> None:
@@ -47,6 +50,59 @@ class Handler(CommandHandler):
         for model_class, count in cleared.items():
             model_name = model_class.split('.')[-1].lower()
             self.increment_counter(model_name, 'cleared', count)
+
+    def ensure_default_dataset(self) -> None:
+        """ Create the given default dataset if required and not yet available.
+
+        This will create a provider and attribution with the same ID as the dataset.
+        """
+
+        if (
+            not self.create_default_dataset or not self.default_dataset or
+            Dataset.objects.filter(dataset_id=self.default_dataset).first()
+        ):
+            return
+
+        provider = Provider.objects.filter(provider_id=self.default_dataset).first()
+        if not provider:
+            self.print(f"Added provider '{self.default_dataset}' for default dataset")
+            provider = Provider.objects.create(
+                provider_id=self.default_dataset,
+                name_de="#Missing",
+                name_fr="#Missing",
+                name_en="#Missing",
+                acronym_de="#Missing",
+                acronym_fr="#Missing",
+                acronym_en="#Missing",
+            )
+
+        attribution = Attribution.objects.filter(attribution_id=self.default_dataset).first()
+        if not attribution:
+            self.print(f"Added attribution '{self.default_dataset}' for default dataset")
+            attribution = Attribution.objects.create(
+                attribution_id=self.default_dataset,
+                name_de="#Missing",
+                name_fr="#Missing",
+                name_en="#Missing",
+                description_de="#Missing",
+                description_fr="#Missing",
+                description_en="#Missing",
+                provider=provider
+            )
+
+        self.print(f"Added default dataset '{self.default_dataset}'")
+        Dataset.objects.create(
+            dataset_id=self.default_dataset,
+            title_de="#Missing",
+            title_fr="#Missing",
+            title_en="#Missing",
+            description_de="#Missing",
+            description_fr="#Missing",
+            description_en="#Missing",
+            geocat_id="#Missing",
+            provider=provider,
+            attribution=attribution
+        )
 
     def update_package_distribution(
         self, collection_id: str, managed_by_stac: bool
@@ -184,6 +240,7 @@ class Handler(CommandHandler):
                 self.clear_package_distributions()
 
             # Import data
+            self.ensure_default_dataset()
             self.import_package_distributions()
 
             # Print counts
@@ -227,6 +284,11 @@ class Command(CustomBaseCommand):
             type=str,
             default="",
             help="Add packages with missing dataset to this dataset"
+        )
+        parser.add_argument(
+            "--no-create-default-dataset",
+            action="store_true",
+            help="Do not create the default dataset if needed"
         )
 
     def handle(self, *args: Any, **options: Any) -> None:

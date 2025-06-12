@@ -18,6 +18,8 @@ class Attribution(models.Model):
     attribution_id = CustomSlugField(
         _(_context, "External ID"), max_length=100, unique=True, db_index=True
     )
+    created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
+    updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
 
     name_de = models.CharField(_(_context, "Name (German)"))
     name_fr = models.CharField(_(_context, "Name (French)"))
@@ -122,6 +124,8 @@ class PackageDistribution(models.Model):
     package_distribution_id = CustomSlugField(
         _(_context, "External ID"), unique=True, max_length=100
     )
+    created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
+    updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
     managed_by_stac = models.BooleanField(_(_context, "Managed by STAC"))
 
     _legacy_imported = models.BooleanField(
