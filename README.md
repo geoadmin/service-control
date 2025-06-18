@@ -60,20 +60,28 @@ app/manage.py migrate
 
 ### Updating Packages
 
-All packages used in production are pinned to a minor version. Automatically updating these packages
-will use the latest minor (or patch) version. Packages used for development, on the other hand, are
-not pinned unless they need to be used with a specific version of a production package
+All packages used in production are pinned to a major version. Automatically updating these packages
+will use the latest minor (or patch) version available. Packages used for development, on the other
+hand, are not pinned unless they need to be used with a specific version of a production package
 (for example, boto3-stubs for boto3).
 
-To update the packages to the latest minor or patch version, run:
+To update the packages to the latest minor/compatible versions, run:
 
 ```bash
-pipenv lock
-pipenv sync --dev
+pipenv update --dev
 ```
 
-To update packages to a new major release, modify the version in the Pipfile, then run the command
-above.
+To see what major/incompatible releases would be available, run:
+
+```bash
+pipenv update --dev --outdated
+```
+
+To update packages to a new major release, run:
+
+```bash
+pipenv install logging-utilities~=5.0
+```
 
 ### Running Tests In Parallel
 

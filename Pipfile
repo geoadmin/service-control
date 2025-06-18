@@ -11,7 +11,6 @@ django-environ = "~=0.12"
 gunicorn = "~=23.0"
 pyyaml = "~=6.0"
 gevent = "~=25.4"
-logging-utilities = "~=4.6"
 boto3 = "~=1.37"
 nanoid = "~=2.0"
 whitenoise = "~=6.9"
@@ -19,6 +18,7 @@ pystac-client = "~=0.8"
 ecs-logging = "~=2.2"
 beautifulsoup4 = "~=4.13"
 requests = "~=2.32"
+logging-utilities = "~=5.0"
 
 [dev-packages]
 yapf = "*"
@@ -41,7 +41,7 @@ boto3-stubs = {extras = ["cognito-idp"], version = "~=1.37"}
 pytest-xdist = "*"
 pytest-cov = "*"
 types-nanoid = "~=2.0"
-types-gevent = "~=24.11"
+types-gevent = "~=25.4"
 types-requests = "~=2.32"
 
 [requires]
