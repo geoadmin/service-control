@@ -233,3 +233,7 @@ LOG_ALLOWED_HEADERS = [
     str(header).lower()
     for header in env.list('LOG_ALLOWED_HEADERS', default=_DEFAULT_LOG_ALLOWED_HEADERS)
 ]
+
+# Path prefix for all API paths and admin path. Useful if service is deployed under specific path.
+# Should end with a slash ('/').
+API_PATH_PREFIX = env.str('API_PATH_PREFIX', default='')
