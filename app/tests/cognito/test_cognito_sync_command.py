@@ -32,13 +32,15 @@ def test_command_adds(cognito_client, user):
 
     assert 'adding user 2ihg2ox304po' in out.getvalue()
     assert '1 user(s) added' in out.getvalue()
-    assert call().create_user('2ihg2ox304po', '1', '1@example.org') in cognito_client.mock_calls
+    assert call().create_user(
+        '2ihg2ox304po', '1', '1@example.org', 'ch.bafu'
+    ) in cognito_client.mock_calls
 
 
 @patch('cognito.management.commands.cognito_sync.Client')
 def test_command_deletes(cognito_client, db, cognito_user_response_factory):
     cognito_client.return_value.list_users.return_value = [
-        cognito_user_response_factory('2ihg2ox304po', '1', '1@example.org')
+        cognito_user_response_factory('2ihg2ox304po', '1', 'ch.bafu', '1@example.org')
     ]
 
     out = StringIO()
@@ -52,7 +54,7 @@ def test_command_deletes(cognito_client, db, cognito_user_response_factory):
 @patch('cognito.management.commands.cognito_sync.Client')
 def test_command_updates(cognito_client, user, cognito_user_response_factory):
     cognito_client.return_value.list_users.return_value = [
-        cognito_user_response_factory('2ihg2ox304po', '2@example.org')
+        cognito_user_response_factory('2ihg2ox304po', '2@example.org', 'ch.bafu')
     ]
 
     out = StringIO()
@@ -60,7 +62,9 @@ def test_command_updates(cognito_client, user, cognito_user_response_factory):
 
     assert 'updating user 2ihg2ox304po' in out.getvalue()
     assert '1 user(s) updated' in out.getvalue()
-    assert call().update_user('2ihg2ox304po', '1', '1@example.org') in cognito_client.mock_calls
+    assert call().update_user(
+        '2ihg2ox304po', '1', '1@example.org', 'ch.bafu'
+    ) in cognito_client.mock_calls
 
 
 @patch('cognito.management.commands.cognito_sync.Client')
@@ -68,7 +72,7 @@ def test_command_updates_disabled(cognito_client, user, cognito_user_response_fa
     user.deleted_at = timezone.now()
     user.save()
     cognito_client.return_value.list_users.return_value = [
-        cognito_user_response_factory('2ihg2ox304po', '1', '1@example.org')
+        cognito_user_response_factory('2ihg2ox304po', '1', 'ch.bafu', '1@example.org')
     ]
 
     out = StringIO()
@@ -82,7 +86,7 @@ def test_command_updates_disabled(cognito_client, user, cognito_user_response_fa
 @patch('cognito.management.commands.cognito_sync.Client')
 def test_command_updates_enabled(cognito_client, user, cognito_user_response_factory):
     cognito_client.return_value.list_users.return_value = [
-        cognito_user_response_factory('2ihg2ox304po', '1', '1@example.org', False)
+        cognito_user_response_factory('2ihg2ox304po', '1', 'ch.bafu', '1@example.org', False)
     ]
 
     out = StringIO()
@@ -96,7 +100,7 @@ def test_command_updates_enabled(cognito_client, user, cognito_user_response_fac
 @patch('cognito.management.commands.cognito_sync.Client')
 def test_command_does_not_updates_if_unchanged(cognito_client, user, cognito_user_response_factory):
     cognito_client.return_value.list_users.return_value = [
-        cognito_user_response_factory('2ihg2ox304po', '1', '1@example.org')
+        cognito_user_response_factory('2ihg2ox304po', '1', 'ch.bafu', '1@example.org')
     ]
 
     out = StringIO()
@@ -110,7 +114,7 @@ def test_command_does_not_updates_if_unchanged(cognito_client, user, cognito_use
 def test_command_clears_if_confirmed(cognito_client, input_, user, cognito_user_response_factory):
     input_.side_effect = ['yes']
     cognito_client.return_value.list_users.side_effect = [[
-        cognito_user_response_factory('2ihg2ox304po', '1', '1@example.org')
+        cognito_user_response_factory('2ihg2ox304po', '1', 'ch.bafu', '1@example.org')
     ], []]
 
     out = StringIO()
@@ -122,7 +126,9 @@ def test_command_clears_if_confirmed(cognito_client, input_, user, cognito_user_
     assert 'adding user 2ihg2ox304po' in out.getvalue()
     assert '1 user(s) added' in out.getvalue()
     assert call().delete_user('2ihg2ox304po') in cognito_client.mock_calls
-    assert call().create_user('2ihg2ox304po', '1', '1@example.org') in cognito_client.mock_calls
+    assert call().create_user(
+        '2ihg2ox304po', '1', '1@example.org', 'ch.bafu'
+    ) in cognito_client.mock_calls
 
 
 @patch('builtins.input')
@@ -132,7 +138,7 @@ def test_command_does_not_clears_if_not_confirmed(
 ):
     input_.side_effect = ['no']
     cognito_client.return_value.list_users.side_effect = [[
-        cognito_user_response_factory('2ihg2ox304po', '1', '1@example.org')
+        cognito_user_response_factory('2ihg2ox304po', '1', 'ch.bafu', '1@example.org')
     ], []]
 
     out = StringIO()
@@ -156,8 +162,8 @@ def test_command_runs_dry(cognito_client, provider, user, cognito_user_response_
     )
 
     cognito_client.return_value.list_users.return_value = [
-        cognito_user_response_factory('2ihg2ox304po', '1', '10@example.org'),
-        cognito_user_response_factory('04i4p3g4iggh', '3', '3@example.org')
+        cognito_user_response_factory('2ihg2ox304po', '1', 'ch.bafu', '10@example.org'),
+        cognito_user_response_factory('04i4p3g4iggh', '3', 'ch.bafu', '3@example.org')
     ]
 
     out = StringIO()

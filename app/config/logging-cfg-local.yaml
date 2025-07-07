@@ -21,6 +21,8 @@ loggers:
 #    level: DEBUG
 #  distributions:
 #    level: DEBUG
+  # django.db.backends:
+  #   level: DEBUG
 
 formatters:
   ecs:
