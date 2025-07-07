@@ -68,7 +68,33 @@ class Client:
 
         return response
 
-    def create_user(self, username: str, preferred_username: str, email: str) -> bool:
+    def create_group(self, name: str) -> None:
+        self.client.create_group(GroupName=name, UserPoolId=self.user_pool_id)
+
+    def delete_group(self, name: str) -> None:
+        self.client.delete_group(UserPoolId=self.user_pool_id, GroupName=name)
+
+    def add_user_to_group(self, username: str, group_name: str) -> None:
+        self.client.admin_add_user_to_group(
+            UserPoolId=self.user_pool_id, Username=username, GroupName=group_name
+        )
+
+    def remove_all_groups(self, username: str) -> None:
+        response = self.client.admin_list_groups_for_user(
+            Username=username, UserPoolId=self.user_pool_id
+        )
+        for group in response['Groups']:
+            self.client.admin_remove_user_from_group(
+                UserPoolId=self.user_pool_id, Username=username, GroupName=group['GroupName']
+            )
+
+    def create_user(
+        self,
+        username: str,
+        preferred_username: str,
+        email: str,
+        provider: str,
+    ) -> bool:
         """ Create a new user.
 
         Returns False, if a (managed or unmanaged) user already exist.
@@ -93,6 +119,8 @@ class Client:
                     "Name": "preferred_username", "Value": preferred_username
                 }, {
                     "Name": self.managed_flag_name, "Value": "true"
+                }, {
+                    "Name": "custom:providers", "Value": provider
                 }],
                 DesiredDeliveryMediums=['EMAIL']
             )
@@ -112,7 +140,9 @@ class Client:
             return True
         return False
 
-    def update_user(self, username: str, preferred_username: str, email: str) -> bool:
+    def update_user(
+        self, username: str, preferred_username: str, email: str, provider: str
+    ) -> bool:
         """ Update the user with the given cognito username.
 
         Only updates changed attributes.
@@ -138,6 +168,8 @@ class Client:
             reset_password = True
         if old_attributes.get('preferred_username') != preferred_username:
             new_attributes.append({'Name': 'preferred_username', 'Value': preferred_username})
+        if old_attributes.get('custom:providers', "") != provider:
+            new_attributes.append({'Name': 'custom:providers', 'Value': provider})
         if new_attributes:
             self.client.admin_update_user_attributes(
                 UserPoolId=self.user_pool_id, Username=username, UserAttributes=new_attributes
