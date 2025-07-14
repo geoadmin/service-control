@@ -65,7 +65,7 @@ class RoleAccessForm(forms.ModelForm):  # type:ignore[type-arg]
         instance = getattr(self, "instance", None)
         if instance and isinstance(instance, RoleAccess):
             self.fields["actions"].help_text = "testvalue"
-            self.fields["policyId"].widget.attrs['readonly'] = True
+            self.fields["policy_id"].widget.attrs['readonly'] = True
 
 
 class RoleAccessInline(admin.TabularInline):  # type:ignore[type-arg]
