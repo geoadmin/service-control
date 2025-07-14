@@ -79,6 +79,7 @@ def cognito_user_response_factory():
     Returns a callable that accepts the following parameters:
     - username: The username of the user.
     - preferred_username: The preferred username of the user.
+    - provider: The provider the user belongs to.
     - email: The email address of the user.
     - enabled (bool): A flag indicating if the user is enabled.
     - managed (bool): A flag indicating if the user is managed.
@@ -90,7 +91,7 @@ def cognito_user_response_factory():
 
         def test_something(cognito_user_response_factory):
             response = cognito_user_response_factory(
-                '2ihg2ox304po', 'user', 'user@example.org', enabled=False, managed=True,
+                '2ihg2ox304po', 'user', 'ch.bafu', 'user@example.org', enabled=False, managed=True,
                 attributes_key='Attributes'
             )
     """
@@ -99,6 +100,7 @@ def cognito_user_response_factory():
     def create_cognito_user_response(
         username,
         preferred_username,
+        provider,
         email='test@example.org',
         enabled=True,
         managed=True,
@@ -109,6 +111,8 @@ def cognito_user_response_factory():
             'Name': 'email', 'Value': email
         }, {
             'Name': 'preferred_username', 'Value': preferred_username
+        }, {
+            'Name': 'custom:providers', 'Value': provider
         }]
         if managed:
             attributes.append({'Name': settings.COGNITO_MANAGED_FLAG_NAME, 'Value': 'true'})

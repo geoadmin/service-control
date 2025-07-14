@@ -42,7 +42,9 @@ class Handler(CommandHandler):
         self.counts['added'] += 1
         self.print(f'adding user {user.user_id}')
         if not self.dry_run:
-            created = self.client.create_user(user.user_id, user.username, user.email)
+            created = self.client.create_user(
+                user.user_id, user.username, user.email, str(user.provider)
+            )
             if not created:
                 self.print_error(
                     'Could not create %s, might already exist as unmanaged user', user.user_id
@@ -73,7 +75,10 @@ class Handler(CommandHandler):
             self.print(f'updating user {local_user.user_id}')
             if not self.dry_run:
                 updated = self.client.update_user(
-                    local_user.user_id, local_user.username, local_user.email
+                    local_user.user_id,
+                    local_user.username,
+                    local_user.email,
+                    str(local_user.provider)
                 )
                 if not updated:
                     self.print_error(

@@ -12,3 +12,16 @@ class UserSchema(Schema):
 
 class UserListSchema(Schema):
     items: list[UserSchema]
+
+
+class AccessDatasetSchema(Schema):
+    id: str
+    # title: str
+    provider_id: str
+    action: list[str]
+
+
+class AccessDatasetListSchema(Schema):
+    username: str
+    roles: list[str]
+    items: list[AccessDatasetSchema]
