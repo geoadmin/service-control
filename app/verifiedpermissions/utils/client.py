@@ -20,6 +20,7 @@ class VPClient:
     def __init__(self) -> None:
         self.policy_store_id = settings.VERIFIED_PERMISSIONS_STORE_ID  # settings.COGNITO_POOL_ID
         self.namespace = settings.VERIFIED_PERMISSIONS_NAMESPACE
+        self.user_pool_id = settings.COGNITO_POOL_ID
         self.group_resource_suffix = "_grp"
 
         self.client = client('verifiedpermissions')
@@ -111,7 +112,7 @@ class VPClient:
 
     def create_policy(self, role: str, actions: list[str], resource_type: str) -> str:
         policy = f"""permit (
-            principal in {self.namespace}::UserGroup::"eu-central-1_KQjOs69yR|{role}",
+            principal in {self.namespace}::UserGroup::"{self.user_pool_id}|{role}",
             action in
                 [{",".join([f"{self.namespace}::Action::\"{action}\"" for action in actions])}],
             resource in {self.namespace}::{resource_type}_grp::"All"
