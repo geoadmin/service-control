@@ -31,3 +31,9 @@ class DatasetSchema(Schema):
 
 class DatasetListSchema(Schema):
     items: list[DatasetSchema]
+
+
+class PackageDistributionSchema(Schema):
+    id: str
+    dataset_id: str
+    provider_id: str
