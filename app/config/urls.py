@@ -23,21 +23,27 @@ from django.urls import path
 from .api import api
 from .api import root
 
+customAdminUrls = []
+if settings.ENABLE_OAUTH2_PROXY:
+    customAdminUrls = [
+        path(
+            settings.API_PATH_PREFIX + 'admin/logout/',
+            views.custom_admin_logout,
+            name='custom_admin_logout'
+        ),
+        # Add a new login endpoint for oauth2 login
+        path(
+            settings.API_PATH_PREFIX + 'admin/oauth2/login/',
+            views.custom_admin_login,
+            name='custom_admin_login'
+        ),
+    ]
+
 urlpatterns = [
     path(settings.API_PATH_PREFIX + '', root.urls),
     path(settings.API_PATH_PREFIX + 'api/v1/', api.urls),
     # NOTE: the following 2 endpoints needs to be registered before the admin interface endpoints
     # overwrite the default django admin/logout endpoint
-    path(
-        settings.API_PATH_PREFIX + 'admin/logout/',
-        views.custom_admin_logout,
-        name='custom_admin_logout'
-    ),
-    # Add a new login endpoint for oauth2 login
-    path(
-        settings.API_PATH_PREFIX + 'admin/oauth2/login/',
-        views.custom_admin_login,
-        name='custom_admin_login'
-    ),
+    *customAdminUrls,
     path(settings.API_PATH_PREFIX + 'admin/', admin.site.urls),
 ]
