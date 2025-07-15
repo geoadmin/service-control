@@ -36,6 +36,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
+# Enabled OAuth2-proxy authentication instead django local user
+ENABLE_OAUTH2_PROXY = env.bool('ENABLE_OAUTH2_PROXY', False)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -53,6 +56,13 @@ INSTALLED_APPS = [
     'support'
 ]
 
+AUTH_MIDDLEWARES = []
+if ENABLE_OAUTH2_PROXY:
+    AUTH_MIDDLEWARES = [
+        'middlewares.oauth2_proxy_middleware.Oauth2ProxyRemoteUserMiddleware',
+        'middlewares.oauth2_proxy_middleware.Oauth2ProxyRemoteGroupMiddleware',
+    ]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -60,16 +70,26 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    *AUTH_MIDDLEWARES,
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+if ENABLE_OAUTH2_PROXY:
+    AUTHENTICATION_BACKENDS = [
+        "django.contrib.auth.backends.RemoteUserBackend",
+    ]
+
 ROOT_URLCONF = 'config.urls'
+
+ADMIN_TEMPLATE_DIRS = []
+if ENABLE_OAUTH2_PROXY:
+    ADMIN_TEMPLATE_DIRS = [BASE_DIR / "templates"]
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ADMIN_TEMPLATE_DIRS,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -156,8 +176,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cognito
 COGNITO_ENDPOINT_URL = env.str('COGNITO_ENDPOINT_URL', 'http://localhost:9229')
+COGNITO_DOMAIN_URL = env.str('COGNITO_DOMAIN_URL', None)
 COGNITO_POOL_ID = env.str('COGNITO_POOL_ID', 'local')
 COGNITO_MANAGED_FLAG_NAME = env.str('COGNITO_MANAGED_FLAG_NAME', 'dev:custom:managed_by_service')
+COGNITO_OAUTH2_PROXY_APP_CLIENT_ID = env.str('COGNITO_OAUTH2_PROXY_APP_CLIENT_ID', 'local')
+
+# oauth2-proxy
+OAUTH2_PROXY_DOMAIN = env.str('OAUTH2_PROXY_DOMAIN', 'http://localhost:4180')
 
 # Verified Permissions
 VERIFIED_PERMISSIONS_STORE_ID = env.str('VERIFIED_PERMISSIONS_STORE_ID', '')
