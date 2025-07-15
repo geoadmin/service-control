@@ -10,10 +10,12 @@ from django.shortcuts import get_object_or_404
 
 from .models import Attribution
 from .models import Dataset
+from .models import PackageDistribution
 from .schemas import AttributionListSchema
 from .schemas import AttributionSchema
 from .schemas import DatasetListSchema
 from .schemas import DatasetSchema
+from .schemas import PackageDistributionSchema
 
 router = Router()
 
@@ -73,6 +75,14 @@ def dataset_to_response(model: Dataset, lang: LanguageCode) -> DatasetSchema:
         attribution_id=model.attribution.attribution_id,
     )
     return response
+
+
+def package_distribution_to_response(model: PackageDistribution) -> PackageDistributionSchema:
+    return PackageDistributionSchema(
+        id=model.package_distribution_id,
+        dataset_id=model.dataset.dataset_id,
+        provider_id=model.dataset.provider.provider_id
+    )
 
 
 @router.get(
@@ -194,3 +204,19 @@ def datasets(request: HttpRequest,
     lang_to_use = get_language(lang, request.headers)
     responses = [dataset_to_response(model, lang_to_use) for model in models]
     return {"items": responses}
+
+
+@router.get(
+    "collections/{collection_id}",
+    response={200: PackageDistributionSchema},
+    exclude_none=True,
+    # Don't use auth for now, but should be restricted such that service-stac can call this.
+    # auth=PermissionAuth('distributions.view_dataset')
+)
+def collection(request: HttpRequest, collection_id: str) -> PackageDistributionSchema:
+    """
+    Get the related dataset and provider of a package distribution.
+    In BGDI/BOD world a package distribution maps to a collection in STAC world.
+    """
+    model = get_object_or_404(PackageDistribution, package_distribution_id=collection_id)
+    return package_distribution_to_response(model)
