@@ -60,7 +60,7 @@ AUTH_MIDDLEWARES = []
 if ENABLE_OAUTH2_PROXY:
     AUTH_MIDDLEWARES = [
         'middlewares.oauth2_proxy_middleware.Oauth2ProxyRemoteUserMiddleware',
-        'middlewares.oauth2_proxy_middleware.Oauth2ProxyRemoteGroupMiddleware',
+        'middlewares.oauth2_proxy_middleware.Oauth2ProxyRemoteMiddleware',
     ]
 
 MIDDLEWARE = [
