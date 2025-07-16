@@ -60,7 +60,7 @@ AUTH_MIDDLEWARES = []
 if ENABLE_OAUTH2_PROXY:
     AUTH_MIDDLEWARES = [
         'middlewares.oauth2_proxy_middleware.Oauth2ProxyRemoteUserMiddleware',
-        'middlewares.oauth2_proxy_middleware.Oauth2ProxyRemoteGroupMiddleware',
+        'middlewares.oauth2_proxy_middleware.Oauth2ProxyRemoteMiddleware',
     ]
 
 MIDDLEWARE = [
@@ -182,6 +182,10 @@ COGNITO_MANAGED_FLAG_NAME = env.str('COGNITO_MANAGED_FLAG_NAME', 'dev:custom:man
 COGNITO_OAUTH2_PROXY_APP_CLIENT_ID = env.str('COGNITO_OAUTH2_PROXY_APP_CLIENT_ID', 'local')
 
 # oauth2-proxy
+# List of groups that are allowed in django admin interface
+OAUTH2_PROXY_DJANGO_ADMIN_GROUPS = env.list(
+    'OAUTH2_PROXY_DJANGO_ADMIN_GROUPS', default=['ppbgdi-admin']
+)
 OAUTH2_PROXY_DOMAIN = env.str('OAUTH2_PROXY_DOMAIN', 'http://localhost:4180')
 
 # Verified Permissions
