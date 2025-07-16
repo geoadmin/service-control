@@ -1,6 +1,7 @@
 import logging
 from typing import Callable
 
+from django.conf import settings
 from django.contrib.auth import get_user
 from django.contrib.auth.middleware import RemoteUserMiddleware
 from django.contrib.auth.models import Group
@@ -29,16 +30,23 @@ class Oauth2ProxyRemoteMiddleware:
 
         user = get_user(request)
         if not user.is_authenticated:
+            # If the user is not authenticated then do nothing and let django
+            # refuse the request
             return self.get_response(request)
 
+        # If the user is authenticated then we need to update it with the following oauth2-proxy
+        # provided user information:
+        #  - preferred_username
+        #  - email
+        #  - groups
         try:
-            preferred_username = request.META[self.preferred_username_header]
+            preferred_username = request.META[self.preferred_username_header].strip()
         except KeyError as error:
             logger.error("Failed to get preferred_username header: %s", error)
             return self.get_response(request)
 
         try:
-            email = request.META[self.email_header]
+            email = request.META[self.email_header].strip()
         except KeyError as error:
             logger.error("Failed to get email header: %s", error)
             return self.get_response(request)
@@ -61,7 +69,9 @@ class Oauth2ProxyRemoteMiddleware:
         user.first_name = preferred_username
         user.email = email
         user.groups.set(Group.objects.filter(name__in=group_names))
-        if "ppbgdi-admin" in group_names:
+
+        # Check if the user is allowed in django admin interface
+        if bool(set(group_names) & set(settings.OAUTH2_PROXY_DJANGO_ADMIN_GROUPS)):
             user.is_staff = True
             user.is_superuser = True
         user.save()
