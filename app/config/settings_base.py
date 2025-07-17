@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'access',
     'cognito',
     'bod',
-    'support'
+    'support',
+    'verifiedpermissions'
 ]
 
 AUTH_MIDDLEWARES = []
@@ -188,8 +189,8 @@ OAUTH2_PROXY_DJANGO_ADMIN_GROUPS = env.list(
 )
 
 # Verified Permissions
-VERIFIED_PERMISSIONS_STORE_ID = env.str('VERIFIED_PERMISSIONS_STORE_ID', '')
-VERIFIED_PERMISSIONS_NAMESPACE = env.str('VERIFIED_PERMISSIONS_NAMESPACE', '')
+VERIFIED_PERMISSIONS_STORE_ID = env.str('VERIFIED_PERMISSIONS_STORE_ID', 'NHTB657yh9b8jjViHsX6J6')
+VERIFIED_PERMISSIONS_NAMESPACE = env.str('VERIFIED_PERMISSIONS_NAMESPACE', 'poc')
 
 # Testing
 TESTING = False
