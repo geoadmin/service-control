@@ -2,7 +2,6 @@ import logging
 import urllib
 
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
 from django.http import HttpRequest
 from django.http import HttpResponse
@@ -18,7 +17,7 @@ def oauth2_proxy_base_url(request: HttpRequest) -> str:
     return request.build_absolute_uri('/')
 
 
-def custom_admin_login(request: HttpRequest) -> HttpResponse:
+def admin_oauth2_proxy_login(request: HttpRequest) -> HttpResponse:
     # Redirect URL after successful login
     redirect_uri = f"{request.build_absolute_uri(reverse('admin:index'))}"
 
@@ -29,8 +28,7 @@ def custom_admin_login(request: HttpRequest) -> HttpResponse:
     return redirect(oauth2_proxy_login_url)
 
 
-@staff_member_required
-def custom_admin_logout(request: HttpRequest) -> HttpResponse:
+def admin_oauth2_proxy_logout(request: HttpRequest) -> HttpResponse:
     # logout the user from Django
     logout(request)
 

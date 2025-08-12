@@ -42,33 +42,34 @@ class Oauth2ProxyRemoteMiddleware:
         try:
             preferred_username = request.META[self.preferred_username_header].strip()
         except KeyError as error:
-            logger.error("Failed to get preferred_username header: %s", error)
-            return self.get_response(request)
+            logger.warning("Failed to get preferred_username header: %s", error)
+            preferred_username = None
 
         try:
             email = request.META[self.email_header].strip()
         except KeyError as error:
-            logger.error("Failed to get email header: %s", error)
-            return self.get_response(request)
+            logger.warning("Failed to get email header: %s", error)
+            email = None
 
         try:
             raw_groups = request.META[self.group_header]
         except KeyError as error:
-            logger.error("Failed to get group header: %s", error)
-            return self.get_response(request)
+            logger.warning("Failed to get group header: %s", error)
+            raw_groups = ""
 
         group_names = [g.strip() for g in raw_groups.split(",") if g.strip()]
-        if not group_names:
-            return self.get_response(request)
 
         for name in group_names:
             Group.objects.get_or_create(name=name)
 
         # Django user.first_name is used as display in the admin interface, therefore set it
-        # as preferred user name.
-        user.first_name = preferred_username
-        user.email = email
-        user.groups.set(Group.objects.filter(name__in=group_names))
+        # to preferred user name.
+        if preferred_username:
+            user.first_name = preferred_username
+        if email:
+            user.email = email
+        if len(group_names) > 0:
+            user.groups.set(Group.objects.filter(name__in=group_names))
 
         # Check if the user is allowed in django admin interface
         if bool(set(group_names) & set(settings.OAUTH2_PROXY_DJANGO_ADMIN_GROUPS)):
