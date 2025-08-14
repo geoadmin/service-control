@@ -28,14 +28,14 @@ if settings.ENABLE_OAUTH2_PROXY:
     customAdminUrls = [
         path(
             settings.API_PATH_PREFIX + 'admin/logout/',
-            views.custom_admin_logout,
-            name='custom_admin_logout'
+            views.admin_oauth2_proxy_logout,
+            name='admin_oauth2_proxy_logout'
         ),
         # Add a new login endpoint for oauth2 login
         path(
             settings.API_PATH_PREFIX + 'admin/oauth2/login/',
-            views.custom_admin_login,
-            name='custom_admin_login'
+            views.admin_oauth2_proxy_login,
+            name='admin_oauth2_proxy_login'
         ),
     ]
 

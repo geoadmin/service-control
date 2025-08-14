@@ -46,10 +46,24 @@
 
 <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
   <div class="submit-row">
-    <!-- OAuth2 Login Button -->
-    <a href="{% url 'custom_admin_login' %}" class="button" style="margin-left: 10px; padding: 10px 15px;">
-    Login via PP-BGDI OAuth2
-    </a>
+    {% if user.is_authenticated %}
+      <!-- User authenticated but without the staff member access are redirected by django to this page.
+           Therefore we show the logout button so the user can logout and login with another account.
+      -->
+      <!-- LOGOUT -->
+      <a href="{% url 'admin_oauth2_proxy_logout' %}" class="button" style="margin-left: 10px; padding: 10px 15px;">
+        Logout
+      </a>
+    {% else %}
+      <!-- This should not happened because the /admin/login page is protected by oauth2-proxy and this one Would
+           redirect to the managed login page if the user is not authenticated. This page is only shown for
+           authenticated without admin interface access.
+      -->
+      <!-- OAuth2 Login Button -->
+      <a href="{% url 'admin_oauth2_proxy_login' %}" class="button" style="margin-left: 10px; padding: 10px 15px;">
+        Login via PP-BGDI OAuth2
+      </a>
+    {% endif %}
   </div>
 </form>
 
