@@ -1,4 +1,4 @@
-import mock_api  # pylint: disable=unused-import
+import mock_api  # noqa: F401
 
 
 def test_handle_404_not_found(client):

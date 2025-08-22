@@ -17,15 +17,18 @@ LogExtra = TypedDict(
     'LogExtra',
     {
         'http': {
-            'request': {
-                'method': str, 'header': dict[str, str]
+            'request': {  # noqa: F821
+                'method': str,  # noqa: F821
+                'header': dict[str, str]  # noqa: F821
             },
-            'response': {
-                'status_code': int, 'header': dict[str, str]
+            'response': {  # noqa: F821
+                'status_code': int,  # noqa: F821
+                'header': dict[str, str]  # noqa: F821
             }
         },
         'url': {
-            'path': str, 'scheme': str
+            'path': str,  # noqa: F821
+            'scheme': str  # noqa: F821
         }
     }
 )

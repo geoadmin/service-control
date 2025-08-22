@@ -1,0 +1,47 @@
+[project]
+name = "service-control"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4>=4.13.4",
+    "boto3>=1.40.15",
+    "django>=5.2.5",
+    "django-environ>=0.12.0",
+    "django-ninja>=1.4.3",
+    "ecs-logging>=2.2.0",
+    "gevent>=25.5.1",
+    "gunicorn>=23.0.0",
+    "logging-utilities>=5.1.0",
+    "nanoid>=2.0.0",
+    "psycopg[binary]>=3.2.9",
+    "pystac-client>=0.9.0",
+    "pyyaml>=6.0.2",
+    "requests>=2.32.5",
+    "whitenoise>=6.9.0",
+]
+
+[dependency-groups]
+dev = [
+    "bandit>=1.8.6",
+    "boto3-stubs>=1.40.15",
+    "debugpy>=1.8.16",
+    "dill>=0.4.0",
+    "django-debug-toolbar>=6.0.0",
+    "django-extensions>=4.1",
+    "django-stubs>=5.2.2",
+    "factory-boy>=3.3.3",
+    "faker>=37.5.3",
+    "ipdb>=0.13.13",
+    "isort>=6.0.1",
+    "mypy>=1.17.1",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-django>=4.11.1",
+    "pytest-xdist>=3.8.0",
+    "ruff>=0.12.10",
+    "types-gevent>=25.4.0.20250822",
+    "types-nanoid>=2.0.0.20240601",
+    "types-requests>=2.32.4.20250809",
+]
