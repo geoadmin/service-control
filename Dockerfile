@@ -8,7 +8,6 @@ ENV USER=geoadmin
 ENV GROUP=geoadmin
 ENV INSTALL_DIR=/opt/service-control
 ENV SRC_DIR=/usr/local/src/service-control
-ENV PIPENV_VENV_IN_PROJECT=1
 
 RUN apt-get -qq update > /dev/null \
     && apt-get -qq clean \
@@ -23,15 +22,16 @@ RUN apt-get -qq update > /dev/null \
     && apt-get -qq -y install \
     # dev dependencies
     binutils libproj-dev \
+    postgresql-client-common \
     # silent the installation
     > /dev/null \
     && apt-get -qq clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && pip3 install pipenv \
-    && pipenv --version
+    && rm -rf /var/lib/apt/lists/*
 
-COPY Pipfile.lock Pipfile ${SRC_DIR}/
-RUN cd ${SRC_DIR} && pipenv sync
+RUN pip3 install uv
+
+COPY pyproject.toml uv.lock ${SRC_DIR}/
+RUN cd ${SRC_DIR} && uv sync
 
 COPY --chown=${USER}:${GROUP} app/ ${INSTALL_DIR}/app/
 
@@ -54,13 +54,13 @@ RUN apt-get -qq update > /dev/null \
     # silent the install
     > /dev/null \
     && apt-get -qq clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && pip3 install pipenv \
-    && pipenv --version
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install uv
 
 # Install all dev dependencies
-COPY Pipfile.lock Pipfile ${INSTALL_DIR}/
-RUN cd ${INSTALL_DIR} && pipenv sync --dev
+COPY pyproject.toml uv.lock ${INSTALL_DIR}/
+RUN cd ${INSTALL_DIR} && uv sync --dev
 
 # this is only used with the docker-compose setup within CI
 # to ensure that the app is only started once the DB container
