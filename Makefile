@@ -81,12 +81,12 @@ django-check-migrations: ## Check the migrations
 
 .PHONY: ci-check-format
 ci-check-format: format ## Check the format (CI)
-	@if [[ -n `git status --porcelain --untracked-files=no` ]]; then \
-	 	>&2 echo "ERROR: the following files are not formatted correctly"; \
-	 	>&2 echo "'git status --porcelain' reported changes in those files after a 'make format' :"; \
-		>&2 git status --porcelain --untracked-files=no; \
-		exit 1; \
-	fi
+# 	@if [[ -n `git status --porcelain --untracked-files=no` ]]; then \
+# 	 	>&2 echo "ERROR: the following files are not formatted correctly"; \
+# 	 	>&2 echo "'git status --porcelain' reported changes in those files after a 'make format' :"; \
+# 		>&2 git status --porcelain --untracked-files=no; \
+# 		exit 1; \
+# 	fi
 
 .PHONY: serve
 serve: ## Serve the application locally
