@@ -9,7 +9,6 @@ from django.core.management import call_command
 
 
 class Handler(CommandHandler):
-
     def __init__(self, command, options):
         super().__init__(command, options)
         self.logger = MagicMock()
@@ -46,7 +45,6 @@ class Handler(CommandHandler):
 
 
 class Command(CustomBaseCommand):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.handler = None
@@ -182,15 +180,15 @@ def test_print_to_log_args_kwargs():
     command = Command()
     call_command(command, verbosity=3, logger=True)
     calls = command.handler.logger.mock_calls
-    assert call.info('Print %s', 'JohnDoe') in calls
-    assert call.info('Print', extra={'n': 'JohnDoe'}) in calls
-    assert call.info('Print %s', 'John', extra={'n': 'Doe'}) in calls
-    assert call.info('Success JohnDoe') in calls
-    assert call.info('Success', extra={'n': 'JohnDoe'}) in calls
-    assert call.info('Success John', extra={'n': 'Doe'}) in calls
-    assert call.warning('Warning JohnDoe') in calls
-    assert call.warning('Warning', extra={'n': 'JohnDoe'}) in calls
-    assert call.warning('Warning John', extra={'n': 'Doe'}) in calls
-    assert call.error('Error JohnDoe') in calls
-    assert call.error('Error', extra={'n': 'JohnDoe'}) in calls
-    assert call.error('Error John', extra={'n': 'Doe'}) in calls
+    assert call.info("Print %s", "JohnDoe") in calls
+    assert call.info("Print", extra={"n": "JohnDoe"}) in calls
+    assert call.info("Print %s", "John", extra={"n": "Doe"}) in calls
+    assert call.info("Success JohnDoe") in calls
+    assert call.info("Success", extra={"n": "JohnDoe"}) in calls
+    assert call.info("Success John", extra={"n": "Doe"}) in calls
+    assert call.warning("Warning JohnDoe") in calls
+    assert call.warning("Warning", extra={"n": "JohnDoe"}) in calls
+    assert call.warning("Warning John", extra={"n": "Doe"}) in calls
+    assert call.error("Error JohnDoe") in calls
+    assert call.error("Error", extra={"n": "JohnDoe"}) in calls
+    assert call.error("Error John", extra={"n": "Doe"}) in calls

@@ -34,7 +34,7 @@ def user_to_response(model: User) -> UserSchema:
     "users/{username}",
     response={200: UserSchema},
     exclude_none=True,
-    auth=PermissionAuth('access.view_user')
+    auth=PermissionAuth("access.view_user"),
 )
 def user(request: HttpRequest, username: str) -> UserSchema:
     """
@@ -49,7 +49,7 @@ def user(request: HttpRequest, username: str) -> UserSchema:
     "users",
     response={200: UserListSchema},
     exclude_none=True,
-    auth=PermissionAuth('access.view_user')
+    auth=PermissionAuth("access.view_user"),
 )
 def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     """
@@ -60,7 +60,9 @@ def users(request: HttpRequest) -> dict[str, list[UserSchema]]:
     return {"items": responses}
 
 
-@router.post("users", response={201: UserSchema}, auth=PermissionAuth('access.add_user'))
+@router.post(
+    "users", response={201: UserSchema}, auth=PermissionAuth("access.add_user")
+)
 def create(request: HttpRequest, user_in: UserSchema) -> UserSchema:
     """Create the given user and return it.
 
@@ -80,12 +82,12 @@ def create(request: HttpRequest, user_in: UserSchema) -> UserSchema:
         first_name=user_in.first_name,
         last_name=user_in.last_name,
         email=user_in.email,
-        provider=provider
+        provider=provider,
     )
     return user_to_response(user_out)
 
 
-@router.delete("users/{username}", auth=PermissionAuth('access.delete_user'))
+@router.delete("users/{username}", auth=PermissionAuth("access.delete_user"))
 def delete(request: HttpRequest, username: str) -> HttpResponse:
     """
     Delete the user with the given username.
@@ -101,7 +103,7 @@ def delete(request: HttpRequest, username: str) -> HttpResponse:
     return HttpResponse(status=204)
 
 
-@router.put("users/{username}", auth=PermissionAuth('access.change_user'))
+@router.put("users/{username}", auth=PermissionAuth("access.change_user"))
 def update_user(
     request: HttpRequest, username: str, user_in: UserSchema
 ) -> HttpResponse | UserSchema:

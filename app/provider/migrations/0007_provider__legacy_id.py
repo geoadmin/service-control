@@ -5,20 +5,22 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('provider', '0006_alter_provider_acronym_it_alter_provider_acronym_rm_and_more'),
+        (
+            "provider",
+            "0006_alter_provider_acronym_it_alter_provider_acronym_rm_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='provider',
-            name='_legacy_id',
+            model_name="provider",
+            name="_legacy_id",
             field=models.IntegerField(
                 blank=True,
-                help_text='This field is used to track objects imported from the BOD',
+                help_text="This field is used to track objects imported from the BOD",
                 null=True,
-                verbose_name='Legacy ID'
+                verbose_name="Legacy ID",
             ),
         ),
     ]

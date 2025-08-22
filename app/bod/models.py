@@ -21,7 +21,7 @@ class BodContactOrganisation(models.Model):
 
     class Meta:
         managed = settings.TESTING
-        db_table = 'contactorganisation'
+        db_table = "contactorganisation"
 
 
 class BodDataset(models.Model):
@@ -33,7 +33,7 @@ class BodDataset(models.Model):
 
     class Meta:
         managed = settings.TESTING
-        db_table = 'dataset'
+        db_table = "dataset"
 
 
 class BodTranslations(models.Model):
@@ -47,7 +47,7 @@ class BodTranslations(models.Model):
 
     class Meta:
         managed = settings.TESTING
-        db_table = 'translations'
+        db_table = "translations"
 
 
 class BodGeocatPublish(models.Model):
@@ -68,4 +68,4 @@ class BodGeocatPublish(models.Model):
 
     class Meta:
         managed = settings.TESTING
-        db_table = 'geocat_publish'
+        db_table = "geocat_publish"

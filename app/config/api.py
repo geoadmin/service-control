@@ -38,9 +38,7 @@ def handle_django_validation_error(
     messages = extract_error_messages(exception)
     return api.create_response(
         request,
-        {
-            "code": status, "description": messages
-        },
+        {"code": status, "description": messages},
         status=status,
     )
 
@@ -50,9 +48,7 @@ def handle_django_validation_error(
 def handle_404_not_found(request: HttpRequest, exception: Http404) -> HttpResponse:
     return api.create_response(
         request,
-        {
-            "code": 404, "description": "Resource not found"
-        },
+        {"code": 404, "description": "Resource not found"},
         status=404,
     )
 
@@ -61,9 +57,7 @@ def handle_404_not_found(request: HttpRequest, exception: Http404) -> HttpRespon
 def handle_exception(request: HttpRequest, exception: Exception) -> HttpResponse:
     return api.create_response(
         request,
-        {
-            "code": 500, "description": "Internal Server Error"
-        },
+        {"code": 500, "description": "Internal Server Error"},
         status=500,
     )
 
@@ -72,20 +66,18 @@ def handle_exception(request: HttpRequest, exception: Exception) -> HttpResponse
 def handle_http_error(request: HttpRequest, exception: HttpError) -> HttpResponse:
     return api.create_response(
         request,
-        {
-            "code": exception.status_code, "description": exception.message
-        },
+        {"code": exception.status_code, "description": exception.message},
         status=exception.status_code,
     )
 
 
 @api.exception_handler(AuthenticationError)
-def handle_unauthorized(request: HttpRequest, exception: AuthenticationError) -> HttpResponse:
+def handle_unauthorized(
+    request: HttpRequest, exception: AuthenticationError
+) -> HttpResponse:
     return api.create_response(
         request,
-        {
-            "code": 401, "description": "Unauthorized"
-        },
+        {"code": 401, "description": "Unauthorized"},
         status=401,
     )
 
@@ -100,9 +92,7 @@ def handle_ninja_validation_error(
 
     return api.create_response(
         request,
-        {
-            "code": 422, "description": messages
-        },
+        {"code": 422, "description": messages},
         status=422,
     )
 
@@ -113,9 +103,7 @@ def handle_cognito_connection_error(
 ) -> HttpResponse:
     return api.create_response(
         request,
-        {
-            "code": 503, "description": "Service Unavailable"
-        },
+        {"code": 503, "description": "Service Unavailable"},
         status=503,
     )
 

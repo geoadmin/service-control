@@ -6,46 +6,45 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0009_alter_dataset_slug_alter_packagedistribution_slug'),
+        ("distributions", "0009_alter_dataset_slug_alter_packagedistribution_slug"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='attribution',
-            old_name='slug',
-            new_name='attribution_id',
+            model_name="attribution",
+            old_name="slug",
+            new_name="attribution_id",
         ),
         migrations.RenameField(
-            model_name='dataset',
-            old_name='slug',
-            new_name='dataset_id',
+            model_name="dataset",
+            old_name="slug",
+            new_name="dataset_id",
         ),
         migrations.RenameField(
-            model_name='packagedistribution',
-            old_name='slug',
-            new_name='package_distribution_id',
+            model_name="packagedistribution",
+            old_name="slug",
+            new_name="package_distribution_id",
         ),
         migrations.AlterField(
-            model_name='attribution',
-            name='attribution_id',
+            model_name="attribution",
+            name="attribution_id",
             field=utils.fields.CustomSlugField(
-                db_index=True, max_length=100, unique=True, verbose_name='External ID'
+                db_index=True, max_length=100, unique=True, verbose_name="External ID"
             ),
         ),
         migrations.AlterField(
-            model_name='dataset',
-            name='dataset_id',
+            model_name="dataset",
+            name="dataset_id",
             field=utils.fields.CustomSlugField(
-                max_length=100, unique=True, verbose_name='External ID'
+                max_length=100, unique=True, verbose_name="External ID"
             ),
         ),
         migrations.AlterField(
-            model_name='packagedistribution',
-            name='package_distribution_id',
+            model_name="packagedistribution",
+            name="package_distribution_id",
             field=utils.fields.CustomSlugField(
-                max_length=100, unique=True, verbose_name='External ID'
+                max_length=100, unique=True, verbose_name="External ID"
             ),
         ),
     ]

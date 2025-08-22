@@ -9,28 +9,31 @@ from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
 
 def populate_user_id(apps: Apps, schema_editor: BaseDatabaseSchemaEditor) -> None:
-    User = apps.get_model('access', 'User')
+    User = apps.get_model("access", "User")
     for obj in User.objects.all():
         obj.user_id = generate_short_id()
         obj.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('access', '0002_user_deleted_at'),
+        ("access", "0002_user_deleted_at"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='user_id',
-            field=models.CharField(default=generate_short_id, null=True, verbose_name='User ID'),
+            model_name="user",
+            name="user_id",
+            field=models.CharField(
+                default=generate_short_id, null=True, verbose_name="User ID"
+            ),
         ),
         migrations.RunPython(populate_user_id, migrations.RunPython.noop),
         migrations.AlterField(
-            model_name='user',
-            name='user_id',
-            field=models.CharField(default=generate_short_id, unique=True, verbose_name='User ID'),
+            model_name="user",
+            name="user_id",
+            field=models.CharField(
+                default=generate_short_id, unique=True, verbose_name="User ID"
+            ),
         ),
     ]

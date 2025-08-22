@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# ruff: noqa: E402
 """
 The gevent monkey import and patch suppress a warning, and a potential problem.
 Gunicorn would call it anyway, but if it tries to call it after the ssl module
@@ -15,9 +16,11 @@ for local development, monkey patching creates the following error:
 
 isort:skip_file
 """
+
 # pylint: disable=wrong-import-position
-if __name__ == '__main__':
+if __name__ == "__main__":
     import gevent.monkey
+
     gevent.monkey.patch_all()
 """
 WSGI config for project project.
@@ -27,7 +30,7 @@ It exposes the WSGI callable as a module-level variable named ``application``.
 For more information on this file, see
 https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
 """
-import os
+import os  # noqa
 
 from gunicorn.app.base import BaseApplication
 from gunicorn.config import Config
@@ -38,15 +41,16 @@ from django.core.wsgi import get_wsgi_application
 from config.settings_prod import get_logging_config
 
 # default to the setting that's being created in DOCKERFILE
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 application = get_wsgi_application()
 
 
 class StandaloneApplication(BaseApplication):  # pylint: disable=abstract-method
-
     cfg: Config
 
-    def __init__(self, app: WSGIHandler, options: dict[str, object] | None = None) -> None:  # pylint: disable=redefined-outer-name
+    def __init__(
+        self, app: WSGIHandler, options: dict[str, object] | None = None
+    ) -> None:  # pylint: disable=redefined-outer-name
         self.options = options or {}
         self.application = app
         super().__init__()
@@ -65,16 +69,17 @@ class StandaloneApplication(BaseApplication):  # pylint: disable=abstract-method
 
 
 # We use the port 5000 as default, otherwise we set the HTTP_PORT env variable within the container.
-if __name__ == '__main__':
-    HTTP_PORT = str(os.environ.get('HTTP_PORT', "8000"))
+if __name__ == "__main__":
+    HTTP_PORT = str(os.environ.get("HTTP_PORT", "8000"))
     # Bind to 0.0.0.0 to let your app listen to all network interfaces.
     options = {
-        'bind': f"{'0.0.0.0'}:{HTTP_PORT}",  # nosec B104
-        'worker_class': 'gevent',
-        'workers': int(os.environ.get('GUNICORN_WORKERS',
-                                      '2')),  # scaling horizontally is left to Kubernetes
-        'worker_tmp_dir': os.environ.get('GUNICORN_WORKER_TMP_DIR', None),
-        'timeout': 60,
-        'logconfig_dict': get_logging_config()
+        "bind": f"{'0.0.0.0'}:{HTTP_PORT}",  # nosec B104
+        "worker_class": "gevent",
+        "workers": int(
+            os.environ.get("GUNICORN_WORKERS", "2")
+        ),  # scaling horizontally is left to Kubernetes
+        "worker_tmp_dir": os.environ.get("GUNICORN_WORKER_TMP_DIR", None),
+        "timeout": 60,
+        "logconfig_dict": get_logging_config(),
     }
     StandaloneApplication(application, options).run()  # type:ignore[no-untyped-call]

@@ -5,27 +5,32 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Provider',
+            name="Provider",
             fields=[
                 (
-                    'id',
+                    "id",
                     models.BigAutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
-                    )
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
                 ),
-                ('name', models.CharField(max_length=50, verbose_name='Provider Name')),
-                ('prefix', models.CharField(max_length=50, verbose_name='Provider prefix')),
+                ("name", models.CharField(max_length=50, verbose_name="Provider Name")),
+                (
+                    "prefix",
+                    models.CharField(max_length=50, verbose_name="Provider prefix"),
+                ),
             ],
             options={
-                'verbose_name': 'provider',
-                'verbose_name_plural': 'providers',
+                "verbose_name": "provider",
+                "verbose_name_plural": "providers",
             },
         ),
     ]

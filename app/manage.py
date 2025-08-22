@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
+
 import os
 import sys
 
@@ -7,7 +8,7 @@ import sys
 def main() -> None:
     """Run administrative tasks."""
     # default to the setting that's being created in DOCKERFILE
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     try:
         from django.core.management import \
             execute_from_command_line  # pylint: disable=import-outside-toplevel
@@ -20,5 +21,5 @@ def main() -> None:
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

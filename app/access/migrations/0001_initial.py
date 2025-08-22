@@ -6,32 +6,38 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('provider', '0006_alter_provider_acronym_it_alter_provider_acronym_rm_and_more'),
+        (
+            "provider",
+            "0006_alter_provider_acronym_it_alter_provider_acronym_rm_and_more",
+        ),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
                 (
-                    'id',
+                    "id",
                     models.BigAutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
-                    )
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
                 ),
-                ('username', models.CharField(unique=True, verbose_name='User name')),
-                ('first_name', models.CharField(verbose_name='First name')),
-                ('last_name', models.CharField(verbose_name='Last name')),
-                ('email', models.EmailField(max_length=254, verbose_name='Email')),
+                ("username", models.CharField(unique=True, verbose_name="User name")),
+                ("first_name", models.CharField(verbose_name="First name")),
+                ("last_name", models.CharField(verbose_name="Last name")),
+                ("email", models.EmailField(max_length=254, verbose_name="Email")),
                 (
-                    'provider',
+                    "provider",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='provider.provider'
-                    )
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="provider.provider",
+                    ),
                 ),
             ],
         ),

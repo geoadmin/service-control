@@ -12,14 +12,14 @@ from pytest import fixture
 from django.core.management import call_command
 
 
-@fixture(name='bod_translation')
+@fixture(name="bod_translation")
 def fixture_bod_translation(db):
     yield BodTranslations.objects.create(
         msg_id="ch.bafu", de="BAFU", fr="OFEV", en="FOEN", it="UFAM", rm="UFAM"
     )
 
 
-@fixture(name='bod_contact_organisation')
+@fixture(name="bod_contact_organisation")
 def fixture_bod_contact_organisation(bod_translation):
     yield BodContactOrganisation.objects.create(
         pk_contactorganisation_id=17,
@@ -33,22 +33,22 @@ def fixture_bod_contact_organisation(bod_translation):
         abkuerzung_en="FOEN",
         abkuerzung_it="UFAM",
         abkuerzung_rm="UFAM",
-        attribution="ch.bafu"
+        attribution="ch.bafu",
     )
 
 
-@fixture(name='bod_dataset')
+@fixture(name="bod_dataset")
 def fixture_bod_dataset(bod_contact_organisation):
     yield BodDataset.objects.create(
         id=170,
         id_dataset="ch.bafu.auen-vegetationskarten",
         fk_geocat="ab76361f-657d-4705-9053-95f89ecab126",
         fk_contactorganisation_id=bod_contact_organisation.pk_contactorganisation_id,
-        staging="prod"
+        staging="prod",
     )
 
 
-@fixture(name='bod_geocat_publish')
+@fixture(name="bod_geocat_publish")
 def fixture_bod_geocat_publish(bod_dataset):
     yield BodGeocatPublish.objects.create(
         bgdi_id=170,
@@ -62,11 +62,11 @@ def fixture_bod_geocat_publish(bod_dataset):
         abstract_fr="abstract_vegetationskarten_fr",
         abstract_it="abstract_vegetationskarten_it",
         abstract_rm="abstract_vegetationskarten_rm",
-        abstract_en="abstract_vegetationskarten_en"
+        abstract_en="abstract_vegetationskarten_en",
     )
 
 
-@fixture(name='bod_geocat_publish_missing_english')
+@fixture(name="bod_geocat_publish_missing_english")
 def fixture_bod_geocat_publish_missing_english(bod_dataset):
     yield BodGeocatPublish.objects.create(
         bgdi_id=170,
@@ -81,7 +81,12 @@ def fixture_bod_geocat_publish_missing_english(bod_dataset):
 def test_command_imports(bod_geocat_publish):
     out = StringIO()
     call_command(
-        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=True,
+        attributions=True,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert "Added provider 'Federal Office for the Environment'" in out.getvalue()
     assert "1 provider(s) added" in out.getvalue()
@@ -136,23 +141,38 @@ def test_command_imports(bod_geocat_publish):
 def test_command_does_not_need_to_import(db):
     out = StringIO()
     call_command(
-        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=True,
+        attributions=True,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
-    assert 'nothing to be done, already in sync' in out.getvalue()
+    assert "nothing to be done, already in sync" in out.getvalue()
 
 
 def test_command_no_flag_set(bod_geocat_publish):
     out = StringIO()
     call_command(
-        "bod_sync", providers=False, attributions=False, datasets=False, verbosity=2, stdout=out
+        "bod_sync",
+        providers=False,
+        attributions=False,
+        datasets=False,
+        verbosity=2,
+        stdout=out,
     )
-    assert 'no option provided, nothing changed' in out.getvalue()
+    assert "no option provided, nothing changed" in out.getvalue()
 
 
 def test_command_imports_providers(bod_geocat_publish):
     out = StringIO()
     call_command(
-        "bod_sync", providers=True, attributions=False, datasets=False, verbosity=2, stdout=out
+        "bod_sync",
+        providers=True,
+        attributions=False,
+        datasets=False,
+        verbosity=2,
+        stdout=out,
     )
 
     assert "Added provider 'Federal Office for the Environment'" in out.getvalue()
@@ -182,7 +202,12 @@ def test_command_skips_invalid_providers(bod_contact_organisation, bod_geocat_pu
 
         out = StringIO()
         call_command(
-            "bod_sync", providers=True, attributions=False, datasets=False, verbosity=2, stdout=out
+            "bod_sync",
+            providers=True,
+            attributions=False,
+            datasets=False,
+            verbosity=2,
+            stdout=out,
         )
         assert "nothing to be done" in out.getvalue()
         assert Provider.objects.count() == 0
@@ -199,12 +224,17 @@ def test_command_imports_attributions(bod_contact_organisation, bod_geocat_publi
         acronym_de="BAFU",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
+        "bod_sync",
+        providers=False,
+        attributions=True,
+        datasets=False,
+        verbosity=2,
+        stdout=out,
     )
     assert "Added attribution 'ch.bafu'" in out.getvalue()
     assert "1 attribution(s) added" in out.getvalue()
@@ -226,18 +256,26 @@ def test_command_imports_attributions(bod_contact_organisation, bod_geocat_publi
     assert attribution.description_rm == "UFAM"
 
 
-def test_command_skips_invalid_attributions(bod_contact_organisation, bod_geocat_publish):
+def test_command_skips_invalid_attributions(
+    bod_contact_organisation, bod_geocat_publish
+):
     for attribution in (bod_contact_organisation.attribution, "", None):
         bod_contact_organisation.attribution = attribution
         bod_contact_organisation.save()
 
         out = StringIO()
         call_command(
-            "bod_sync", providers=False, attributions=True, datasets=False, verbosity=2, stdout=out
+            "bod_sync",
+            providers=False,
+            attributions=True,
+            datasets=False,
+            verbosity=2,
+            stdout=out,
         )
-        assert (f"skipping attribution '{attribution}' as no matching provider was found"
-               ) in out.getvalue()
-        assert 'nothing to be done, already in sync' in out.getvalue()
+        assert (
+            f"skipping attribution '{attribution}' as no matching provider was found"
+        ) in out.getvalue()
+        assert "nothing to be done, already in sync" in out.getvalue()
         assert Provider.objects.count() == 0
         assert Attribution.objects.count() == 0
         assert Dataset.objects.count() == 0
@@ -252,7 +290,7 @@ def test_command_imports_datasets(bod_contact_organisation, bod_geocat_publish):
         acronym_de="BAFU",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
     attribution = Attribution.objects.create(
         attribution_id="ch.bafu",
@@ -263,12 +301,17 @@ def test_command_imports_datasets(bod_contact_organisation, bod_geocat_publish):
         description_fr="XXX",
         description_en="XXX",
         provider=provider,
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=False,
+        attributions=False,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert "Added dataset 'ch.bafu.auen-vegetationskarten'" in out.getvalue()
     assert "1 dataset(s) added" in out.getvalue()
@@ -303,7 +346,7 @@ def test_command_imports_datasets_missing_english(
         acronym_de="BAFU",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
     attribution = Attribution.objects.create(
         attribution_id="ch.bafu",
@@ -314,12 +357,17 @@ def test_command_imports_datasets_missing_english(
         description_fr="XXX",
         description_en="XXX",
         provider=provider,
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=False,
+        attributions=False,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert "Added dataset 'ch.bafu.auen-vegetationskarten'" in out.getvalue()
     assert "1 dataset(s) added" in out.getvalue()
@@ -352,7 +400,7 @@ def test_command_imports_datasets_missing_geocat(bod_contact_organisation, bod_d
         acronym_de="BAFU",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
     attribution = Attribution.objects.create(
         attribution_id="ch.bafu",
@@ -363,12 +411,17 @@ def test_command_imports_datasets_missing_geocat(bod_contact_organisation, bod_d
         description_fr="XXX",
         description_en="XXX",
         provider=provider,
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=False,
+        attributions=False,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert "Added dataset 'ch.bafu.auen-vegetationskarten'" in out.getvalue()
     assert "1 dataset(s) added" in out.getvalue()
@@ -395,32 +448,42 @@ def test_command_imports_datasets_missing_geocat(bod_contact_organisation, bod_d
 def test_command_skips_invalid_datasets(bod_geocat_publish):
     out = StringIO()
     call_command(
-        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=False,
+        attributions=False,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert (
-        "skipping dataset 'ch.bafu.auen-vegetationskarten' " +
-        "as no matching attribution was found"
+        "skipping dataset 'ch.bafu.auen-vegetationskarten' "
+        + "as no matching attribution was found"
     ) in out.getvalue()
-    assert 'nothing to be done, already in sync' in out.getvalue()
+    assert "nothing to be done, already in sync" in out.getvalue()
     assert Provider.objects.count() == 0
     assert Attribution.objects.count() == 0
     assert Dataset.objects.count() == 0
 
 
 def test_command_skips_non_prod_datasets(bod_dataset, bod_geocat_publish):
-    bod_dataset.staging = 'test'
+    bod_dataset.staging = "test"
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=False, attributions=False, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=False,
+        attributions=False,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
-    assert 'nothing to be done, already in sync' in out.getvalue()
+    assert "nothing to be done, already in sync" in out.getvalue()
     assert Provider.objects.count() == 0
     assert Attribution.objects.count() == 0
     assert Dataset.objects.count() == 0
 
 
-#pylint: disable=too-many-statements
+# pylint: disable=too-many-statements
 def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publish):
     # Add objects that will be updated
     provider = Provider.objects.create(
@@ -431,7 +494,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publi
         acronym_de="BAFU",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
     attribution = Attribution.objects.create(
         attribution_id="ch.bafu",
@@ -442,7 +505,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publi
         description_fr="XXX",
         description_en="XXX",
         provider=provider,
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
     dataset = Dataset.objects.create(
         dataset_id="xxx",
@@ -455,12 +518,17 @@ def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publi
         description_en="xxx",
         provider=provider,
         attribution=attribution,
-        _legacy_id=bod_dataset.id
+        _legacy_id=bod_dataset.id,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=True,
+        attributions=True,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert f"Changed Provider {provider.id} name_de" in out.getvalue()
     assert f"Changed Provider {provider.id} acronym_de" not in out.getvalue()
@@ -525,7 +593,7 @@ def test_command_removes_orphaned_provider(bod_geocat_publish):
         acronym_de="XXX",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=16
+        _legacy_id=16,
     )
     attribution = Attribution.objects.create(
         attribution_id="ch.xxx",
@@ -536,7 +604,7 @@ def test_command_removes_orphaned_provider(bod_geocat_publish):
         description_fr="XXX",
         description_en="XXX",
         provider=provider,
-        _legacy_id=16
+        _legacy_id=16,
     )
     Dataset.objects.create(
         dataset_id="xxx",
@@ -549,7 +617,7 @@ def test_command_removes_orphaned_provider(bod_geocat_publish):
         description_en="xxx",
         provider=provider,
         attribution=attribution,
-        _legacy_id=160
+        _legacy_id=160,
     )
 
     # Add objects which will not be removed
@@ -570,7 +638,7 @@ def test_command_removes_orphaned_provider(bod_geocat_publish):
         description_de="YYY",
         description_fr="YYY",
         description_en="YYY",
-        provider=provider
+        provider=provider,
     )
     Dataset.objects.create(
         dataset_id="yyyy",
@@ -582,12 +650,17 @@ def test_command_removes_orphaned_provider(bod_geocat_publish):
         description_fr="yyyy",
         description_en="yyyy",
         provider=provider,
-        attribution=attribution
+        attribution=attribution,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=True,
+        attributions=True,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert "1 provider(s) removed" in out.getvalue()
     assert "1 attribution(s) removed" in out.getvalue()
@@ -598,10 +671,15 @@ def test_command_removes_orphaned_provider(bod_geocat_publish):
     assert Provider.objects.count() == 2
     assert Attribution.objects.count() == 2
     assert Dataset.objects.count() == 2
-    assert {'BAFU', 'YYYY'} == set(Provider.objects.values_list('acronym_de', flat=True))
-    assert {'BAFU', 'YYYY'} == set(Attribution.objects.values_list('name_de', flat=True))
-    assert {'ch.bafu.auen-vegetationskarten',
-            'yyyy'} == set(Dataset.objects.values_list('dataset_id', flat=True))
+    assert {"BAFU", "YYYY"} == set(
+        Provider.objects.values_list("acronym_de", flat=True)
+    )
+    assert {"BAFU", "YYYY"} == set(
+        Attribution.objects.values_list("name_de", flat=True)
+    )
+    assert {"ch.bafu.auen-vegetationskarten", "yyyy"} == set(
+        Dataset.objects.values_list("dataset_id", flat=True)
+    )
 
 
 def test_command_removes_orphaned_attribution(bod_contact_organisation):
@@ -614,7 +692,7 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
         acronym_de="XXX",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
 
     # Add objects which will be removed
@@ -627,7 +705,7 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
         description_fr="XXX",
         description_en="XXX",
         provider=provider,
-        _legacy_id=16
+        _legacy_id=16,
     )
     Dataset.objects.create(
         dataset_id="xxx",
@@ -640,12 +718,17 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
         description_en="xxx",
         provider=provider,
         attribution=attribution,
-        _legacy_id=160
+        _legacy_id=160,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=True,
+        attributions=True,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert "provider(s) removed" not in out.getvalue()
     assert "1 attribution(s) removed" in out.getvalue()
@@ -656,8 +739,8 @@ def test_command_removes_orphaned_attribution(bod_contact_organisation):
     assert Provider.objects.count() == 1
     assert Attribution.objects.count() == 1
     assert Dataset.objects.count() == 0
-    assert {'BAFU'} == set(Provider.objects.values_list('acronym_de', flat=True))
-    assert {'BAFU'} == set(Attribution.objects.values_list('name_de', flat=True))
+    assert {"BAFU"} == set(Provider.objects.values_list("acronym_de", flat=True))
+    assert {"BAFU"} == set(Attribution.objects.values_list("name_de", flat=True))
 
 
 def test_command_removes_orphaned_dataset(bod_contact_organisation):
@@ -670,7 +753,7 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
         acronym_de="XXX",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
     attribution = Attribution.objects.create(
         attribution_id="ch.xxx",
@@ -681,7 +764,7 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
         description_fr="XXX",
         description_en="XXX",
         provider=provider,
-        _legacy_id=bod_contact_organisation.pk_contactorganisation_id
+        _legacy_id=bod_contact_organisation.pk_contactorganisation_id,
     )
 
     # Add objects which will be removed
@@ -696,12 +779,17 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
         description_en="xxx",
         provider=provider,
         attribution=attribution,
-        _legacy_id=160
+        _legacy_id=160,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", providers=True, attributions=True, datasets=True, verbosity=2, stdout=out
+        "bod_sync",
+        providers=True,
+        attributions=True,
+        datasets=True,
+        verbosity=2,
+        stdout=out,
     )
     assert "provider(s) removed" not in out.getvalue()
     assert "attribution(s) removed" not in out.getvalue()
@@ -712,14 +800,19 @@ def test_command_removes_orphaned_dataset(bod_contact_organisation):
     assert Provider.objects.count() == 1
     assert Attribution.objects.count() == 1
     assert Dataset.objects.count() == 0
-    assert {'BAFU'} == set(Provider.objects.values_list('acronym_de', flat=True))
-    assert {'BAFU'} == set(Attribution.objects.values_list('name_de', flat=True))
+    assert {"BAFU"} == set(Provider.objects.values_list("acronym_de", flat=True))
+    assert {"BAFU"} == set(Attribution.objects.values_list("name_de", flat=True))
 
 
 def test_command_does_not_import_if_dry_run(bod_geocat_publish):
     out = StringIO()
     call_command(
-        "bod_sync", providers=True, attributions=True, datasets=True, dry_run=True, stdout=out
+        "bod_sync",
+        providers=True,
+        attributions=True,
+        datasets=True,
+        dry_run=True,
+        stdout=out,
     )
     assert "1 provider(s) added" in out.getvalue()
     assert "1 attribution(s) added" in out.getvalue()
@@ -739,7 +832,7 @@ def test_command_clears_existing_data(bod_geocat_publish):
         acronym_de="XXX",
         acronym_fr="XXX",
         acronym_en="XXX",
-        _legacy_id=150
+        _legacy_id=150,
     )
     attribution = Attribution.objects.create(
         attribution_id="ch.xxx",
@@ -749,7 +842,7 @@ def test_command_clears_existing_data(bod_geocat_publish):
         description_de="XXX",
         description_fr="XXX",
         description_en="XXX",
-        provider=provider
+        provider=provider,
     )
     Dataset.objects.create(
         dataset_id="yyyy",
@@ -761,12 +854,17 @@ def test_command_clears_existing_data(bod_geocat_publish):
         description_fr="yyyy",
         description_en="yyyy",
         provider=provider,
-        attribution=attribution
+        attribution=attribution,
     )
 
     out = StringIO()
     call_command(
-        "bod_sync", clear=True, providers=True, attributions=True, datasets=True, stdout=out
+        "bod_sync",
+        clear=True,
+        providers=True,
+        attributions=True,
+        datasets=True,
+        stdout=out,
     )
     assert "1 provider(s) cleared" in out.getvalue()
     assert "1 attribution(s) cleared" in out.getvalue()

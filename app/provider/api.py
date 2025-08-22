@@ -36,7 +36,7 @@ def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
             en=model.acronym_en,
             it=model.acronym_it,
             rm=model.acronym_rm,
-        )
+        ),
     )
     return response
 
@@ -45,7 +45,7 @@ def provider_to_response(model: Provider, lang: LanguageCode) -> ProviderSchema:
     "/providers/{provider_id}",
     response={200: ProviderSchema},
     exclude_none=True,
-    auth=PermissionAuth('provider.view_provider')
+    auth=PermissionAuth("provider.view_provider"),
 )
 def provider(
     request: HttpRequest, provider_id: str, lang: LanguageCode | None = None
@@ -104,9 +104,11 @@ def provider(
     "/providers",
     response={200: ProviderListSchema},
     exclude_none=True,
-    auth=PermissionAuth('provider.view_provider')
+    auth=PermissionAuth("provider.view_provider"),
 )
-def providers(request: HttpRequest, lang: LanguageCode | None = None) -> ProviderListSchema:
+def providers(
+    request: HttpRequest, lang: LanguageCode | None = None
+) -> ProviderListSchema:
     """
     Get all providers, return translatable fields in the given language.
 

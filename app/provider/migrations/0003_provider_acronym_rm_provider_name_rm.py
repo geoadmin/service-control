@@ -5,20 +5,19 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('provider', '0002_remove_provider_name_remove_provider_prefix_and_more'),
+        ("provider", "0002_remove_provider_name_remove_provider_prefix_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='provider',
-            name='acronym_rm',
-            field=models.CharField(blank=True, verbose_name='Acronym (Romansh)'),
+            model_name="provider",
+            name="acronym_rm",
+            field=models.CharField(blank=True, verbose_name="Acronym (Romansh)"),
         ),
         migrations.AddField(
-            model_name='provider',
-            name='name_rm',
-            field=models.CharField(blank=True, verbose_name='Name (Romansh)'),
+            model_name="provider",
+            name="name_rm",
+            field=models.CharField(blank=True, verbose_name="Name (Romansh)"),
         ),
     ]

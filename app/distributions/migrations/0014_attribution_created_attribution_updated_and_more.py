@@ -6,36 +6,39 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0013_packagedistribution__legacy_imported_and_more'),
+        ("distributions", "0013_packagedistribution__legacy_imported_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='attribution',
-            name='created',
+            model_name="attribution",
+            name="created",
             field=models.DateTimeField(
-                auto_now_add=True, default=django.utils.timezone.now, verbose_name='Created'
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="Created",
             ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='attribution',
-            name='updated',
-            field=models.DateTimeField(auto_now=True, verbose_name='Updated'),
+            model_name="attribution",
+            name="updated",
+            field=models.DateTimeField(auto_now=True, verbose_name="Updated"),
         ),
         migrations.AddField(
-            model_name='packagedistribution',
-            name='created',
+            model_name="packagedistribution",
+            name="created",
             field=models.DateTimeField(
-                auto_now_add=True, default=django.utils.timezone.now, verbose_name='Created'
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="Created",
             ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='packagedistribution',
-            name='updated',
-            field=models.DateTimeField(auto_now=True, verbose_name='Updated'),
+            model_name="packagedistribution",
+            name="updated",
+            field=models.DateTimeField(auto_now=True, verbose_name="Updated"),
         ),
     ]

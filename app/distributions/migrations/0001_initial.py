@@ -6,49 +6,70 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('provider', '0004_alter_provider_acronym_de_alter_provider_acronym_en_and_more'),
+        (
+            "provider",
+            "0004_alter_provider_acronym_de_alter_provider_acronym_en_and_more",
+        ),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Attribution',
+            name="Attribution",
             fields=[
                 (
-                    'id',
+                    "id",
                     models.BigAutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
-                    )
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
                 ),
-                ('name_de', models.CharField(verbose_name='Name (German)')),
-                ('name_fr', models.CharField(verbose_name='Name (French)')),
-                ('name_en', models.CharField(verbose_name='Name (English)')),
-                ('name_it', models.CharField(blank=True, verbose_name='Name (Italian)')),
-                ('name_rm', models.CharField(blank=True, verbose_name='Name (Romansh)')),
-                ('description_de', models.CharField(verbose_name='Description (German)')),
-                ('description_fr', models.CharField(verbose_name='Description (French)')),
-                ('description_en', models.CharField(verbose_name='Description (English)')),
+                ("name_de", models.CharField(verbose_name="Name (German)")),
+                ("name_fr", models.CharField(verbose_name="Name (French)")),
+                ("name_en", models.CharField(verbose_name="Name (English)")),
                 (
-                    'description_it',
-                    models.CharField(blank=True, verbose_name='Description (Italian)')
+                    "name_it",
+                    models.CharField(blank=True, verbose_name="Name (Italian)"),
                 ),
                 (
-                    'description_rm',
-                    models.CharField(blank=True, verbose_name='Description (Romansh)')
+                    "name_rm",
+                    models.CharField(blank=True, verbose_name="Name (Romansh)"),
                 ),
                 (
-                    'provider',
+                    "description_de",
+                    models.CharField(verbose_name="Description (German)"),
+                ),
+                (
+                    "description_fr",
+                    models.CharField(verbose_name="Description (French)"),
+                ),
+                (
+                    "description_en",
+                    models.CharField(verbose_name="Description (English)"),
+                ),
+                (
+                    "description_it",
+                    models.CharField(blank=True, verbose_name="Description (Italian)"),
+                ),
+                (
+                    "description_rm",
+                    models.CharField(blank=True, verbose_name="Description (Romansh)"),
+                ),
+                (
+                    "provider",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='provider.provider'
-                    )
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="provider.provider",
+                    ),
                 ),
             ],
             options={
-                'verbose_name': 'attribution',
-                'verbose_name_plural': 'attributions',
+                "verbose_name": "attribution",
+                "verbose_name_plural": "attributions",
             },
         ),
     ]

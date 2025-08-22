@@ -6,22 +6,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('provider', '0008_provider_slug'),
+        ("provider", "0008_provider_slug"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='provider',
-            old_name='slug',
-            new_name='provider_id',
+            model_name="provider",
+            old_name="slug",
+            new_name="provider_id",
         ),
         migrations.AlterField(
-            model_name='provider',
-            name='provider_id',
+            model_name="provider",
+            name="provider_id",
             field=utils.fields.CustomSlugField(
-                db_index=True, max_length=100, unique=True, verbose_name='External ID'
+                db_index=True, max_length=100, unique=True, verbose_name="External ID"
             ),
         ),
     ]

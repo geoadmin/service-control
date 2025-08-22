@@ -9,34 +9,35 @@ from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
 
 def populate_slug(apps: Apps, schema_editor: BaseDatabaseSchemaEditor) -> None:
-    Provider = apps.get_model('provider', 'Provider')
+    Provider = apps.get_model("provider", "Provider")
     for obj in Provider.objects.all():
         obj.slug = generate_short_id()
         obj.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('provider', '0007_provider__legacy_id'),
+        ("provider", "0007_provider__legacy_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='provider',
-            name='slug',
-            field=utils.fields.CustomSlugField(default='1', max_length=100, verbose_name='Slug'),
+            model_name="provider",
+            name="slug",
+            field=utils.fields.CustomSlugField(
+                default="1", max_length=100, verbose_name="Slug"
+            ),
             preserve_default=False,
         ),
         migrations.RunPython(populate_slug, migrations.RunPython.noop),
         migrations.AlterField(
-            model_name='provider',
-            name='slug',
+            model_name="provider",
+            name="slug",
             field=utils.fields.CustomSlugField(
                 db_index=True,
                 unique=True,
                 max_length=100,
-                verbose_name='Slug',
+                verbose_name="Slug",
             ),
         ),
     ]

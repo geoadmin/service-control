@@ -11,6 +11,6 @@ def test_generate_short_id_default():
 
 def test_generate_short_id_settings(settings):
     settings.SHORT_ID_SIZE = 4
-    settings.SHORT_ID_ALPHABET = 'a'
+    settings.SHORT_ID_ALPHABET = "a"
     short_id = generate_short_id()
-    assert short_id == 'aaaa'
+    assert short_id == "aaaa"

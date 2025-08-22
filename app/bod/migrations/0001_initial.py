@@ -6,81 +6,140 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='BodContactOrganisation',
+            name="BodContactOrganisation",
             fields=[
-                ('pk_contactorganisation_id', models.AutoField(primary_key=True, serialize=False)),
-                ('abkuerzung_de', models.CharField(blank=True, max_length=255, null=True)),
-                ('abkuerzung_fr', models.CharField(blank=True, max_length=255, null=True)),
-                ('abkuerzung_en', models.CharField(blank=True, max_length=255, null=True)),
-                ('abkuerzung_it', models.CharField(blank=True, max_length=255, null=True)),
-                ('abkuerzung_rm', models.CharField(blank=True, max_length=255, null=True)),
-                ('name_de', models.CharField(blank=True, max_length=255, null=True)),
-                ('name_fr', models.CharField(blank=True, max_length=255, null=True)),
-                ('name_en', models.CharField(blank=True, max_length=255, null=True)),
-                ('name_it', models.CharField(blank=True, max_length=255, null=True)),
-                ('name_rm', models.CharField(blank=True, max_length=255, null=True)),
-                ('attribution', models.TextField(blank=True, null=True)),
+                (
+                    "pk_contactorganisation_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
+                (
+                    "abkuerzung_de",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "abkuerzung_fr",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "abkuerzung_en",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "abkuerzung_it",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "abkuerzung_rm",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                ("name_de", models.CharField(blank=True, max_length=255, null=True)),
+                ("name_fr", models.CharField(blank=True, max_length=255, null=True)),
+                ("name_en", models.CharField(blank=True, max_length=255, null=True)),
+                ("name_it", models.CharField(blank=True, max_length=255, null=True)),
+                ("name_rm", models.CharField(blank=True, max_length=255, null=True)),
+                ("attribution", models.TextField(blank=True, null=True)),
             ],
             options={
-                'db_table': 'contactorganisation',
-                'managed': settings.TESTING,
+                "db_table": "contactorganisation",
+                "managed": settings.TESTING,
             },
         ),
         migrations.CreateModel(
-            name='BodDataset',
+            name="BodDataset",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, unique=True)),
-                ('id_dataset', models.TextField()),
-                ('fk_geocat', models.TextField()),
-                ('fk_contactorganisation_id', models.IntegerField(blank=True, null=True)),
-                ('staging', models.TextField(blank=True, null=True)),
+                (
+                    "id",
+                    models.AutoField(primary_key=True, serialize=False, unique=True),
+                ),
+                ("id_dataset", models.TextField()),
+                ("fk_geocat", models.TextField()),
+                (
+                    "fk_contactorganisation_id",
+                    models.IntegerField(blank=True, null=True),
+                ),
+                ("staging", models.TextField(blank=True, null=True)),
             ],
             options={
-                'db_table': 'dataset',
-                'managed': settings.TESTING,
+                "db_table": "dataset",
+                "managed": settings.TESTING,
             },
         ),
         migrations.CreateModel(
-            name='BodGeocatPublish',
+            name="BodGeocatPublish",
             fields=[
-                ('bgdi_id', models.AutoField(primary_key=True, serialize=False, unique=True)),
-                ('fk_id_dataset', models.TextField()),
-                ('bezeichnung_de', models.CharField(blank=True, max_length=5000, null=True)),
-                ('bezeichnung_fr', models.CharField(blank=True, max_length=5000, null=True)),
-                ('bezeichnung_it', models.CharField(blank=True, max_length=5000, null=True)),
-                ('bezeichnung_rm', models.CharField(blank=True, max_length=5000, null=True)),
-                ('bezeichnung_en', models.CharField(blank=True, max_length=5000, null=True)),
-                ('abstract_de', models.CharField(blank=True, max_length=5000, null=True)),
-                ('abstract_fr', models.CharField(blank=True, max_length=5000, null=True)),
-                ('abstract_it', models.CharField(blank=True, max_length=5000, null=True)),
-                ('abstract_rm', models.CharField(blank=True, max_length=5000, null=True)),
-                ('abstract_en', models.CharField(blank=True, max_length=5000, null=True)),
+                (
+                    "bgdi_id",
+                    models.AutoField(primary_key=True, serialize=False, unique=True),
+                ),
+                ("fk_id_dataset", models.TextField()),
+                (
+                    "bezeichnung_de",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "bezeichnung_fr",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "bezeichnung_it",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "bezeichnung_rm",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "bezeichnung_en",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "abstract_de",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "abstract_fr",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "abstract_it",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "abstract_rm",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
+                (
+                    "abstract_en",
+                    models.CharField(blank=True, max_length=5000, null=True),
+                ),
             ],
             options={
-                'db_table': 'geocat_publish',
-                'managed': settings.TESTING,
+                "db_table": "geocat_publish",
+                "managed": settings.TESTING,
             },
         ),
         migrations.CreateModel(
-            name='BodTranslations',
+            name="BodTranslations",
             fields=[
-                ('msg_id', models.CharField(max_length=255, primary_key=True, serialize=False)),
-                ('de', models.CharField(blank=True, max_length=5000, null=True)),
-                ('fr', models.CharField(blank=True, max_length=5000, null=True)),
-                ('it', models.CharField(blank=True, max_length=5000, null=True)),
-                ('rm', models.CharField(blank=True, max_length=5000, null=True)),
-                ('en', models.CharField(blank=True, max_length=5000, null=True)),
+                (
+                    "msg_id",
+                    models.CharField(max_length=255, primary_key=True, serialize=False),
+                ),
+                ("de", models.CharField(blank=True, max_length=5000, null=True)),
+                ("fr", models.CharField(blank=True, max_length=5000, null=True)),
+                ("it", models.CharField(blank=True, max_length=5000, null=True)),
+                ("rm", models.CharField(blank=True, max_length=5000, null=True)),
+                ("en", models.CharField(blank=True, max_length=5000, null=True)),
             ],
             options={
-                'db_table': 'translations',
-                'managed': settings.TESTING,
+                "db_table": "translations",
+                "managed": settings.TESTING,
             },
         ),
     ]

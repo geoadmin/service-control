@@ -5,66 +5,82 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0010_rename_slug_attribution_attribution_id_and_more_updated'),
+        (
+            "distributions",
+            "0010_rename_slug_attribution_attribution_id_and_more_updated",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dataset',
-            name='description_de',
-            field=models.CharField(default='changeme', verbose_name='Description (German)'),
+            model_name="dataset",
+            name="description_de",
+            field=models.CharField(
+                default="changeme", verbose_name="Description (German)"
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='description_en',
-            field=models.CharField(default='changeme', verbose_name='Description (English)'),
+            model_name="dataset",
+            name="description_en",
+            field=models.CharField(
+                default="changeme", verbose_name="Description (English)"
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='description_fr',
-            field=models.CharField(default='changeme', verbose_name='Description (French)'),
+            model_name="dataset",
+            name="description_fr",
+            field=models.CharField(
+                default="changeme", verbose_name="Description (French)"
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='description_it',
-            field=models.CharField(blank=True, null=True, verbose_name='Description (Italian)'),
+            model_name="dataset",
+            name="description_it",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Description (Italian)"
+            ),
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='description_rm',
-            field=models.CharField(blank=True, null=True, verbose_name='Description (Romansh)'),
+            model_name="dataset",
+            name="description_rm",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Description (Romansh)"
+            ),
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='title_de',
-            field=models.CharField(default='changeme', verbose_name='Title (German)'),
+            model_name="dataset",
+            name="title_de",
+            field=models.CharField(default="changeme", verbose_name="Title (German)"),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='title_en',
-            field=models.CharField(default='changeme', verbose_name='Title (English)'),
+            model_name="dataset",
+            name="title_en",
+            field=models.CharField(default="changeme", verbose_name="Title (English)"),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='title_fr',
-            field=models.CharField(default='changeme', verbose_name='Title (French)'),
+            model_name="dataset",
+            name="title_fr",
+            field=models.CharField(default="changeme", verbose_name="Title (French)"),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='title_it',
-            field=models.CharField(blank=True, null=True, verbose_name='Title (Italian)'),
+            model_name="dataset",
+            name="title_it",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Title (Italian)"
+            ),
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='title_rm',
-            field=models.CharField(blank=True, null=True, verbose_name='Title (Romansh)'),
+            model_name="dataset",
+            name="title_rm",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Title (Romansh)"
+            ),
         ),
     ]

@@ -4,14 +4,14 @@ from pytest import raises
 
 
 def test_database_routing_inside_tests():
-    assert BodContactOrganisation.objects.db == 'default'
-    assert Provider.objects.db == 'default'
+    assert BodContactOrganisation.objects.db == "default"
+    assert Provider.objects.db == "default"
 
 
 def test_database_routing_outside_tests(settings):
     settings.TESTING = False
-    assert BodContactOrganisation.objects.db == 'bod'
-    assert Provider.objects.db == 'default'
+    assert BodContactOrganisation.objects.db == "bod"
+    assert Provider.objects.db == "default"
 
 
 def test_writing_to_bod_supported_inside_tests(db):

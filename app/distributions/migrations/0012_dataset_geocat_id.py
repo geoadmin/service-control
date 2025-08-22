@@ -9,29 +9,35 @@ from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
 
 def populate_geocat(apps: Apps, schema_editor: BaseDatabaseSchemaEditor) -> None:
-    Dataset = apps.get_model('distributions', 'Dataset')
+    Dataset = apps.get_model("distributions", "Dataset")
     for obj in Dataset.objects.all():
-        obj.geocat_id = 'changeme ' + generate_short_id()
+        obj.geocat_id = "changeme " + generate_short_id()
         obj.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0011_dataset_description_de_dataset_description_en_and_more'),
+        (
+            "distributions",
+            "0011_dataset_description_de_dataset_description_en_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dataset',
-            name='geocat_id',
-            field=models.CharField(default='changeme', max_length=100, verbose_name='Geocat ID'),
+            model_name="dataset",
+            name="geocat_id",
+            field=models.CharField(
+                default="changeme", max_length=100, verbose_name="Geocat ID"
+            ),
             preserve_default=False,
         ),
         migrations.RunPython(populate_geocat, migrations.RunPython.noop),
         migrations.AlterField(
-            model_name='dataset',
-            name='geocat_id',
-            field=models.CharField(max_length=100, unique=True, verbose_name='Geocat ID'),
+            model_name="dataset",
+            name="geocat_id",
+            field=models.CharField(
+                max_length=100, unique=True, verbose_name="Geocat ID"
+            ),
         ),
     ]

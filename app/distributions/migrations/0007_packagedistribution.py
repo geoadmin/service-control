@@ -8,31 +8,37 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0006_alter_dataset_slug'),
+        ("distributions", "0006_alter_dataset_slug"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PackageDistribution',
+            name="PackageDistribution",
             fields=[
                 (
-                    'id',
+                    "id",
                     models.BigAutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
-                    )
-                ),
-                ('slug', utils.fields.CustomSlugField(max_length=100, verbose_name='Slug')),
-                (
-                    'managed_by_stac',
-                    models.BooleanField(max_length=100, verbose_name='Managed by STAC')
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
                 ),
                 (
-                    'dataset',
+                    "slug",
+                    utils.fields.CustomSlugField(max_length=100, verbose_name="Slug"),
+                ),
+                (
+                    "managed_by_stac",
+                    models.BooleanField(max_length=100, verbose_name="Managed by STAC"),
+                ),
+                (
+                    "dataset",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='distributions.dataset'
-                    )
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="distributions.dataset",
+                    ),
                 ),
             ],
         ),

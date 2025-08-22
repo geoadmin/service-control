@@ -11,6 +11,7 @@ class LanguageCode(StrEnum):
     """
     Two-letter language codes
     """
+
     GERMAN = "de"
     FRENCH = "fr"
     ITALIAN = "it"
@@ -44,7 +45,7 @@ def get_translation(
     obj: Any,
     field_name: str,
     lang: LanguageCode,
-    default_lang: LanguageCode = DEFAULT_LANGUAGE
+    default_lang: LanguageCode = DEFAULT_LANGUAGE,
 ) -> str:
     """
     Return the field `obj.{field_name}_{lang}` as a string if it has a value.

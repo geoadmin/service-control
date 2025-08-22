@@ -11,6 +11,8 @@ def create_user_with_permissions(
     user = get_user_model().objects.create_user(username=username, password=password)
     for app_label, model, codename in permissions:
         content_type = ContentType.objects.get(app_label=app_label, model=model)
-        permission = Permission.objects.get(content_type=content_type, codename=codename)
+        permission = Permission.objects.get(
+            content_type=content_type, codename=codename
+        )
         user.user_permissions.add(permission)
     return user
