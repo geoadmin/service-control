@@ -5,30 +5,37 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0003_alter_attribution_options_alter_dataset_options'),
+        ("distributions", "0003_alter_attribution_options_alter_dataset_options"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='attribution',
-            name='description_it',
-            field=models.CharField(blank=True, null=True, verbose_name='Description (Italian)'),
+            model_name="attribution",
+            name="description_it",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Description (Italian)"
+            ),
         ),
         migrations.AlterField(
-            model_name='attribution',
-            name='description_rm',
-            field=models.CharField(blank=True, null=True, verbose_name='Description (Romansh)'),
+            model_name="attribution",
+            name="description_rm",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Description (Romansh)"
+            ),
         ),
         migrations.AlterField(
-            model_name='attribution',
-            name='name_it',
-            field=models.CharField(blank=True, null=True, verbose_name='Name (Italian)'),
+            model_name="attribution",
+            name="name_it",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Name (Italian)"
+            ),
         ),
         migrations.AlterField(
-            model_name='attribution',
-            name='name_rm',
-            field=models.CharField(blank=True, null=True, verbose_name='Name (Romansh)'),
+            model_name="attribution",
+            name="name_rm",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Name (Romansh)"
+            ),
         ),
     ]

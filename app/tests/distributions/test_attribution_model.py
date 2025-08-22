@@ -18,7 +18,7 @@ def test_object_created_in_db_with_all_fields_defined(provider):
         "description_en": "Federal Office for the Environment",
         "description_it": "Ufficio federale dell'ambiente",
         "description_rm": "Uffizi federal per l'ambient",
-        "provider": provider
+        "provider": provider,
     }
     Attribution.objects.create(**attribution)
 
@@ -57,7 +57,7 @@ def test_object_created_in_db_with_optional_fields_null(provider):
         "description_en": "Federal Office for the Environment",
         "description_it": None,
         "description_rm": None,
-        "provider": provider
+        "provider": provider,
     }
     Attribution.objects.create(**attribution)
 
@@ -87,9 +87,7 @@ def test_raises_exception_when_creating_db_object_with_mandatory_field_null(prov
 
 
 def test_form_valid_for_blank_optional_field(provider):
-
     class AttributionForm(ModelForm):
-
         class Meta:
             model = Attribution
             fields = "__all__"
@@ -110,9 +108,7 @@ def test_form_valid_for_blank_optional_field(provider):
 
 
 def test_form_invalid_for_blank_mandatory_field(provider):
-
     class AttributionForm(ModelForm):
-
         class Meta:
             model = Attribution
             fields = "__all__"

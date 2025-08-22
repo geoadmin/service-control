@@ -6,41 +6,54 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0001_initial'),
-        ('provider', '0004_alter_provider_acronym_de_alter_provider_acronym_en_and_more'),
+        ("distributions", "0001_initial"),
+        (
+            "provider",
+            "0004_alter_provider_acronym_de_alter_provider_acronym_en_and_more",
+        ),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Dataset',
+            name="Dataset",
             fields=[
                 (
-                    'id',
+                    "id",
                     models.BigAutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name='ID'
-                    )
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
                 ),
-                ('slug', models.SlugField(verbose_name='Slug')),
-                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Created')),
-                ('updated', models.DateTimeField(auto_now=True, verbose_name='Updated')),
+                ("slug", models.SlugField(verbose_name="Slug")),
                 (
-                    'attribution',
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='distributions.attribution'
-                    )
+                    "created",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Created"),
                 ),
                 (
-                    'provider',
+                    "updated",
+                    models.DateTimeField(auto_now=True, verbose_name="Updated"),
+                ),
+                (
+                    "attribution",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='provider.provider'
-                    )
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="distributions.attribution",
+                    ),
+                ),
+                (
+                    "provider",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="provider.provider",
+                    ),
                 ),
             ],
             options={
-                'verbose_name': 'dataset',
-                'verbose_name_plural': 'datasets',
+                "verbose_name": "dataset",
+                "verbose_name_plural": "datasets",
             },
         ),
     ]

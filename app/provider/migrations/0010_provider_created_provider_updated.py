@@ -6,23 +6,24 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('provider', '0009_rename_slug_provider_provider_id_and_more'),
+        ("provider", "0009_rename_slug_provider_provider_id_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='provider',
-            name='created',
+            model_name="provider",
+            name="created",
             field=models.DateTimeField(
-                auto_now_add=True, default=django.utils.timezone.now, verbose_name='Created'
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="Created",
             ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='provider',
-            name='updated',
-            field=models.DateTimeField(auto_now=True, verbose_name='Updated'),
+            model_name="provider",
+            name="updated",
+            field=models.DateTimeField(auto_now=True, verbose_name="Updated"),
         ),
     ]

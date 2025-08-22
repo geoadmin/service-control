@@ -20,46 +20,52 @@ from utils.command import CustomBaseCommand
 from django.core.management.base import CommandParser
 from django.db import transaction
 
-Counter = TypedDict('Counter', {'added': int, 'cleared': int, 'removed': int, 'updated': int})
-Operation = Literal['added', 'cleared', 'removed', 'updated']
+Counter = TypedDict(
+    "Counter", {"added": int, "cleared": int, "removed": int, "updated": int}
+)
+Operation = Literal["added", "cleared", "removed", "updated"]
 
 
 class Handler(CommandHandler):
-
-    def __init__(self, command: CustomBaseCommand, options: dict['str', Any]):
+    def __init__(self, command: CustomBaseCommand, options: dict["str", Any]):
         super().__init__(command, options)
-        self.clear = options['clear']
-        self.dry_run = options['dry_run']
-        self.similarity = options['similarity']
-        self.url = options['url']
-        self.endpoint = options['endpoint']
-        self.default_dataset = options['default_dataset']
-        self.create_default_dataset = not options['no_create_default_dataset']
+        self.clear = options["clear"]
+        self.dry_run = options["dry_run"]
+        self.similarity = options["similarity"]
+        self.url = options["url"]
+        self.endpoint = options["endpoint"]
+        self.default_dataset = options["default_dataset"]
+        self.create_default_dataset = not options["no_create_default_dataset"]
         self.counts: dict[str, Counter] = {}
 
-    def increment_counter(self, model_name: str, operation: Operation, value: int = 1) -> None:
-        """ Updates internal counters of operations on models. """
+    def increment_counter(
+        self, model_name: str, operation: Operation, value: int = 1
+    ) -> None:
+        """Updates internal counters of operations on models."""
 
-        self.counts.setdefault(model_name, {'added': 0, 'cleared': 0, 'removed': 0, 'updated': 0})
+        self.counts.setdefault(
+            model_name, {"added": 0, "cleared": 0, "removed": 0, "updated": 0}
+        )
         self.counts[model_name][operation] += value
 
     def clear_package_distributions(self) -> None:
-        """ Remove existing package distributions previously imported from STAC. """
+        """Remove existing package distributions previously imported from STAC."""
 
         _, cleared = PackageDistribution.objects.filter(_legacy_imported=True).delete()
         for model_class, count in cleared.items():
-            model_name = model_class.split('.')[-1].lower()
-            self.increment_counter(model_name, 'cleared', count)
+            model_name = model_class.split(".")[-1].lower()
+            self.increment_counter(model_name, "cleared", count)
 
     def ensure_default_dataset(self) -> None:
-        """ Create the given default dataset if required and not yet available.
+        """Create the given default dataset if required and not yet available.
 
         This will create a provider and attribution with the same ID as the dataset.
         """
 
         if (
-            not self.create_default_dataset or not self.default_dataset or
-            Dataset.objects.filter(dataset_id=self.default_dataset).first()
+            not self.create_default_dataset
+            or not self.default_dataset
+            or Dataset.objects.filter(dataset_id=self.default_dataset).first()
         ):
             return
 
@@ -76,9 +82,13 @@ class Handler(CommandHandler):
                 acronym_en="#Missing",
             )
 
-        attribution = Attribution.objects.filter(attribution_id=self.default_dataset).first()
+        attribution = Attribution.objects.filter(
+            attribution_id=self.default_dataset
+        ).first()
         if not attribution:
-            self.print(f"Added attribution '{self.default_dataset}' for default dataset")
+            self.print(
+                f"Added attribution '{self.default_dataset}' for default dataset"
+            )
             attribution = Attribution.objects.create(
                 attribution_id=self.default_dataset,
                 name_de="#Missing",
@@ -87,7 +97,7 @@ class Handler(CommandHandler):
                 description_de="#Missing",
                 description_fr="#Missing",
                 description_en="#Missing",
-                provider=provider
+                provider=provider,
             )
 
         self.print(f"Added default dataset '{self.default_dataset}'")
@@ -101,24 +111,26 @@ class Handler(CommandHandler):
             description_en="#Missing",
             geocat_id="#Missing",
             provider=provider,
-            attribution=attribution
+            attribution=attribution,
         )
 
     def update_package_distribution(
         self, collection_id: str, managed_by_stac: bool
     ) -> Dataset | None:
-        """ Create or update the package distribution with the given ID. """
-        managed = 'managed' if managed_by_stac else 'unmanaged'
+        """Create or update the package distribution with the given ID."""
+        managed = "managed" if managed_by_stac else "unmanaged"
 
         # Get dataset
         dataset = (
-            Dataset.objects.filter(dataset_id=collection_id).first() or
-            Dataset.objects.filter(dataset_id=self.default_dataset).first()
+            Dataset.objects.filter(dataset_id=collection_id).first()
+            or Dataset.objects.filter(dataset_id=self.default_dataset).first()
         )
         if not dataset:
             self.print_warning("No dataset for collection id '%s'", collection_id)
             if self.default_dataset:
-                self.print_warning("Default dataset '%s' does not exist", self.default_dataset)
+                self.print_warning(
+                    "Default dataset '%s' does not exist", self.default_dataset
+                )
             return None
 
         # Get or create package distribution
@@ -130,26 +142,26 @@ class Handler(CommandHandler):
                 package_distribution_id=collection_id,
                 _legacy_imported=True,
                 managed_by_stac=managed_by_stac,
-                dataset=dataset
+                dataset=dataset,
             )
-            self.increment_counter('package_distribution', 'added')
+            self.increment_counter("package_distribution", "added")
             self.print(f"Added package distribution '{collection_id}' ({managed})")
 
         # Update package distribution
         if (
-            package_distribution.managed_by_stac != managed_by_stac or
-            package_distribution.dataset != dataset
+            package_distribution.managed_by_stac != managed_by_stac
+            or package_distribution.dataset != dataset
         ):
             package_distribution.managed_by_stac = managed_by_stac
             package_distribution.dataset = dataset
             package_distribution.save()
-            self.increment_counter('package_distribution', 'updated')
+            self.increment_counter("package_distribution", "updated")
             self.print(f"Updated package distribution '{collection_id}' ({managed})")
 
         return dataset
 
     def import_package_distributions(self) -> None:
-        """ Import package distributions from STAC.
+        """Import package distributions from STAC.
 
         This function adds new package distributions, updates existing ones and removes orphans.
 
@@ -173,16 +185,16 @@ class Handler(CommandHandler):
 
         # Get unmanaged collections from the HTML root
         response = get(self.url, timeout=60)
-        element = BeautifulSoup(response.text, 'html.parser').find('div', id="data")
+        element = BeautifulSoup(response.text, "html.parser").find("div", id="data")
         if not element:
             raise ValueError(f"Error parsing {self.url}")
 
-        for line in split(r'\r?\n', element.text.strip()):
+        for line in split(r"\r?\n", element.text.strip()):
             line = line.strip()
             if not line:
                 continue
 
-            values = line.split(' ')
+            values = line.split(" ")
             if len(values) == 0:
                 continue
 
@@ -197,13 +209,13 @@ class Handler(CommandHandler):
             processed.add(collection_id)
 
         # Remove orphaned package distributions
-        orphans = PackageDistribution.objects.filter(
-            _legacy_imported=True
-        ).exclude(package_distribution_id__in=processed,)
+        orphans = PackageDistribution.objects.filter(_legacy_imported=True).exclude(
+            package_distribution_id__in=processed,
+        )
         _, removed = orphans.delete()
         for model_class, count in removed.items():
-            model_name = model_class.split('.')[-1].lower()
-            self.increment_counter(model_name, 'removed', count)
+            model_name = model_class.split(".")[-1].lower()
+            self.increment_counter(model_name, "removed", count)
 
     def check_provider(self, collection: Collection, dataset: Dataset) -> None:
         """Checks whether the provider in the STAC collection matches the provider in the dataset
@@ -217,22 +229,26 @@ class Handler(CommandHandler):
         if not providers:
             self.print_warning("Collection '%s' has no providers", collection_id)
         elif len(providers) > 1:
-            self.print_warning("Collection '%s' has more than one provider", collection_id)
+            self.print_warning(
+                "Collection '%s' has more than one provider", collection_id
+            )
         else:
             name_collection = providers[0].name
             name_dataset = dataset.provider.name_en
             if name_dataset != name_collection:
-                similarity = SequenceMatcher(None, name_collection, name_dataset).ratio()
+                similarity = SequenceMatcher(
+                    None, name_collection, name_dataset
+                ).ratio()
                 if similarity < self.similarity:
                     self.print_warning(
                         "Provider in collection and dataset differ (%.2f): '%s' / '%s'",
                         similarity,
                         name_collection,
-                        name_dataset
+                        name_dataset,
                     )
 
     def run(self) -> None:
-        """ Main entry point of command. """
+        """Main entry point of command."""
 
         with transaction.atomic():
             # Clear data
@@ -266,29 +282,37 @@ class Command(CustomBaseCommand):
     def add_arguments(self, parser: CommandParser) -> None:
         super().add_arguments(parser)
         parser.add_argument(
-            "--clear", action="store_true", help="Delete existing objects before importing"
+            "--clear",
+            action="store_true",
+            help="Delete existing objects before importing",
         )
         parser.add_argument(
-            "--dry-run", action="store_true", help="Dry run, abort transaction in the end"
+            "--dry-run",
+            action="store_true",
+            help="Dry run, abort transaction in the end",
         )
         parser.add_argument(
             "--similarity",
             type=float,
             default=1.0,
-            help="Similarity threshold to use when comparing providers"
+            help="Similarity threshold to use when comparing providers",
         )
-        parser.add_argument("--url", type=str, default="https://data.geo.admin.ch", help="STAC URL")
-        parser.add_argument("--endpoint", type=str, default="/api/stac/v1", help="STAC endpoint")
+        parser.add_argument(
+            "--url", type=str, default="https://data.geo.admin.ch", help="STAC URL"
+        )
+        parser.add_argument(
+            "--endpoint", type=str, default="/api/stac/v1", help="STAC endpoint"
+        )
         parser.add_argument(
             "--default-dataset",
             type=str,
             default="",
-            help="Add packages with missing dataset to this dataset"
+            help="Add packages with missing dataset to this dataset",
         )
         parser.add_argument(
             "--no-create-default-dataset",
             action="store_true",
-            help="Do not create the default dataset if needed"
+            help="Do not create the default dataset if needed",
         )
 
     def handle(self, *args: Any, **options: Any) -> None:

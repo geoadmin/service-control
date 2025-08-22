@@ -5,30 +5,37 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('provider', '0005_alter_provider_options'),
+        ("provider", "0005_alter_provider_options"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='provider',
-            name='acronym_it',
-            field=models.CharField(blank=True, null=True, verbose_name='Acronym (Italian)'),
+            model_name="provider",
+            name="acronym_it",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Acronym (Italian)"
+            ),
         ),
         migrations.AlterField(
-            model_name='provider',
-            name='acronym_rm',
-            field=models.CharField(blank=True, null=True, verbose_name='Acronym (Romansh)'),
+            model_name="provider",
+            name="acronym_rm",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Acronym (Romansh)"
+            ),
         ),
         migrations.AlterField(
-            model_name='provider',
-            name='name_it',
-            field=models.CharField(blank=True, null=True, verbose_name='Name (Italian)'),
+            model_name="provider",
+            name="name_it",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Name (Italian)"
+            ),
         ),
         migrations.AlterField(
-            model_name='provider',
-            name='name_rm',
-            field=models.CharField(blank=True, null=True, verbose_name='Name (Romansh)'),
+            model_name="provider",
+            name="name_rm",
+            field=models.CharField(
+                blank=True, null=True, verbose_name="Name (Romansh)"
+            ),
         ),
     ]

@@ -6,17 +6,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('access', '0003_user_user_id'),
+        ("access", "0003_user_user_id"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='username',
+            model_name="user",
+            name="username",
             field=utils.fields.CustomSlugField(
-                max_length=100, unique=True, verbose_name='User name'
+                max_length=100, unique=True, verbose_name="User name"
             ),
         ),
     ]

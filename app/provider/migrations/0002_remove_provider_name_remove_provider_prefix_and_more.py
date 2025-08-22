@@ -5,58 +5,57 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('provider', '0001_initial'),
+        ("provider", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='provider',
-            name='name',
+            model_name="provider",
+            name="name",
         ),
         migrations.RemoveField(
-            model_name='provider',
-            name='prefix',
+            model_name="provider",
+            name="prefix",
         ),
         migrations.AddField(
-            model_name='provider',
-            name='acronym_de',
-            field=models.CharField(blank=True, verbose_name='Acronym (German)'),
+            model_name="provider",
+            name="acronym_de",
+            field=models.CharField(blank=True, verbose_name="Acronym (German)"),
         ),
         migrations.AddField(
-            model_name='provider',
-            name='acronym_en',
-            field=models.CharField(blank=True, verbose_name='Acronym (English)'),
+            model_name="provider",
+            name="acronym_en",
+            field=models.CharField(blank=True, verbose_name="Acronym (English)"),
         ),
         migrations.AddField(
-            model_name='provider',
-            name='acronym_fr',
-            field=models.CharField(blank=True, verbose_name='Acronym (French)'),
+            model_name="provider",
+            name="acronym_fr",
+            field=models.CharField(blank=True, verbose_name="Acronym (French)"),
         ),
         migrations.AddField(
-            model_name='provider',
-            name='acronym_it',
-            field=models.CharField(blank=True, verbose_name='Acronym (Italian)'),
+            model_name="provider",
+            name="acronym_it",
+            field=models.CharField(blank=True, verbose_name="Acronym (Italian)"),
         ),
         migrations.AddField(
-            model_name='provider',
-            name='name_de',
-            field=models.CharField(blank=True, verbose_name='Name (German)'),
+            model_name="provider",
+            name="name_de",
+            field=models.CharField(blank=True, verbose_name="Name (German)"),
         ),
         migrations.AddField(
-            model_name='provider',
-            name='name_en',
-            field=models.CharField(blank=True, verbose_name='Name (English)'),
+            model_name="provider",
+            name="name_en",
+            field=models.CharField(blank=True, verbose_name="Name (English)"),
         ),
         migrations.AddField(
-            model_name='provider',
-            name='name_fr',
-            field=models.CharField(blank=True, verbose_name='Name (French)'),
+            model_name="provider",
+            name="name_fr",
+            field=models.CharField(blank=True, verbose_name="Name (French)"),
         ),
         migrations.AddField(
-            model_name='provider',
-            name='name_it',
-            field=models.CharField(blank=True, verbose_name='Name (Italian)'),
+            model_name="provider",
+            name="name_it",
+            field=models.CharField(blank=True, verbose_name="Name (Italian)"),
         ),
     ]

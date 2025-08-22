@@ -16,7 +16,7 @@ logger = getLogger(__name__)
 
 
 class CognitoInconsistencyError(Exception):
-    """ An exception indicating that the state in the database and state in cognito have
+    """An exception indicating that the state in the database and state in cognito have
     diverged.
     """
 
@@ -46,7 +46,9 @@ class User(models.Model):
         return str(self.username)
 
     username = CustomSlugField(_(_context, "User name"), unique=True, max_length=100)
-    user_id = models.CharField(_(_context, "User ID"), unique=True, default=generate_short_id)
+    user_id = models.CharField(
+        _(_context, "User ID"), unique=True, default=generate_short_id
+    )
     created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
     updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
     first_name = models.CharField(_(_context, "First name"))
@@ -70,7 +72,7 @@ class User(models.Model):
         force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
         using: str | None = None,
-        update_fields: Iterable[str] | None = None
+        update_fields: Iterable[str] | None = None,
     ) -> None:
         """Validates the model before writing it to the database and syncs with cognito."""
 
@@ -78,20 +80,28 @@ class User(models.Model):
         client = Client()
         with transaction.atomic():
             if self._state.adding:
-                super().save(force_insert=True, using=using, update_fields=update_fields)
+                super().save(
+                    force_insert=True, using=using, update_fields=update_fields
+                )
                 if not client.create_user(self.user_id, self.username, self.email):
-                    logger.critical("User %s already exists in cognito, not created", self.user_id)
+                    logger.critical(
+                        "User %s already exists in cognito, not created", self.user_id
+                    )
                     raise CognitoInconsistencyError()
             else:
                 User.all_objects.select_for_update().filter(pk=self.pk).get()
-                super().save(force_update=True, using=using, update_fields=update_fields)
+                super().save(
+                    force_update=True, using=using, update_fields=update_fields
+                )
                 if not client.update_user(self.user_id, self.username, self.email):
-                    logger.critical("User %s does not exist in cognito, not updated", self.user_id)
+                    logger.critical(
+                        "User %s does not exist in cognito, not updated", self.user_id
+                    )
                     raise CognitoInconsistencyError()
 
-    def delete(self,
-               using: str | None = None,
-               keep_parents: bool = False) -> tuple[int, dict[str, int]]:
+    def delete(
+        self, using: str | None = None, keep_parents: bool = False
+    ) -> tuple[int, dict[str, int]]:
         """Deletes the user from the database and cognito."""
 
         client = Client()
@@ -99,7 +109,9 @@ class User(models.Model):
             User.all_objects.select_for_update().filter(pk=self.pk).get()
             result = super().delete(using=using, keep_parents=keep_parents)
             if not client.delete_user(self.user_id):
-                logger.critical("User %s does not exist in cognito, not deleted", self.user_id)
+                logger.critical(
+                    "User %s does not exist in cognito, not deleted", self.user_id
+                )
                 raise CognitoInconsistencyError()
             return result
 
@@ -113,5 +125,7 @@ class User(models.Model):
             self.deleted_at = timezone.now()
             super().save(force_update=True)
             if not client.disable_user(self.user_id):
-                logger.critical("User %s does not exist in cognito, not disabled", self.user_id)
+                logger.critical(
+                    "User %s does not exist in cognito, not disabled", self.user_id
+                )
                 raise CognitoInconsistencyError()

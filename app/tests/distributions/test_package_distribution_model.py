@@ -6,7 +6,7 @@ from pytest import raises
 from django.core.exceptions import ValidationError
 
 
-@fixture(name='dataset')
+@fixture(name="dataset")
 def fixture_dataset(provider, attribution):
     yield Dataset.objects.create(
         dataset_id="ch.agroscope.feuchtflaechenpotential-kulturlandschaft",
@@ -26,7 +26,7 @@ def test_create_package_distribution_in_database(dataset):
     PackageDistribution.objects.create(
         package_distribution_id="ch.agroscope.feuchtflaechenpotential-kulturlandschaft",
         managed_by_stac=True,
-        dataset=dataset
+        dataset=dataset,
     )
 
     distributions = PackageDistribution.objects.all()
@@ -35,13 +35,14 @@ def test_create_package_distribution_in_database(dataset):
 
     distribution = distributions[0]
 
-    assert distribution.package_distribution_id == \
-        "ch.agroscope.feuchtflaechenpotential-kulturlandschaft"
+    assert (
+        distribution.package_distribution_id
+        == "ch.agroscope.feuchtflaechenpotential-kulturlandschaft"
+    )
     assert distribution.managed_by_stac is True
     assert distribution.dataset == dataset
 
 
-def test_raises_exception_when_creating_db_object_with_mandatory_field_null(
-        dataset):
+def test_raises_exception_when_creating_db_object_with_mandatory_field_null(dataset):
     with raises(ValidationError):
         PackageDistribution.objects.create(dataset=dataset)

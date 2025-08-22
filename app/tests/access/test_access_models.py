@@ -10,7 +10,7 @@ from django.forms import ModelForm
 from django.utils import timezone
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_user_stored_as_expected_for_valid_input(client, provider):
     client.return_value.create_user.return_value = True
 
@@ -34,7 +34,7 @@ def test_user_stored_as_expected_for_valid_input(client, provider):
     assert client.return_value.create_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_user_raises_exception_for_user_with_existing_user_name(client, provider):
     client.return_value.create_user.return_value = True
 
@@ -43,7 +43,7 @@ def test_user_raises_exception_for_user_with_existing_user_name(client, provider
         first_name="Jeffrey",
         last_name="Lebowski",
         email="dude@bowling.com",
-        provider=provider
+        provider=provider,
     )
     with raises(ValidationError):
         User.objects.create(
@@ -51,15 +51,17 @@ def test_user_raises_exception_for_user_with_existing_user_name(client, provider
             first_name="XXX",
             last_name="YYY",
             email="xxx@yyy.com",
-            provider=provider
+            provider=provider,
         )
 
     assert User.objects.count() == 1
     assert client.return_value.create_user.call_count == 1
 
 
-@patch('access.models.Client')
-def test_user_with_invalid_email_raises_exception_when_creating_db_record(client, provider):
+@patch("access.models.Client")
+def test_user_with_invalid_email_raises_exception_when_creating_db_record(
+    client, provider
+):
     client.return_value.create_user.return_value = True
 
     model_fields = {
@@ -77,8 +79,8 @@ def test_user_with_invalid_email_raises_exception_when_creating_db_record(client
     assert not client.return_value.create_user.called
 
 
-@patch('access.models.Client')
-@patch('access.models.logger')
+@patch("access.models.Client")
+@patch("access.models.logger")
 def test_create_user_raises_cognito_exception(logger, client, provider):
     client.return_value.create_user.return_value = False
 
@@ -96,12 +98,13 @@ def test_create_user_raises_cognito_exception(logger, client, provider):
 
     assert User.objects.count() == 0
     assert client.return_value.create_user.called
-    assert call.critical(
-        'User %s already exists in cognito, not created', '2ihg2ox304po'
-    ) in logger.mock_calls
+    assert (
+        call.critical("User %s already exists in cognito, not created", "2ihg2ox304po")
+        in logger.mock_calls
+    )
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_save_user_updates_records(client, provider):
     client.return_value.create_user.return_value = True
     client.return_value.update_user.return_value = True
@@ -125,11 +128,11 @@ def test_save_user_updates_records(client, provider):
 
     updated = User.objects.first()
 
-    assert updated.email == 'jeffrey.lebowski@bowling.com'
+    assert updated.email == "jeffrey.lebowski@bowling.com"
     assert client.return_value.update_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_save_disabled_user_updates_records(client, provider):
     client.return_value.create_user.return_value = True
     client.return_value.update_user.return_value = True
@@ -140,7 +143,7 @@ def test_save_disabled_user_updates_records(client, provider):
         "last_name": "Lebowski",
         "email": "dude@bowling.com",
         "provider": provider,
-        "deleted_at": timezone.now()
+        "deleted_at": timezone.now(),
     }
 
     User.objects.create(**model_fields)
@@ -154,11 +157,11 @@ def test_save_disabled_user_updates_records(client, provider):
 
     updated = User.all_objects.first()
 
-    assert updated.email == 'jeffrey.lebowski@bowling.com'
+    assert updated.email == "jeffrey.lebowski@bowling.com"
     assert client.return_value.update_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_save_user_raises_cognito_exception(client, provider):
     client.return_value.create_user.return_value = True
     client.return_value.update_user.return_value = False
@@ -183,11 +186,11 @@ def test_save_user_raises_cognito_exception(client, provider):
 
     retained = User.objects.first()
 
-    assert retained.email == 'dude@bowling.com'
+    assert retained.email == "dude@bowling.com"
     assert client.return_value.update_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_delete_user_deletes_records(client, provider):
     client.return_value.create_user.return_value = True
     client.return_value.delete_user.return_value = True
@@ -211,7 +214,7 @@ def test_delete_user_deletes_records(client, provider):
     assert client.return_value.delete_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_delete_disabled_user_deletes_records(client, provider):
     client.return_value.create_user.return_value = True
     client.return_value.delete_user.return_value = True
@@ -222,7 +225,7 @@ def test_delete_disabled_user_deletes_records(client, provider):
         "last_name": "Lebowski",
         "email": "dude@bowling.com",
         "provider": provider,
-        "deleted_at": timezone.now()
+        "deleted_at": timezone.now(),
     }
 
     User.objects.create(**model_fields)
@@ -236,7 +239,7 @@ def test_delete_disabled_user_deletes_records(client, provider):
     assert client.return_value.delete_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_delete_user_raises_cognito_exception(client, provider):
     client.return_value.create_user.return_value = True
     client.return_value.delete_user.return_value = False
@@ -261,7 +264,7 @@ def test_delete_user_raises_cognito_exception(client, provider):
     assert client.return_value.delete_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_disable_user_disables_records(client, provider):
     client.return_value.create_user.return_value = True
     client.return_value.disable_user.return_value = True
@@ -286,7 +289,7 @@ def test_disable_user_disables_records(client, provider):
     assert client.return_value.disable_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_disable_user_raises_cognito_exception(client, provider):
     client.return_value.create_user.return_value = True
     client.return_value.disable_user.return_value = False
@@ -311,12 +314,11 @@ def test_disable_user_raises_cognito_exception(client, provider):
     assert client.return_value.disable_user.called
 
 
-@patch('access.models.Client')
+@patch("access.models.Client")
 def test_form_invalid_for_user_with_invalid_email(client, provider):
     client.return_value.create_user.return_value = True
 
     class UserForm(ModelForm):
-
         class Meta:
             model = User
             fields = "__all__"

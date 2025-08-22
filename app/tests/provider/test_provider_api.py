@@ -24,13 +24,15 @@ def test_provider_to_response_returns_response_with_language_as_defined(provider
             en="FOEN",
             it="UFAM",
             rm="UFAM",
-        )
+        ),
     )
 
     assert actual == expected
 
 
-def test_provider_to_response_returns_response_with_default_language_if_undefined(provider):
+def test_provider_to_response_returns_response_with_default_language_if_undefined(
+    provider,
+):
     provider.name_it = None
     provider.name_rm = None
     provider.acronym_it = None
@@ -55,7 +57,7 @@ def test_provider_to_response_returns_response_with_default_language_if_undefine
             en="FOEN",
             it=None,
             rm=None,
-        )
+        ),
     )
 
     assert actual == expected
@@ -64,8 +66,8 @@ def test_provider_to_response_returns_response_with_default_language_if_undefine
 def test_get_provider_returns_existing_provider_with_default_language(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get(f"/api/v1/providers/{provider.provider_id}")
 
@@ -87,15 +89,15 @@ def test_get_provider_returns_existing_provider_with_default_language(
             "en": "FOEN",
             "it": "UFAM",
             "rm": "UFAM",
-        }
+        },
     }
 
 
 def test_get_provider_returns_provider_with_language_from_query(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get(f"/api/v1/providers/{provider.provider_id}?lang=de")
 
@@ -117,13 +119,13 @@ def test_get_provider_returns_provider_with_language_from_query(
             "en": "FOEN",
             "it": "UFAM",
             "rm": "UFAM",
-        }
+        },
     }
 
 
 def test_get_provider_returns_404_for_nonexisting_provider(client, django_user_factory):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get("/api/v1/providers/2")
 
@@ -134,8 +136,8 @@ def test_get_provider_returns_404_for_nonexisting_provider(client, django_user_f
 def test_get_provider_skips_translations_that_are_not_available(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     provider = Provider.objects.last()
     provider.name_it = None
@@ -160,15 +162,15 @@ def test_get_provider_skips_translations_that_are_not_available(
             "de": "BAFU",
             "fr": "OFEV",
             "en": "FOEN",
-        }
+        },
     }
 
 
 def test_get_provider_returns_provider_with_language_from_header(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get(
         f"/api/v1/providers/{provider.provider_id}", headers={"Accept-Language": "de"}
@@ -192,18 +194,19 @@ def test_get_provider_returns_provider_with_language_from_header(
             "en": "FOEN",
             "it": "UFAM",
             "rm": "UFAM",
-        }
+        },
     }
 
 
 def test_get_provider_returns_provider_with_language_from_query_param_even_if_header_set(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get(
-        f"/api/v1/providers/{provider.provider_id}?lang=fr", headers={"Accept-Language": "de"}
+        f"/api/v1/providers/{provider.provider_id}?lang=fr",
+        headers={"Accept-Language": "de"},
     )
 
     assert response.status_code == 200
@@ -224,15 +227,15 @@ def test_get_provider_returns_provider_with_language_from_query_param_even_if_he
             "en": "FOEN",
             "it": "UFAM",
             "rm": "UFAM",
-        }
+        },
     }
 
 
 def test_get_provider_returns_provider_with_default_language_if_header_empty(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get(
         f"/api/v1/providers/{provider.provider_id}", headers={"Accept-Language": ""}
@@ -256,19 +259,19 @@ def test_get_provider_returns_provider_with_default_language_if_header_empty(
             "en": "FOEN",
             "it": "UFAM",
             "rm": "UFAM",
-        }
+        },
     }
 
 
 def test_get_provider_returns_provider_with_first_known_language_from_header(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get(
         f"/api/v1/providers/{provider.provider_id}",
-        headers={"Accept-Language": "cn, *, de-DE, en"}
+        headers={"Accept-Language": "cn, *, de-DE, en"},
     )
 
     assert response.status_code == 200
@@ -289,19 +292,19 @@ def test_get_provider_returns_provider_with_first_known_language_from_header(
             "en": "FOEN",
             "it": "UFAM",
             "rm": "UFAM",
-        }
+        },
     }
 
 
 def test_get_provider_returns_provider_with_first_known_language_from_header_ignoring_qfactor(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get(
         f"/api/v1/providers/{provider.provider_id}",
-        headers={"Accept-Language": "fr;q=0.9, de;q=0.8"}
+        headers={"Accept-Language": "fr;q=0.9, de;q=0.8"},
     )
 
     assert response.status_code == 200
@@ -322,7 +325,7 @@ def test_get_provider_returns_provider_with_first_known_language_from_header_ign
             "en": "FOEN",
             "it": "UFAM",
             "rm": "UFAM",
-        }
+        },
     }
 
 
@@ -333,9 +336,11 @@ def test_get_provider_returns_401_if_not_logged_in(provider, client):
     assert response.json() == {"code": 401, "description": "Unauthorized"}
 
 
-def test_get_provider_returns_403_if_no_permission(provider, client, django_user_factory):
-    django_user_factory('test', 'test', [])
-    client.login(username='test', password='test')
+def test_get_provider_returns_403_if_no_permission(
+    provider, client, django_user_factory
+):
+    django_user_factory("test", "test", [])
+    client.login(username="test", password="test")
 
     response = client.get(f"/api/v1/providers/{provider.provider_id}")
 
@@ -346,40 +351,42 @@ def test_get_provider_returns_403_if_no_permission(provider, client, django_user
 def test_get_providers_returns_single_provider_with_given_language(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get("/api/v1/providers?lang=fr")
 
     assert response.status_code == 200
     assert response.json() == {
-        "items": [{
-            "id": "ch.bafu",
-            "name": "Office fédéral de l'environnement",
-            "name_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
-                "it": "Ufficio federale dell'ambiente",
-                "rm": "Uffizi federal per l'ambient",
-            },
-            "acronym": "OFEV",
-            "acronym_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
-                "it": "UFAM",
-                "rm": "UFAM",
+        "items": [
+            {
+                "id": "ch.bafu",
+                "name": "Office fédéral de l'environnement",
+                "name_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                    "it": "Ufficio federale dell'ambiente",
+                    "rm": "Uffizi federal per l'ambient",
+                },
+                "acronym": "OFEV",
+                "acronym_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                    "it": "UFAM",
+                    "rm": "UFAM",
+                },
             }
-        }]
+        ]
     }
 
 
 def test_get_providers_skips_translations_that_are_not_available(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     provider = Provider.objects.last()
     provider.name_it = None
@@ -392,61 +399,65 @@ def test_get_providers_skips_translations_that_are_not_available(
 
     assert response.status_code == 200
     assert response.json() == {
-        "items": [{
-            "id": "ch.bafu",
-            "name": "Federal Office for the Environment",
-            "name_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
-            },
-            "acronym": "FOEN",
-            "acronym_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
+        "items": [
+            {
+                "id": "ch.bafu",
+                "name": "Federal Office for the Environment",
+                "name_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                },
+                "acronym": "FOEN",
+                "acronym_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                },
             }
-        }]
+        ]
     }
 
 
 def test_get_providers_returns_provider_with_language_from_header(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     response = client.get("/api/v1/providers", headers={"Accept-Language": "de"})
 
     assert response.status_code == 200
     assert response.json() == {
-        "items": [{
-            "id": "ch.bafu",
-            "name": "Bundesamt für Umwelt",
-            "name_translations": {
-                "de": "Bundesamt für Umwelt",
-                "fr": "Office fédéral de l'environnement",
-                "en": "Federal Office for the Environment",
-                "it": "Ufficio federale dell'ambiente",
-                "rm": "Uffizi federal per l'ambient",
-            },
-            "acronym": "BAFU",
-            "acronym_translations": {
-                "de": "BAFU",
-                "fr": "OFEV",
-                "en": "FOEN",
-                "it": "UFAM",
-                "rm": "UFAM",
+        "items": [
+            {
+                "id": "ch.bafu",
+                "name": "Bundesamt für Umwelt",
+                "name_translations": {
+                    "de": "Bundesamt für Umwelt",
+                    "fr": "Office fédéral de l'environnement",
+                    "en": "Federal Office for the Environment",
+                    "it": "Ufficio federale dell'ambiente",
+                    "rm": "Uffizi federal per l'ambient",
+                },
+                "acronym": "BAFU",
+                "acronym_translations": {
+                    "de": "BAFU",
+                    "fr": "OFEV",
+                    "en": "FOEN",
+                    "it": "UFAM",
+                    "rm": "UFAM",
+                },
             }
-        }]
+        ]
     }
 
 
 def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
     provider, client, django_user_factory
 ):
-    django_user_factory('test', 'test', [('provider', 'provider', 'view_provider')])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [("provider", "provider", "view_provider")])
+    client.login(username="test", password="test")
 
     provider = {
         "provider_id": "ch.bav",
@@ -485,7 +496,7 @@ def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
                     "en": "FOEN",
                     "it": "UFAM",
                     "rm": "UFAM",
-                }
+                },
             },
             {
                 "id": "ch.bav",
@@ -504,7 +515,7 @@ def test_get_providers_returns_all_providers_ordered_by_id_with_given_language(
                     "en": "FOT",
                     "it": "UFT",
                     "rm": "UFT",
-                }
+                },
             },
         ]
     }
@@ -518,8 +529,8 @@ def test_get_providers_returns_401_if_not_logged_in(client):
 
 
 def test_get_providers_returns_403_if_no_permission(client, django_user_factory):
-    django_user_factory('test', 'test', [])
-    client.login(username='test', password='test')
+    django_user_factory("test", "test", [])
+    client.login(username="test", password="test")
 
     response = client.get("/api/v1/providers")
 

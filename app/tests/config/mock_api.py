@@ -56,7 +56,7 @@ def trigger_django_validation_error(request: HttpRequest) -> dict[str, bool | st
 
 @router.get("/trigger-cognito-connection-error")
 def trigger_cognito_connection_error(request: HttpRequest) -> dict[str, bool | str]:
-    raise EndpointConnectionError(endpoint_url='localhost')
+    raise EndpointConnectionError(endpoint_url="localhost")
 
 
 @router.get("/trigger-200-response")

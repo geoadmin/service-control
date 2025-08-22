@@ -4,14 +4,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('provider', '0004_alter_provider_acronym_de_alter_provider_acronym_en_and_more'),
+        (
+            "provider",
+            "0004_alter_provider_acronym_de_alter_provider_acronym_en_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='provider',
+            name="provider",
             options={},
         ),
     ]

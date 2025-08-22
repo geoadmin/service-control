@@ -14,23 +14,23 @@ from django.http import HttpResponse
 logger = getLogger(__name__)
 
 LogExtra = TypedDict(
-    'LogExtra',
+    "LogExtra",
     {
-        'http': {
-            'request': {  # noqa: F821
-                'method': str,  # noqa: F821
-                'header': dict[str, str]  # noqa: F821
+        "http": {
+            "request": {  # noqa: F821
+                "method": str,  # noqa: F821
+                "header": dict[str, str],  # noqa: F821
             },
-            'response': {  # noqa: F821
-                'status_code': int,  # noqa: F821
-                'header': dict[str, str]  # noqa: F821
-            }
+            "response": {  # noqa: F821
+                "status_code": int,  # noqa: F821
+                "header": dict[str, str],  # noqa: F821
+            },
         },
-        'url': {
-            'path': str,  # noqa: F821
-            'scheme': str  # noqa: F821
-        }
-    }
+        "url": {
+            "path": str,  # noqa: F821
+            "scheme": str,  # noqa: F821
+        },
+    },
 )
 
 
@@ -60,27 +60,28 @@ def generate_log_extra(request: HttpRequest, response: HttpResponse) -> LogExtra
         dict: dict of extras
     """
     return {
-        'http': {
-            'request': {
-                'method': request.method or 'UNKNOWN',
-                'header': {
+        "http": {
+            "request": {
+                "method": request.method or "UNKNOWN",
+                "header": {
                     k.lower(): v
                     for k, v in request.headers.items()
                     if k.lower() in settings.LOG_ALLOWED_HEADERS
-                }
+                },
             },
-            'response': {
-                'status_code': response.status_code,
-                'header': {
+            "response": {
+                "status_code": response.status_code,
+                "header": {
                     k.lower(): v
                     for k, v in response.headers.items()
                     if k.lower() in settings.LOG_ALLOWED_HEADERS
                 },
-            }
+            },
         },
-        'url': {
-            'path': request.path or 'UNKNOWN', 'scheme': request.scheme or 'UNKNOWN'
-        }
+        "url": {
+            "path": request.path or "UNKNOWN",
+            "scheme": request.scheme or "UNKNOWN",
+        },
     }
 
 
@@ -108,16 +109,18 @@ class LoggedNinjaAPI(NinjaAPI):
                 "Response %s on %s",
                 response.status_code,  # parameter for %s
                 request.path,  # parameter for %s
-                extra=generate_log_extra(request, response)
+                extra=generate_log_extra(request, response),
             )
         elif response.status_code >= 400 and response.status_code < 500:
             logger.warning(
                 "Response %s on %s",
                 response.status_code,  # parameter for %s
                 request.path,  # parameter for %s
-                extra=generate_log_extra(request, response)
+                extra=generate_log_extra(request, response),
             )
         else:
-            logger.exception(repr(sys.exc_info()[1]), extra=generate_log_extra(request, response))
+            logger.exception(
+                repr(sys.exc_info()[1]), extra=generate_log_extra(request, response)
+            )
 
         return response

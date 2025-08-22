@@ -2,7 +2,6 @@ from ninja import Schema
 
 
 class UserSchema(Schema):
-
     username: str
     first_name: str
     last_name: str

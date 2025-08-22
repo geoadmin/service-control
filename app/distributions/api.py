@@ -18,7 +18,9 @@ from .schemas import DatasetSchema
 router = Router()
 
 
-def attribution_to_response(model: Attribution, lang: LanguageCode) -> AttributionSchema:
+def attribution_to_response(
+    model: Attribution, lang: LanguageCode
+) -> AttributionSchema:
     """
     Transforms the given model using the given language into a response object.
     """
@@ -79,12 +81,10 @@ def dataset_to_response(model: Dataset, lang: LanguageCode) -> DatasetSchema:
     "attributions/{attribution_id}",
     response={200: AttributionSchema},
     exclude_none=True,
-    auth=PermissionAuth('distributions.view_attribution')
+    auth=PermissionAuth("distributions.view_attribution"),
 )
 def attribution(
-    request: HttpRequest,
-    attribution_id: str,
-    lang: LanguageCode | None = None
+    request: HttpRequest, attribution_id: str, lang: LanguageCode | None = None
 ) -> AttributionSchema:
     """
     Get the attribution with the given ID, return translatable fields in the given language.
@@ -141,10 +141,11 @@ def attribution(
     "attributions",
     response={200: AttributionListSchema},
     exclude_none=True,
-    auth=PermissionAuth('distributions.view_attribution')
+    auth=PermissionAuth("distributions.view_attribution"),
 )
-def attributions(request: HttpRequest,
-                 lang: LanguageCode | None = None) -> dict[str, list[AttributionSchema]]:
+def attributions(
+    request: HttpRequest, lang: LanguageCode | None = None
+) -> dict[str, list[AttributionSchema]]:
     """
     Get all attributions, return translatable fields in the given language.
 
@@ -162,7 +163,7 @@ def attributions(request: HttpRequest,
     "datasets/{dataset_id}",
     response={200: DatasetSchema},
     exclude_none=True,
-    auth=PermissionAuth('distributions.view_dataset')
+    auth=PermissionAuth("distributions.view_dataset"),
 )
 def dataset(
     request: HttpRequest, dataset_id: str, lang: LanguageCode | None = None
@@ -180,10 +181,11 @@ def dataset(
     "datasets",
     response={200: DatasetListSchema},
     exclude_none=True,
-    auth=PermissionAuth('distributions.view_dataset')
+    auth=PermissionAuth("distributions.view_dataset"),
 )
-def datasets(request: HttpRequest,
-             lang: LanguageCode | None = None) -> dict[str, list[DatasetSchema]]:
+def datasets(
+    request: HttpRequest, lang: LanguageCode | None = None
+) -> dict[str, list[DatasetSchema]]:
     """
     Get all datasets.
 

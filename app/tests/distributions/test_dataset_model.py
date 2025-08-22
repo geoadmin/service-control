@@ -15,14 +15,16 @@ def test_object_created_in_db_with_all_fields_defined(provider, attribution):
     title_de = "Invasive gebietsfremde Pflanzen - Potentialkarte Haargurke"
     title_fr = "Plantes exotiques envahissantes - Carte de distribution potentiel Sicyos anguleux"
     title_en = "Invasive alien plants - map of the potential area Sicyos angulatus"
-    title_it = "Piante esotiche invasive - carte di distribuzione potenziale Sicios angoloso"
+    title_it = (
+        "Piante esotiche invasive - carte di distribuzione potenziale Sicios angoloso"
+    )
     title_rm = "Plantas exoticas invasivas - Charta da la derasaziun potenziala dal sichius angulus"
     description_de = "Beschreibung Haargurke"
     description_fr = "Description Sicyos anguleux"
     description_en = "Description Sicyos angulatus"
     description_it = "Descrizione Sicios angoloso"
     description_rm = "Descripziun Sicyos angulatus"
-    with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
+    with mock.patch("django.utils.timezone.now", mock.Mock(return_value=time_created)):
         Dataset.objects.create(
             dataset_id=dataset_id,
             geocat_id=geocat_id,
@@ -67,10 +69,10 @@ def test_object_created_in_db_with_all_fields_defined(provider, attribution):
 
 def test_field_created_matches_creation_time(provider, attribution):
     time_created = datetime.datetime(2024, 9, 12, 15, 28, 0, tzinfo=datetime.UTC)
-    with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_created)):
+    with mock.patch("django.utils.timezone.now", mock.Mock(return_value=time_created)):
         dataset = Dataset.objects.create(
-            dataset_id='xxxx',
-            geocat_id='xxxx',
+            dataset_id="xxxx",
+            geocat_id="xxxx",
             title_de="xxxx",
             title_fr="xxxx",
             title_en="xxxx",
@@ -85,8 +87,8 @@ def test_field_created_matches_creation_time(provider, attribution):
 
 def test_field_updated_matches_update_time(provider, attribution):
     dataset = Dataset.objects.create(
-        dataset_id='xxxx',
-        geocat_id='xxxx',
+        dataset_id="xxxx",
+        geocat_id="xxxx",
         title_de="xxxx",
         title_fr="xxxx",
         title_en="xxxx",
@@ -94,11 +96,11 @@ def test_field_updated_matches_update_time(provider, attribution):
         description_fr="xxxx",
         description_en="xxxx",
         provider=provider,
-        attribution=attribution
+        attribution=attribution,
     )
 
     time_updated = datetime.datetime(2024, 9, 12, 15, 42, 0, tzinfo=datetime.UTC)
-    with mock.patch('django.utils.timezone.now', mock.Mock(return_value=time_updated)):
+    with mock.patch("django.utils.timezone.now", mock.Mock(return_value=time_updated)):
         dataset.dataset_id = "ch.bafu.neophyten-goetterbaum"
         dataset.save()
 
@@ -106,6 +108,7 @@ def test_field_updated_matches_update_time(provider, attribution):
 
 
 def test_raises_exception_when_creating_db_object_with_mandatory_field_null(
-        provider, attribution):
+    provider, attribution
+):
     with raises(ValidationError):
         Dataset.objects.create(provider=provider, attribution=attribution)

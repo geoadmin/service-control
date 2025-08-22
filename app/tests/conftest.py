@@ -10,7 +10,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
 
-@fixture(name='provider')
+@fixture(name="provider")
 def fixture_provider(db):
     yield Provider.objects.create(
         provider_id="ch.bafu",
@@ -27,7 +27,7 @@ def fixture_provider(db):
     )
 
 
-@fixture(name='attribution')
+@fixture(name="attribution")
 def fixture_attribution(provider):
     yield Attribution.objects.create(
         attribution_id="ch.bafu.kt",
@@ -41,7 +41,7 @@ def fixture_attribution(provider):
         description_en="Federal Office for the Environment and cantons",
         description_it="Ufficio federale dell'ambiente e cantoni",
         description_rm="Uffizi federal per l'ambient e chantuns",
-        provider=provider
+        provider=provider,
     )
 
 
@@ -62,10 +62,14 @@ def django_user_factory(db):
     def create_user_with_permissions(
         username: str, password: str, permissions: list[tuple[str, str, str]]
     ) -> Any:
-        user = get_user_model().objects.create_user(username=username, password=password)
+        user = get_user_model().objects.create_user(
+            username=username, password=password
+        )
         for app_label, model, codename in permissions:
             content_type = ContentType.objects.get(app_label=app_label, model=model)
-            permission = Permission.objects.get(content_type=content_type, codename=codename)
+            permission = Permission.objects.get(
+                content_type=content_type, codename=codename
+            )
             user.user_permissions.add(permission)
         return user
 
@@ -74,7 +78,7 @@ def django_user_factory(db):
 
 @fixture
 def cognito_user_response_factory():
-    """ A fixture to create Cognito responses containing user data.
+    """A fixture to create Cognito responses containing user data.
 
     Returns a callable that accepts the following parameters:
     - username: The username of the user.
@@ -99,19 +103,19 @@ def cognito_user_response_factory():
     def create_cognito_user_response(
         username,
         preferred_username,
-        email='test@example.org',
+        email="test@example.org",
         enabled=True,
         managed=True,
-        attributes_key='Attributes'
+        attributes_key="Attributes",
     ):
-
-        attributes = [{
-            'Name': 'email', 'Value': email
-        }, {
-            'Name': 'preferred_username', 'Value': preferred_username
-        }]
+        attributes = [
+            {"Name": "email", "Value": email},
+            {"Name": "preferred_username", "Value": preferred_username},
+        ]
         if managed:
-            attributes.append({'Name': settings.COGNITO_MANAGED_FLAG_NAME, 'Value': 'true'})
-        return {'Username': username, attributes_key: attributes, 'Enabled': enabled}
+            attributes.append(
+                {"Name": settings.COGNITO_MANAGED_FLAG_NAME, "Value": "true"}
+            )
+        return {"Username": username, attributes_key: attributes, "Enabled": enabled}
 
     return create_cognito_user_response

@@ -11,27 +11,27 @@ from .models import PackageDistribution
 
 @admin.register(Attribution)
 class AttributionAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
-    '''Admin View for Attribution'''
+    """Admin View for Attribution"""
 
-    list_display = ('attribution_id', 'name_en', 'provider')
-    list_filter = (('provider', admin.RelatedOnlyFieldListFilter),)
-    readonly_fields = ('created', 'updated')
+    list_display = ("attribution_id", "name_en", "provider")
+    list_filter = (("provider", admin.RelatedOnlyFieldListFilter),)
+    readonly_fields = ("created", "updated")
 
 
 @admin.register(Dataset)
 class DatasetAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
-    '''Admin View for Dataset'''
+    """Admin View for Dataset"""
 
-    list_display = ('dataset_id', 'title_en', 'provider')
-    list_filter = (('provider', admin.RelatedOnlyFieldListFilter),)
-    readonly_fields = ('created', 'updated')
+    list_display = ("dataset_id", "title_en", "provider")
+    list_filter = (("provider", admin.RelatedOnlyFieldListFilter),)
+    readonly_fields = ("created", "updated")
 
     def get_form(
         self,
         request: HttpRequest,
         obj: Dataset | None = None,
         change: bool = False,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any:
         form = super().get_form(request, obj=obj, change=change, **kwargs)
         if obj is not None:
@@ -47,11 +47,11 @@ class DatasetAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
 
 @admin.register(PackageDistribution)
 class PackageDistributionAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
-    '''Admin View for Package Distribution'''
+    """Admin View for Package Distribution"""
 
-    list_display = ('package_distribution_id', 'managed_by_stac', 'dataset')
+    list_display = ("package_distribution_id", "managed_by_stac", "dataset")
     list_filter = (
-        'managed_by_stac',
-        ('dataset__provider', admin.RelatedOnlyFieldListFilter),
+        "managed_by_stac",
+        ("dataset__provider", admin.RelatedOnlyFieldListFilter),
     )
-    readonly_fields = ('created', 'updated')
+    readonly_fields = ("created", "updated")

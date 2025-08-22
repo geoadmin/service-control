@@ -9,7 +9,6 @@ from django.utils.translation import pgettext_lazy as _
 
 
 class Attribution(models.Model):
-
     _context = "Attribution Model"
 
     def __str__(self) -> str:
@@ -30,8 +29,12 @@ class Attribution(models.Model):
     description_de = models.CharField(_(_context, "Description (German)"))
     description_fr = models.CharField(_(_context, "Description (French)"))
     description_en = models.CharField(_(_context, "Description (English)"))
-    description_it = models.CharField(_(_context, "Description (Italian)"), null=True, blank=True)
-    description_rm = models.CharField(_(_context, "Description (Romansh)"), null=True, blank=True)
+    description_it = models.CharField(
+        _(_context, "Description (Italian)"), null=True, blank=True
+    )
+    description_rm = models.CharField(
+        _(_context, "Description (Romansh)"), null=True, blank=True
+    )
 
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
 
@@ -40,7 +43,7 @@ class Attribution(models.Model):
         null=True,
         blank=True,
         db_index=False,
-        help_text="This field is used to track objects imported from the BOD"
+        help_text="This field is used to track objects imported from the BOD",
     )
 
     def save(
@@ -49,27 +52,26 @@ class Attribution(models.Model):
         force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
         using: str | None = None,
-        update_fields: Iterable[str] | None = None
+        update_fields: Iterable[str] | None = None,
     ) -> None:
-
         self.full_clean()
         super().save(
             force_insert=force_insert,
             force_update=force_update,
             using=using,
-            update_fields=update_fields
+            update_fields=update_fields,
         )
 
 
 class Dataset(models.Model):
-
     _context = "Dataset Model"
 
     def __str__(self) -> str:
         return str(self.dataset_id)
 
-
-    dataset_id = CustomSlugField(_(_context, "External ID"), unique=True, max_length=100)
+    dataset_id = CustomSlugField(
+        _(_context, "External ID"), unique=True, max_length=100
+    )
     created = models.DateTimeField(_(_context, "Created"), auto_now_add=True)
     updated = models.DateTimeField(_(_context, "Updated"), auto_now=True)
 
@@ -81,8 +83,12 @@ class Dataset(models.Model):
     description_de = models.CharField(_(_context, "Description (German)"))
     description_fr = models.CharField(_(_context, "Description (French)"))
     description_en = models.CharField(_(_context, "Description (English)"))
-    description_it = models.CharField(_(_context, "Description (Italian)"), null=True, blank=True)
-    description_rm = models.CharField(_(_context, "Description (Romansh)"), null=True, blank=True)
+    description_it = models.CharField(
+        _(_context, "Description (Italian)"), null=True, blank=True
+    )
+    description_rm = models.CharField(
+        _(_context, "Description (Romansh)"), null=True, blank=True
+    )
 
     geocat_id = models.CharField(_(_context, "Geocat ID"), unique=True, max_length=100)
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
@@ -93,7 +99,7 @@ class Dataset(models.Model):
         null=True,
         blank=True,
         db_index=False,
-        help_text="This field is used to track objects imported from the BOD"
+        help_text="This field is used to track objects imported from the BOD",
     )
 
     def save(
@@ -102,20 +108,18 @@ class Dataset(models.Model):
         force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
         using: str | None = None,
-        update_fields: Iterable[str] | None = None
+        update_fields: Iterable[str] | None = None,
     ) -> None:
-
         self.full_clean()
         super().save(
             force_insert=force_insert,
             force_update=force_update,
             using=using,
-            update_fields=update_fields
+            update_fields=update_fields,
         )
 
 
 class PackageDistribution(models.Model):
-
     _context = "Package Distribution Model"
 
     def __str__(self) -> str:
@@ -132,7 +136,7 @@ class PackageDistribution(models.Model):
         _(_context, "Legacy Imported"),
         db_index=False,
         default=False,
-        help_text="This field is used to track objects imported from STAC"
+        help_text="This field is used to track objects imported from STAC",
     )
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
@@ -143,13 +147,12 @@ class PackageDistribution(models.Model):
         force_insert: bool | tuple[ModelBase, ...] = False,
         force_update: bool = False,
         using: str | None = None,
-        update_fields: Iterable[str] | None = None
+        update_fields: Iterable[str] | None = None,
     ) -> None:
-
         self.full_clean()
         super().save(
             force_insert=force_insert,
             force_update=force_update,
             using=using,
-            update_fields=update_fields
+            update_fields=update_fields,
         )

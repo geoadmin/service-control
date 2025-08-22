@@ -5,24 +5,23 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0012_dataset_geocat_id'),
+        ("distributions", "0012_dataset_geocat_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='packagedistribution',
-            name='_legacy_imported',
+            model_name="packagedistribution",
+            name="_legacy_imported",
             field=models.BooleanField(
                 default=False,
-                help_text='This field is used to track objects imported from STAC',
-                verbose_name='Legacy Imported'
+                help_text="This field is used to track objects imported from STAC",
+                verbose_name="Legacy Imported",
             ),
         ),
         migrations.AlterField(
-            model_name='packagedistribution',
-            name='managed_by_stac',
-            field=models.BooleanField(verbose_name='Managed by STAC'),
+            model_name="packagedistribution",
+            name="managed_by_stac",
+            field=models.BooleanField(verbose_name="Managed by STAC"),
         ),
     ]

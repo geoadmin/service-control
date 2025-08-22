@@ -6,20 +6,23 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0008_attribution_slug'),
+        ("distributions", "0008_attribution_slug"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='dataset',
-            name='slug',
-            field=utils.fields.CustomSlugField(max_length=100, unique=True, verbose_name='Slug'),
+            model_name="dataset",
+            name="slug",
+            field=utils.fields.CustomSlugField(
+                max_length=100, unique=True, verbose_name="Slug"
+            ),
         ),
         migrations.AlterField(
-            model_name='packagedistribution',
-            name='slug',
-            field=utils.fields.CustomSlugField(max_length=100, unique=True, verbose_name='Slug'),
+            model_name="packagedistribution",
+            name="slug",
+            field=utils.fields.CustomSlugField(
+                max_length=100, unique=True, verbose_name="Slug"
+            ),
         ),
     ]

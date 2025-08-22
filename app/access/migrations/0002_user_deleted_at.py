@@ -5,15 +5,16 @@ from django.db import models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('access', '0001_initial'),
+        ("access", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='deleted_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='deleted at'),
+            model_name="user",
+            name="deleted_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="deleted at"
+            ),
         ),
     ]

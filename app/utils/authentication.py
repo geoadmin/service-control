@@ -7,7 +7,7 @@ from django.http import HttpRequest
 
 
 class PermissionAuth(SessionAuth):
-    """ Ninja authentication that extends the session authentication with permission checks. """
+    """Ninja authentication that extends the session authentication with permission checks."""
 
     def __init__(self, permission: str, csrf: bool = True) -> None:
         super().__init__(csrf)

@@ -4,18 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('distributions', '0002_dataset'),
+        ("distributions", "0002_dataset"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='attribution',
+            name="attribution",
             options={},
         ),
         migrations.AlterModelOptions(
-            name='dataset',
+            name="dataset",
             options={},
         ),
     ]
