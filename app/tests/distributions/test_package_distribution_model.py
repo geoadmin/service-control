@@ -41,6 +41,7 @@ def test_create_package_distribution_in_database(dataset):
     assert distribution.dataset == dataset
 
 
-def test_raises_exception_when_creating_db_object_with_mandatory_field_null(dataset):
-    with raises(ValidationError) as e:
+def test_raises_exception_when_creating_db_object_with_mandatory_field_null(
+        dataset):
+    with raises(ValidationError):
         PackageDistribution.objects.create(dataset=dataset)
