@@ -105,6 +105,7 @@ def test_field_updated_matches_update_time(provider, attribution):
     assert dataset.updated == time_updated
 
 
-def test_raises_exception_when_creating_db_object_with_mandatory_field_null(provider, attribution):
-    with raises(ValidationError) as e:
+def test_raises_exception_when_creating_db_object_with_mandatory_field_null(
+        provider, attribution):
+    with raises(ValidationError):
         Dataset.objects.create(provider=provider, attribution=attribution)

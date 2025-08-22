@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# ruff: noqa: E402
 """
 The gevent monkey import and patch suppress a warning, and a potential problem.
 Gunicorn would call it anyway, but if it tries to call it after the ssl module
@@ -27,7 +28,7 @@ It exposes the WSGI callable as a module-level variable named ``application``.
 For more information on this file, see
 https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
 """
-import os
+import os  # noqa
 
 from gunicorn.app.base import BaseApplication
 from gunicorn.config import Config
