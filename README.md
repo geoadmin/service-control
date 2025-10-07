@@ -23,6 +23,7 @@
 - [Type Checking](#type-checking)
   - [Mypy](#mypy)
   - [Library Types](#library-types)
+- [Deployment configuration](#deployment-configuration)
 
 ## Summary Of The Project
 
@@ -230,3 +231,34 @@ to work. Some of them can be found in [typeshed](https://github.com/python/types
 packages exist, as is the case with [django-stubs](https://pypi.org/project/django-stubs/).
 
 If there aren't any type hints available, they can also be auto-generated with [stubgen](https://mypy.readthedocs.io/en/stable/stubgen.html)
+
+## Deployment configuration
+
+| **Environment Variable**    | **Default**                                   | **Description**                                                                                                                      |
+| --------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `SECRET_KEY`                | `None`                                        | Django secret key       |
+| `ALLOWED_HOSTS`             | `[]`                                          | list of host/domain names allowed to serve the app.  |
+| `DB_NAME`                   | `service_control`                             | Name of the primary PostgreSQL database.                                                                                             |
+| `DB_USER`                   | `service_control`                             | Username for the primary PostgreSQL database.                                                                                        |
+| `DB_PW`                     | `service_control`                             | Password for the primary PostgreSQL database.                                                                                        |
+| `DB_HOST`                   | `service_control`                             | Host address for the primary PostgreSQL database.                                                                                    |
+| `DB_PORT`                   | `5432`                                        | Port number for the primary PostgreSQL database.                                                                                     |
+| `DB_NAME_TEST`              | `test_service_control`                        | Name of the PostgreSQL database used for testing.                                                                                    |
+| `BOD_NAME`                  | `service_control`                             | Name of the secondary (bod) PostgreSQL database.                                                                                   |
+| `BOD_USER`                  | `service_control`                             | Username for the bod PostgreSQL database.                                                                                          |
+| `BOD_PW`                    | `service_control`                             | Password for the bod PostgreSQL database.                                                                                          |
+| `BOD_HOST`                  | `service_control`                             | Host address for the bod PostgreSQL database.                                                                                      |
+| `BOD_PORT`                  | `5432`                                        | Port number for the bod PostgreSQL database.                                                                                       |
+| `DJANGO_STATIC_HOST`        | `''`                                          | Optional base URL |
+| `COGNITO_ENDPOINT_URL`      | `http://localhost:9229`                       | Base URL for AWS Cognito endpoint or local mock.                                                                                     |
+| `COGNITO_POOL_ID`           | `local`                                       | Cognito user pool ID used for authentication.                                                                                        |
+| `COGNITO_MANAGED_FLAG_NAME` | `dev:custom:managed_by_service`               | Cognito custom attribute name for service-managed users.                                                                             |
+| `SHORT_ID_SIZE`             | `12`                                          | Default length of generated short IDs (nanoid).                                                                                      |
+| `SHORT_ID_ALPHABET`         | `0123456789abcdefghijklmnopqrstuvwxyz`        | Character set used for nanoid short IDs.|
+| `LOGGING_CFG`               | `config/logging-cfg-local.yaml`               | Path to YAML logging configuration file.                                                                     |
+| `LOG_ALLOWED_HEADERS`       | List of default headers                       | list of HTTP headers allowed in logs (overrides defaults).                                                           |
+| `HTTP_PORT`                 | `8000`                                        | Port on which the Gunicorn/Django app will listen.                                                                                   |
+| `GUNICORN_WORKERS`          | `2`                                           | Number of worker processes Gunicorn will start.                                                                                      |
+| `GUNICORN_WORKER_TMP_DIR`   | `None`                                        | Optional temporary directory for Gunicorn worker processes.                                                                          |
+| `GUNICORN_KEEPALIVE`        | `2`                                           | The [`keepalive`](https://docs.gunicorn.org/en/stable/settings.html#keepalive) setting for persistent HTTP connections (in seconds). |
+| `GUNICORN_TIMEOUT`          | Not explicitely set | The maximum time (in seconds) a worker can handle a request before timing out.                                                       |
