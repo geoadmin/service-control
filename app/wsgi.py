@@ -74,6 +74,7 @@ if __name__ == '__main__':
         'workers': int(os.environ.get('GUNICORN_WORKERS',
                                       '2')),  # scaling horizontally is left to Kubernetes
         'worker_tmp_dir': os.environ.get('GUNICORN_WORKER_TMP_DIR', None),
+        'keepalive': int(os.environ.get('GUNICORN_KEEPALIVE', '2')),
         'timeout': 60,
         'logconfig_dict': get_logging_config()
     }
