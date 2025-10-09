@@ -19,6 +19,7 @@ ecs-logging = "~=2.2"
 beautifulsoup4 = "~=4.13"
 requests = "~=2.32"
 logging-utilities = "~=5.0"
+pydantic = "<2.12"  # https://github.com/vitalik/django-ninja/issues/1557, remove whole line once resolved
 
 [dev-packages]
 yapf = "*"
