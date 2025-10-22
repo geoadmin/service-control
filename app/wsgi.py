@@ -60,7 +60,7 @@ class StandaloneApplication(BaseApplication):  # pylint: disable=abstract-method
         for key, value in config.items():
             self.cfg.set(key.lower(), value)
 
-    def load(self) -> WSGIHandler:
+    def load(self) -> WSGIHandler:  # type:ignore[override]
         return self.application
 
 
@@ -78,4 +78,4 @@ if __name__ == '__main__':
         'timeout': 60,
         'logconfig_dict': get_logging_config()
     }
-    StandaloneApplication(application, options).run()  # type:ignore[no-untyped-call]
+    StandaloneApplication(application, options).run()
