@@ -44,6 +44,7 @@ pytest-cov = "*"
 types-nanoid = "~=2.0"
 types-gevent = "~=25.4"
 types-requests = "~=2.32"
+types-gunicorn = "~=23.0"
 
 [requires]
 python_version = "3.12"
