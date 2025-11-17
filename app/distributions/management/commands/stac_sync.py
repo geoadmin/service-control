@@ -35,6 +35,7 @@ class Handler(CommandHandler):
         self.endpoint = options['endpoint']
         self.default_dataset = options['default_dataset']
         self.create_default_dataset = not options['no_create_default_dataset']
+        self.skip_unmanaged_collections = options['skip_unmanaged_collections']
         self.counts: dict[str, Counter] = {}
 
     def increment_counter(self, model_name: str, operation: Operation, value: int = 1) -> None:
@@ -172,29 +173,30 @@ class Handler(CommandHandler):
             processed.add(collection_id)
 
         # Get unmanaged collections from the HTML root
-        response = get(self.url, timeout=60)
-        element = BeautifulSoup(response.text, 'html.parser').find('div', id="data")
-        if not element:
-            raise ValueError(f"Error parsing {self.url}")
+        if not self.skip_unmanaged_collections:
+            response = get(self.url, timeout=60)
+            element = BeautifulSoup(response.text, 'html.parser').find('div', id="data")
+            if not element:
+                raise ValueError(f"Error parsing {self.url}")
 
-        for line in split(r'\r?\n', element.text.strip()):
-            line = line.strip()
-            if not line:
-                continue
+            for line in split(r'\r?\n', element.text.strip()):
+                line = line.strip()
+                if not line:
+                    continue
 
-            values = line.split(' ')
-            if len(values) == 0:
-                continue
+                values = line.split(' ')
+                if len(values) == 0:
+                    continue
 
-            collection_id = values[0]
-            if collection_id in processed:
-                continue
+                collection_id = values[0]
+                if collection_id in processed:
+                    continue
 
-            dataset = self.update_package_distribution(collection_id, False)
-            if not dataset:
-                continue
+                dataset = self.update_package_distribution(collection_id, False)
+                if not dataset:
+                    continue
 
-            processed.add(collection_id)
+                processed.add(collection_id)
 
         # Remove orphaned package distributions
         orphans = PackageDistribution.objects.filter(
@@ -289,6 +291,12 @@ class Command(CustomBaseCommand):
             "--no-create-default-dataset",
             action="store_true",
             help="Do not create the default dataset if needed"
+        )
+        parser.add_argument(
+            "--skip-unmanaged-collections",
+            action="store_true",
+            help=
+            "Skip the sync with unmanaged collections (legacy web page at data.geo.admin.ch root)"
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
