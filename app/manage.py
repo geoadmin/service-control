@@ -3,6 +3,8 @@
 import os
 import sys
 
+from utils.logging import redirect_std_to_logger
+
 
 def main() -> None:
     """Run administrative tasks."""
@@ -21,4 +23,9 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    if '--redirect-std-to-logger' in sys.argv:
+        sys.argv.remove('--redirect-std-to-logger')
+        with redirect_std_to_logger(__name__):
+            main()
+    else:
+        main()
