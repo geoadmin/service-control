@@ -19,7 +19,6 @@ ecs-logging = "~=2.2"
 beautifulsoup4 = "~=4.13"
 requests = "~=2.32"
 logging-utilities = "~=5.0"
-pydantic = "<2.12"  # https://github.com/vitalik/django-ninja/issues/1557, remove whole line once resolved
 
 [dev-packages]
 yapf = "*"
@@ -37,7 +36,7 @@ pytest-django = "*"
 mypy = "*"
 debugpy = "*"
 bandit = "*"
-django-stubs = "~=5.1"
+django-stubs = "~=5.2"
 boto3-stubs = {extras = ["cognito-idp"], version = "~=1.37"}
 pytest-xdist = "*"
 pytest-cov = "*"
