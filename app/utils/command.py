@@ -54,7 +54,7 @@ class CommandHandler():
     def print_warning(self, message: str, *args: Any, level: int = 1, **kwargs: Any) -> None:
         if self.verbosity >= level:
             if self.use_logger:
-                self.logger.warning(self.style.WARNING(message % (args)), **kwargs)
+                self.logger.warning(message, *args, **kwargs)
             else:
                 if len(kwargs) > 0:
                     message = message + " " + ", ".join(
@@ -65,7 +65,7 @@ class CommandHandler():
     def print_success(self, message: str, *args: Any, level: int = 1, **kwargs: Any) -> None:
         if self.verbosity >= level:
             if self.use_logger:
-                self.logger.info(self.style.SUCCESS(message % (args)), **kwargs)
+                self.logger.info(message, *args, **kwargs)
             else:
                 if len(kwargs) > 0:
                     message = message + " " + ", ".join(
@@ -75,7 +75,7 @@ class CommandHandler():
 
     def print_error(self, message: str, *args: Any, **kwargs: Any) -> None:
         if self.use_logger:
-            self.logger.error(self.style.ERROR(message % (args)), **kwargs)
+            self.logger.error(message, *args, **kwargs)
         else:
             if len(kwargs) > 0:
                 message = message + "\n" + ", ".join(

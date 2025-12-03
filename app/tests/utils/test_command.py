@@ -185,12 +185,12 @@ def test_print_to_log_args_kwargs():
     assert call.info('Print %s', 'JohnDoe') in calls
     assert call.info('Print', extra={'n': 'JohnDoe'}) in calls
     assert call.info('Print %s', 'John', extra={'n': 'Doe'}) in calls
-    assert call.info('Success JohnDoe') in calls
+    assert call.info('Success %s', 'JohnDoe') in calls
     assert call.info('Success', extra={'n': 'JohnDoe'}) in calls
-    assert call.info('Success John', extra={'n': 'Doe'}) in calls
-    assert call.warning('Warning JohnDoe') in calls
+    assert call.info('Success %s', 'John', extra={'n': 'Doe'}) in calls
+    assert call.warning('Warning %s', 'JohnDoe') in calls
     assert call.warning('Warning', extra={'n': 'JohnDoe'}) in calls
-    assert call.warning('Warning John', extra={'n': 'Doe'}) in calls
-    assert call.error('Error JohnDoe') in calls
+    assert call.warning('Warning %s', 'John', extra={'n': 'Doe'}) in calls
+    assert call.error('Error %s', 'JohnDoe') in calls
     assert call.error('Error', extra={'n': 'JohnDoe'}) in calls
-    assert call.error('Error John', extra={'n': 'Doe'}) in calls
+    assert call.error('Error %s', 'John', extra={'n': 'Doe'}) in calls
