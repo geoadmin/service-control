@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 from typing import Any
+from typing import TextIO
 
 from access.models import User
 from cognito.utils.client import Client
 from cognito.utils.client import user_attributes_to_dict
-from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
 from django.core.management.base import CommandParser
@@ -13,14 +13,32 @@ if TYPE_CHECKING:
     from mypy_boto3_cognito_idp.type_defs import UserTypeTypeDef
 
 
-class Handler(CommandHandler):
+class Command(CustomBaseCommand):
+    help = "Synchronizes local users with cognito"
 
-    def __init__(self, command: CustomBaseCommand, options: dict[str, Any]) -> None:
-        super().__init__(command, options)
-        self.clear = options['clear']
-        self.dry_run = options['dry_run']
+    def __init__(
+        self,
+        stdout: TextIO | None = None,
+        stderr: TextIO | None = None,
+        no_color: bool = False,
+        force_color: bool = False
+    ):
+        super().__init__(stdout, stderr, no_color, force_color)
         self.client = Client()
         self.counts = {'added': 0, 'deleted': 0, 'updated': 0, 'enabled': 0, 'disabled': 0}
+
+    def add_arguments(self, parser: CommandParser) -> None:
+        super().add_arguments(parser)
+        parser.add_argument(
+            '--clear',
+            action='store_true',
+            help='Delete existing users in cognito before synchronizing',
+        )
+        parser.add_argument(
+            '--dry-run',
+            action='store_true',
+            help='Dry run, abort transaction in the end',
+        )
 
     def clear_users(self) -> None:
         """ Remove all existing cognito users. """
@@ -29,7 +47,7 @@ class Handler(CommandHandler):
             self.counts['deleted'] += 1
             user_id = user['Username']
             self.print(f'deleting user {user_id}')
-            if not self.dry_run:
+            if not self.options['dry_run']:
                 deleted = self.client.delete_user(user_id)
                 if not deleted:
                     self.print_error(
@@ -41,7 +59,7 @@ class Handler(CommandHandler):
 
         self.counts['added'] += 1
         self.print(f'adding user {user.user_id}')
-        if not self.dry_run:
+        if not self.options['dry_run']:
             created = self.client.create_user(user.user_id, user.username, user.email)
             if not created:
                 self.print_error(
@@ -53,7 +71,7 @@ class Handler(CommandHandler):
 
         self.counts['deleted'] += 1
         self.print(f'deleting user {user_id}')
-        if not self.dry_run:
+        if not self.options['dry_run']:
             deleted = self.client.delete_user(user_id)
             if not deleted:
                 self.print_error(
@@ -71,7 +89,7 @@ class Handler(CommandHandler):
         if changed:
             self.counts['updated'] += 1
             self.print(f'updating user {local_user.user_id}')
-            if not self.dry_run:
+            if not self.options['dry_run']:
                 updated = self.client.update_user(
                     local_user.user_id, local_user.username, local_user.email
                 )
@@ -85,14 +103,14 @@ class Handler(CommandHandler):
             if local_user.is_active:
                 self.counts['enabled'] += 1
                 self.print(f'enabling user {local_user.user_id}')
-                if not self.dry_run:
+                if not self.options['dry_run']:
                     enabled = self.client.enable_user(local_user.user_id)
                     if not enabled:
                         self.print_error('Could not enable %s', local_user.user_id)
             else:
                 self.counts['disabled'] += 1
                 self.print(f'disabling user {local_user.user_id}')
-                if not self.dry_run:
+                if not self.options['dry_run']:
                     disabled = self.client.disable_user(local_user.user_id)
                     if not disabled:
                         self.print_error('Could not disable %s', local_user.user_id)
@@ -115,11 +133,11 @@ class Handler(CommandHandler):
         for user_id in local_user_ids.intersection(remote_user_ids):
             self.update_user(local_users[user_id], remote_users[user_id])
 
-    def run(self) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         """ Main entry point of command. """
 
         # Clear data
-        if self.clear:
+        if self.options['clear']:
             self.print_warning('This action will delete all managed users from cognito', level=0)
             confirm = input('are you sure you want to proceed? [yes/no]: ')
             if confirm.lower() != 'yes':
@@ -139,25 +157,5 @@ class Handler(CommandHandler):
         if not printed:
             self.print_success('nothing to be done')
 
-        if self.dry_run:
+        if self.options['dry_run']:
             self.print_warning('dry run, nothing has been done')
-
-
-class Command(CustomBaseCommand):
-    help = "Synchronizes local users with cognito"
-
-    def add_arguments(self, parser: CommandParser) -> None:
-        super().add_arguments(parser)
-        parser.add_argument(
-            '--clear',
-            action='store_true',
-            help='Delete existing users in cognito before synchronizing',
-        )
-        parser.add_argument(
-            '--dry-run',
-            action='store_true',
-            help='Dry run, abort transaction in the end',
-        )
-
-    def handle(self, *args: Any, **options: Any) -> None:
-        Handler(self, options).run()

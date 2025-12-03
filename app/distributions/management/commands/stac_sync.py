@@ -2,6 +2,7 @@ from difflib import SequenceMatcher
 from re import split
 from typing import Any
 from typing import Literal
+from typing import TextIO
 from typing import TypedDict
 from typing import cast
 from urllib.parse import urljoin
@@ -14,7 +15,6 @@ from provider.models import Provider
 from pystac.collection import Collection
 from pystac_client import Client
 from requests import get
-from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
 from django.core.management.base import CommandParser
@@ -24,19 +24,52 @@ Counter = TypedDict('Counter', {'added': int, 'cleared': int, 'removed': int, 'u
 Operation = Literal['added', 'cleared', 'removed', 'updated']
 
 
-class Handler(CommandHandler):
+class Command(CustomBaseCommand):
+    help = "Harvests data from STAC"
 
-    def __init__(self, command: CustomBaseCommand, options: dict['str', Any]):
-        super().__init__(command, options)
-        self.clear = options['clear']
-        self.dry_run = options['dry_run']
-        self.similarity = options['similarity']
-        self.url = options['url']
-        self.endpoint = options['endpoint']
-        self.default_dataset = options['default_dataset']
-        self.create_default_dataset = not options['no_create_default_dataset']
-        self.skip_unmanaged_collections = options['skip_unmanaged_collections']
+    def __init__(
+        self,
+        stdout: TextIO | None = None,
+        stderr: TextIO | None = None,
+        no_color: bool = False,
+        force_color: bool = False
+    ):
+        super().__init__(stdout, stderr, no_color, force_color)
         self.counts: dict[str, Counter] = {}
+
+    def add_arguments(self, parser: CommandParser) -> None:
+        super().add_arguments(parser)
+        parser.add_argument(
+            "--clear", action="store_true", help="Delete existing objects before importing"
+        )
+        parser.add_argument(
+            "--dry-run", action="store_true", help="Dry run, abort transaction in the end"
+        )
+        parser.add_argument(
+            "--similarity",
+            type=float,
+            default=1.0,
+            help="Similarity threshold to use when comparing providers"
+        )
+        parser.add_argument("--url", type=str, default="https://data.geo.admin.ch", help="STAC URL")
+        parser.add_argument("--endpoint", type=str, default="/api/stac/v1", help="STAC endpoint")
+        parser.add_argument(
+            "--default-dataset",
+            type=str,
+            default="",
+            help="Add packages with missing dataset to this dataset"
+        )
+        parser.add_argument(
+            "--no-create-default-dataset",
+            action="store_true",
+            help="Do not create the default dataset if needed"
+        )
+        parser.add_argument(
+            "--skip-unmanaged-collections",
+            action="store_true",
+            help=
+            "Skip the sync with unmanaged collections (legacy web page at data.geo.admin.ch root)"
+        )
 
     def increment_counter(self, model_name: str, operation: Operation, value: int = 1) -> None:
         """ Updates internal counters of operations on models. """
@@ -59,16 +92,16 @@ class Handler(CommandHandler):
         """
 
         if (
-            not self.create_default_dataset or not self.default_dataset or
-            Dataset.objects.filter(dataset_id=self.default_dataset).first()
+            self.options['no_create_default_dataset'] or not self.options['default_dataset'] or
+            Dataset.objects.filter(dataset_id=self.options['default_dataset']).first()
         ):
             return
 
-        provider = Provider.objects.filter(provider_id=self.default_dataset).first()
+        provider = Provider.objects.filter(provider_id=self.options['default_dataset']).first()
         if not provider:
-            self.print(f"Added provider '{self.default_dataset}' for default dataset")
+            self.print(f"Added provider '{self.options['default_dataset']}' for default dataset")
             provider = Provider.objects.create(
-                provider_id=self.default_dataset,
+                provider_id=self.options['default_dataset'],
                 name_de="#Missing",
                 name_fr="#Missing",
                 name_en="#Missing",
@@ -77,11 +110,12 @@ class Handler(CommandHandler):
                 acronym_en="#Missing",
             )
 
-        attribution = Attribution.objects.filter(attribution_id=self.default_dataset).first()
+        attribution = Attribution.objects.filter(attribution_id=self.options['default_dataset']
+                                                ).first()
         if not attribution:
-            self.print(f"Added attribution '{self.default_dataset}' for default dataset")
+            self.print(f"Added attribution '{self.options['default_dataset']}' for default dataset")
             attribution = Attribution.objects.create(
-                attribution_id=self.default_dataset,
+                attribution_id=self.options['default_dataset'],
                 name_de="#Missing",
                 name_fr="#Missing",
                 name_en="#Missing",
@@ -91,9 +125,9 @@ class Handler(CommandHandler):
                 provider=provider
             )
 
-        self.print(f"Added default dataset '{self.default_dataset}'")
+        self.print(f"Added default dataset '{self.options['default_dataset']}'")
         Dataset.objects.create(
-            dataset_id=self.default_dataset,
+            dataset_id=self.options['default_dataset'],
             title_de="#Missing",
             title_fr="#Missing",
             title_en="#Missing",
@@ -114,12 +148,14 @@ class Handler(CommandHandler):
         # Get dataset
         dataset = (
             Dataset.objects.filter(dataset_id=collection_id).first() or
-            Dataset.objects.filter(dataset_id=self.default_dataset).first()
+            Dataset.objects.filter(dataset_id=self.options['default_dataset']).first()
         )
         if not dataset:
             self.print_warning("No dataset for collection id '%s'", collection_id)
-            if self.default_dataset:
-                self.print_warning("Default dataset '%s' does not exist", self.default_dataset)
+            if self.options['default_dataset']:
+                self.print_warning(
+                    "Default dataset '%s' does not exist", self.options['default_dataset']
+                )
             return None
 
         # Get or create package distribution
@@ -161,7 +197,7 @@ class Handler(CommandHandler):
         processed = set()
 
         # Get managed collections from STAC API
-        client = Client.open(urljoin(self.url, self.endpoint))
+        client = Client.open(urljoin(self.options['url'], self.options['endpoint']))
         for collection in client.collection_search().collections():
             collection_id = collection.id
 
@@ -173,11 +209,11 @@ class Handler(CommandHandler):
             processed.add(collection_id)
 
         # Get unmanaged collections from the HTML root
-        if not self.skip_unmanaged_collections:
-            response = get(self.url, timeout=60)
+        if not self.options['skip_unmanaged_collections']:
+            response = get(self.options['url'], timeout=60)
             element = BeautifulSoup(response.text, 'html.parser').find('div', id="data")
             if not element:
-                raise ValueError(f"Error parsing {self.url}")
+                raise ValueError(f"Error parsing {self.options['url']}")
 
             for line in split(r'\r?\n', element.text.strip()):
                 line = line.strip()
@@ -225,7 +261,7 @@ class Handler(CommandHandler):
             name_dataset = dataset.provider.name_en
             if name_dataset != name_collection:
                 similarity = SequenceMatcher(None, name_collection, name_dataset).ratio()
-                if similarity < self.similarity:
+                if similarity < self.options['similarity']:
                     self.print_warning(
                         "Provider in collection and dataset differ (%.2f): '%s' / '%s'",
                         similarity,
@@ -233,12 +269,12 @@ class Handler(CommandHandler):
                         name_dataset
                     )
 
-    def run(self) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         """ Main entry point of command. """
 
         with transaction.atomic():
             # Clear data
-            if self.clear:
+            if options['clear']:
                 self.clear_package_distributions()
 
             # Import data
@@ -257,47 +293,6 @@ class Handler(CommandHandler):
                 self.print_success("nothing to be done, already up to date")
 
             # Abort if dry run
-            if self.dry_run:
+            if options['dry_run']:
                 self.print_warning("dry run, aborting transaction")
                 transaction.set_rollback(True)
-
-
-class Command(CustomBaseCommand):
-    help = "Harvests data from STAC"
-
-    def add_arguments(self, parser: CommandParser) -> None:
-        super().add_arguments(parser)
-        parser.add_argument(
-            "--clear", action="store_true", help="Delete existing objects before importing"
-        )
-        parser.add_argument(
-            "--dry-run", action="store_true", help="Dry run, abort transaction in the end"
-        )
-        parser.add_argument(
-            "--similarity",
-            type=float,
-            default=1.0,
-            help="Similarity threshold to use when comparing providers"
-        )
-        parser.add_argument("--url", type=str, default="https://data.geo.admin.ch", help="STAC URL")
-        parser.add_argument("--endpoint", type=str, default="/api/stac/v1", help="STAC endpoint")
-        parser.add_argument(
-            "--default-dataset",
-            type=str,
-            default="",
-            help="Add packages with missing dataset to this dataset"
-        )
-        parser.add_argument(
-            "--no-create-default-dataset",
-            action="store_true",
-            help="Do not create the default dataset if needed"
-        )
-        parser.add_argument(
-            "--skip-unmanaged-collections",
-            action="store_true",
-            help=
-            "Skip the sync with unmanaged collections (legacy web page at data.geo.admin.ch root)"
-        )
-
-    def handle(self, *args: Any, **options: Any) -> None:
-        Handler(self, options).run()
