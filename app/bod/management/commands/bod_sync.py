@@ -1,5 +1,6 @@
 from typing import Any
 from typing import Literal
+from typing import TextIO
 from typing import TypedDict
 from typing import cast
 
@@ -10,7 +11,6 @@ from bod.models import BodTranslations
 from distributions.models import Attribution
 from distributions.models import Dataset
 from provider.models import Provider
-from utils.command import CommandHandler
 from utils.command import CustomBaseCommand
 
 from django.core.management.base import CommandParser
@@ -20,16 +20,46 @@ Counter = TypedDict('Counter', {'added': int, 'cleared': int, 'removed': int, 'u
 Operation = Literal['added', 'cleared', 'removed', 'updated']
 
 
-class Handler(CommandHandler):
+class Command(CustomBaseCommand):
+    help = "Migrates data from a BOD"
 
-    def __init__(self, command: CustomBaseCommand, options: dict['str', Any]):
-        super().__init__(command, options)
-        self.clear = options["clear"]
-        self.dry_run = options["dry_run"]
-        self.include_attributions = options["attributions"]
-        self.include_providers = options["providers"]
-        self.include_datasets = options["datasets"]
+    def __init__(
+        self,
+        stdout: TextIO | None = None,
+        stderr: TextIO | None = None,
+        no_color: bool = False,
+        force_color: bool = False
+    ):
+        super().__init__(stdout, stderr, no_color, force_color)
         self.counts: dict[str, Counter] = {}
+
+    def add_arguments(self, parser: CommandParser) -> None:
+        super().add_arguments(parser)
+        parser.add_argument(
+            "--clear",
+            action="store_true",
+            help="Delete existing objects before importing",
+        )
+        parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="Dry run, abort transaction in the end",
+        )
+        parser.add_argument(
+            "--providers",
+            action="store_true",
+            help="Import providers",
+        )
+        parser.add_argument(
+            "--attributions",
+            action="store_true",
+            help="Import attributions",
+        )
+        parser.add_argument(
+            "--datasets",
+            action="store_true",
+            help="Import datasets",
+        )
 
     def increment_counter(self, model_name: str, operation: Operation, value: int = 1) -> None:
         """ Updates internal counters of operations on models. """
@@ -376,26 +406,24 @@ class Handler(CommandHandler):
         if any_changed and not is_new_model:
             self.increment_counter('dataset', 'updated')
 
-    def run(self) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         """ Main entry point of command. """
 
         with transaction.atomic():
-            # Clear data
-            if self.clear:
+            if options['clear']:
                 self.clear_providers()
-            # Import data
-            if self.include_providers:
+            if options['providers']:
                 self.import_providers()
-            if self.include_attributions:
+            if options['attributions']:
                 self.import_attribution()
-            if self.include_datasets:
+            if options['datasets']:
                 self.import_datasets()
 
             # Print counts
             printed = False
             if (
-                not self.clear and not self.include_providers and not self.include_attributions and
-                not self.include_datasets
+                not options['clear'] and not options['providers'] and
+                not options['attributions'] and not options['datasets']
             ):
                 printed = True
                 self.print_warning("no option provided, nothing changed")
@@ -409,41 +437,6 @@ class Handler(CommandHandler):
                 self.print_success("nothing to be done, already in sync")
 
             # Abort if dry run
-            if self.dry_run:
+            if options['dry_run']:
                 self.print_warning("dry run, aborting transaction")
                 transaction.set_rollback(True)
-
-
-class Command(CustomBaseCommand):
-    help = "Migrates data from a BOD"
-
-    def add_arguments(self, parser: CommandParser) -> None:
-        super().add_arguments(parser)
-        parser.add_argument(
-            "--clear",
-            action="store_true",
-            help="Delete existing objects before importing",
-        )
-        parser.add_argument(
-            "--dry-run",
-            action="store_true",
-            help="Dry run, abort transaction in the end",
-        )
-        parser.add_argument(
-            "--providers",
-            action="store_true",
-            help="Import providers",
-        )
-        parser.add_argument(
-            "--attributions",
-            action="store_true",
-            help="Import attributions",
-        )
-        parser.add_argument(
-            "--datasets",
-            action="store_true",
-            help="Import datasets",
-        )
-
-    def handle(self, *args: Any, **options: Any) -> None:
-        Handler(self, options).run()
