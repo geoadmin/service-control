@@ -175,7 +175,7 @@ def test_logging_middleware_logs(logger, time, rf):
         '/some-url/',
         encoded,
         extra={
-            'request': request, 'request.query': encoded, 'request.payload': '{"foo'
+            'request.request': request, 'request.query': encoded, 'request.payload': '{"foo'
         }
     )
 
@@ -217,7 +217,7 @@ def test_logging_middleware_skips_content_types(logger, time, rf):
         '/some-url/',
         '',
         extra={
-            'request': request, 'request.query': ''
+            'request.request': request, 'request.query': ''
         }
     )
 

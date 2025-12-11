@@ -137,7 +137,7 @@ class RequestResponseLoggingMiddleware:
         # Code to be executed for each request before the view (and later middlewares) are called.
         method = (request.method or '').upper()
         extra: dict[str, Any] = {
-            "request": request, "request.query": request.GET.urlencode(self.url_safe)
+            "request.request": request, "request.query": request.GET.urlencode(self.url_safe)
         }
         add_payload = (
             method in ("PATCH", "POST", "PUT") and request.content_type == "application/json"
