@@ -54,6 +54,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Middleware to add request to thread variables, this should be far up in the chain so request
+    # information can be added to as many logs as possible.
+    'logging_utilities.django_middlewares.add_request_context.AddToThreadContextMiddleware',
+    'config.logging.RequestResponseLoggingMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -184,6 +188,8 @@ def get_logging_config() -> dict[str, object]:
 
 
 LOGGING = get_logging_config()
+LOGGING_MAX_REQUEST_PAYLOAD_SIZE = env.int('LOGGING_MAX_REQUEST_PAYLOAD_SIZE', default=200)
+LOGGING_MAX_RESPONSE_PAYLOAD_SIZE = env.int('LOGGING_MAX_RESPONSE_PAYLOAD_SIZE', default=200)
 
 # list of headers that are allowed to be logged
 _DEFAULT_LOG_ALLOWED_HEADERS = [
