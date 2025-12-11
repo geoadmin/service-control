@@ -13,14 +13,6 @@ loggers:
     # setting this to ERROR prevents from logging too much
     # we do the logging ourselves
     level: ERROR
-#  provider:
-#    level: DEBUG
-#  cognito:
-#    level: DEBUG
-#  access:
-#    level: DEBUG
-#  distributions:
-#    level: DEBUG
 
 formatters:
   ecs:

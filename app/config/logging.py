@@ -1,6 +1,8 @@
 import sys
 from logging import getLogger
+from time import time
 from typing import Any
+from typing import Callable
 from typing import List
 from typing import Optional
 from typing import TypedDict
@@ -10,6 +12,7 @@ from ninja import NinjaAPI
 from django.conf import settings
 from django.http import HttpRequest
 from django.http import HttpResponse
+from django.http import JsonResponse
 
 logger = getLogger(__name__)
 
@@ -116,5 +119,67 @@ class LoggedNinjaAPI(NinjaAPI):
             )
         else:
             logger.exception(repr(sys.exc_info()[1]), extra=generate_log_extra(request, response))
+
+        return response
+
+
+class RequestResponseLoggingMiddleware:
+    url_safe = ',:/'  # characters that should not be urlencoded in the log statements
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]):
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        # Do not log API calls, they are logged with the LoggedNinjaAPI above
+        if request.path.startswith('/api/'):
+            return self.get_response(request)
+
+        # Code to be executed for each request before the view (and later middlewares) are called.
+        method = (request.method or '').upper()
+        extra: dict[str, Any] = {
+            "request.request": request, "request.query": request.GET.urlencode(self.url_safe)
+        }
+        add_payload = (
+            method in ("PATCH", "POST", "PUT") and request.content_type == "application/json"
+        )
+        if add_payload:
+            payload = request.body.decode()[:int(settings.LOGGING_MAX_REQUEST_PAYLOAD_SIZE)]
+            extra["request.payload"] = payload
+
+        logger.debug(
+            "Request %s %s?%s",
+            method,
+            request.path,
+            request.GET.urlencode(self.url_safe),
+            extra=extra
+        )
+        start = time()
+
+        response = self.get_response(request)
+
+        # Code to be executed for each request/response after the view is called.
+        extra = {
+            "request": request,
+            "response": {
+                "code": response.status_code,
+                "headers": dict(response.items()),
+                "duration": time() - start
+            },
+        }
+
+        # Not all response types have a 'content' attribute, HttpResponse and JSONResponse sure have
+        # (e.g. WhiteNoiseFileResponse doesn't)
+        if isinstance(response, (HttpResponse, JsonResponse)):
+            payload = response.content.decode()[:int(settings.LOGGING_MAX_RESPONSE_PAYLOAD_SIZE)]
+            extra["response"]["payload"] = payload
+
+        logger.info(
+            "Response %s %s %s?%s",
+            response.status_code,
+            method,
+            request.path,
+            request.GET.urlencode(RequestResponseLoggingMiddleware.url_safe),
+            extra=extra
+        )
 
         return response
