@@ -10,13 +10,14 @@ root:
 # configure loggers per app
 loggers:
   django.request:
-    # setting this to ERROR prevents from logging too much
-    # we do the logging ourselves
+    # setting this to ERROR prevents from logging too much, we do the logging ourselves
     level: ERROR
 
 formatters:
   ecs:
     (): ecs_logging.StdlibFormatter
+    # use this logger to pretty print the json output
+    # (): config.logging.PrettyStdlibFormatter
 
 handlers:
   console:
