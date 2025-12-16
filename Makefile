@@ -99,6 +99,10 @@ serve: ## Serve the application locally
 serve-debug: ## Serve the application locally for debugging
 	$(PYTHON) $(DJANGO_MANAGER_DEBUG) runserver
 
+.PHONY: gunicornserve
+gunicornserve: ## Serve the application locally with gunicorn
+	$(PYTHON) $(APP_SRC_DIR)/wsgi.py
+
 .PHONY: dockerlogin
 dockerlogin: ## Login to the AWS Docker Registry (ECR)
 	aws --profile swisstopo-bgdi-builder ecr get-login-password --region $(AWS_DEFAULT_REGION) | docker login --username AWS --password-stdin $(DOCKER_REGISTRY)

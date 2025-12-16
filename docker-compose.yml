@@ -31,6 +31,7 @@ services:
         echo '{}' > /app/.cognito/db/${COGNITO_POOL_ID}.json
         node /app/start.js;
       "
+
   bod:
     image: postgis/postgis:16-3.5
     environment:
@@ -45,3 +46,16 @@ services:
           create_host_path: true
     ports:
       - "${BOD_PORT}:5432"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: --config otel-local-config.yaml
+    volumes:
+      - ./otel-local-config.yaml:/otel-local-config.yaml
+    ports:
+      - "4317:4317"
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    ports:
+      - "9411:9411"
