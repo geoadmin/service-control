@@ -45,6 +45,24 @@ class Client:
             if user_attributes_to_dict(user['Attributes']).get(self.managed_flag_name) == 'true'
         ]
 
+    def user_exists(self, username: str, check_unmanaged: bool = False) -> bool:
+        """ Check if the user with the given username exists.
+
+        If check_unmanaged is True, also checks for unmanaged users.
+        """
+
+        response = self.client.list_users(
+            UserPoolId=self.user_pool_id, Filter=f'username = "{username}"'
+        )
+        users = response.get("Users", [])
+        if not check_unmanaged:
+            users = [
+                user for user in users
+                if user_attributes_to_dict(user['Attributes']).get(self.managed_flag_name) == 'true'
+            ]
+
+        return len(users) > 0
+
     def get_user(
         self,
         username: str,
@@ -80,24 +98,24 @@ class Client:
 
         """
 
-        user = self.get_user(username, return_unmanaged=True)
-        if user is None:
-            self.client.admin_create_user(
-                UserPoolId=self.user_pool_id,
-                Username=username,
-                UserAttributes=[{
-                    "Name": "email", "Value": email
-                }, {
-                    "Name": "email_verified", "Value": "true"
-                }, {
-                    "Name": "preferred_username", "Value": preferred_username
-                }, {
-                    "Name": self.managed_flag_name, "Value": "true"
-                }],
-                DesiredDeliveryMediums=['EMAIL']
-            )
-            return True
-        return False
+        if self.user_exists(username, check_unmanaged=True):
+            return False
+
+        self.client.admin_create_user(
+            UserPoolId=self.user_pool_id,
+            Username=username,
+            UserAttributes=[{
+                "Name": "email", "Value": email
+            }, {
+                "Name": "email_verified", "Value": "true"
+            }, {
+                "Name": "preferred_username", "Value": preferred_username
+            }, {
+                "Name": self.managed_flag_name, "Value": "true"
+            }],
+            DesiredDeliveryMediums=['EMAIL']
+        )
+        return True
 
     def delete_user(self, username: str) -> bool:
         """ Delete the user with the given cognito username.
@@ -106,11 +124,11 @@ class Client:
 
         """
 
-        user = self.get_user(username)
-        if user is not None:
-            self.client.admin_delete_user(UserPoolId=self.user_pool_id, Username=username)
-            return True
-        return False
+        if not self.user_exists(username):
+            return False
+
+        self.client.admin_delete_user(UserPoolId=self.user_pool_id, Username=username)
+        return True
 
     def update_user(self, username: str, preferred_username: str, email: str) -> bool:
         """ Update the user with the given cognito username.
@@ -124,6 +142,9 @@ class Client:
         Returns False, if the user does not exist or doesn't have the managed flag.
 
         """
+
+        if not self.user_exists(username):
+            return False
 
         user = self.get_user(username)
         if user is None:
@@ -154,9 +175,9 @@ class Client:
         Returns False, if the user does not exist, or doesn't have the managed flag.
         """
 
-        user = self.get_user(username)
-        if user is None:
+        if not self.user_exists(username):
             return False
+
         self.client.admin_enable_user(UserPoolId=self.user_pool_id, Username=username)
         return True
 
@@ -166,8 +187,8 @@ class Client:
         Returns False if the user does not exist, or doesn't have the managed flag.
         """
 
-        user = self.get_user(username)
-        if user is None:
+        if not self.user_exists(username):
             return False
+
         self.client.admin_disable_user(UserPoolId=self.user_pool_id, Username=username)
         return True
