@@ -24,6 +24,7 @@
   - [Bootstrap](#bootstrap)
   - [Environment Variables](#environment-variables)
   - [Log Correlation](#log-correlation)
+  - [Sampling](#sampling)
   - [Local Telemetry](#local-telemetry)
 - [Importing Data from the BOD](#importing-data-from-the-bod)
 - [Type Checking](#type-checking)
@@ -236,6 +237,8 @@ The following env variables can be used to configure OTEL
 | OTEL_PYTHON_EXCLUDED_URLS                                 |                            | A comma separated list of url's to exclude, e.g. `checker`                                                                                           |
 | OTEL_PYTHON_DJANGO_TRACED_REQUEST_ATTRS                   |                            | A comma separated list of attributes from the django request, e.g. `path_info,content_type`                                                          |
 | OTEL_RESOURCE_ATTRIBUTES                                  |                            | A comma separated list of custom OTEL resource attributes, Must contain at least the service-name `service.name=service-shortlink`                   |
+| OTEL_TRACES_SAMPLER                                       | parentbased_always_on      | Sampler to be used, see https://opentelemetry-python.readthedocs.io/en/latest/sdk/trace.sampling.html#module-opentelemetry.sdk.trace.sampling.       |
+| OTEL_TRACES_SAMPLER_ARG                                   |                            | Optional additional arguments for sampler.                                                                                                           |
 | OTEL_SDK_DISABLED                                         |                            | If set to "true", OTEL is disabled. See: https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration |
 
 ### Log Correlation
@@ -247,6 +250,13 @@ The OpenTelemetry logging integration automatically injects tracing context into
 - otelTraceSampled
 
 Note that although otelServiceName is injected, it will be empty. This is because the logging integration tries to read the service name from the trace provider, but our trace provider instance does not contain this resource attribute.
+
+### Sampling
+
+The python SDK supports ratio based [head sampling](https://opentelemetry.io/docs/concepts/sampling/#head-sampling). To enable, set
+
+- OTEL_TRACES_SAMPLER=parentbased_traceidratio|traceidratio
+- and OTEL_TRACES_SAMPLER_ARG=[0.0,1.0]
 
 ### Local Telemetry
 
