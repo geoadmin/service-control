@@ -14,7 +14,7 @@ def test_user_attributes_to_dict():
 @patch('cognito.utils.client.client')
 def test_list_users_returns_only_managed(boto3, cognito_user_response_factory):
     managed = cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)
-    unmanaged = cognito_user_response_factory('2ihg2ox304po', '1234', managed=False)
+    unmanaged = cognito_user_response_factory('4ihg2ox304po', '5678', managed=False)
     boto3.return_value.list_users.return_value = {'Users': [managed, unmanaged]}
 
     client = Client()
@@ -45,6 +45,28 @@ def test_list_users_pagination(boto3, cognito_user_response_factory):
     assert call().list_users(
         UserPoolId=client.user_pool_id, Limit=60, PaginationToken='2'
     ) in boto3.mock_calls
+
+
+@patch('cognito.utils.client.client')
+def test_user_exists_managed(boto3, cognito_user_response_factory):
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)]
+    }
+
+    client = Client()
+    assert client.user_exists('1234')
+    assert client.user_exists('1234', check_unmanaged=True)
+
+
+@patch('cognito.utils.client.client')
+def test_user_exists_unmanaged(boto3, cognito_user_response_factory):
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=False)]
+    }
+
+    client = Client()
+    assert not client.user_exists('1234')
+    assert client.user_exists('1234', check_unmanaged=True)
 
 
 @patch('cognito.utils.client.client')
@@ -93,7 +115,7 @@ def test_get_user_returns_unmanaged(boto3, cognito_user_response_factory):
 
 @patch('cognito.utils.client.client')
 def test_create_user_creates_managed(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = None
+    boto3.return_value.list_users.return_value = {'Users': []}
 
     client = Client()
     created = client.create_user('2ihg2ox304po', '1234', 'test@example.org')
@@ -117,9 +139,9 @@ def test_create_user_creates_managed(boto3, cognito_user_response_factory):
 
 @patch('cognito.utils.client.client')
 def test_create_user_does_not_create_if_managed_exists(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
-        '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
-    )
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)]
+    }
 
     client = Client()
     created = client.create_user('2ihg2ox304po', '1234', 'test@example.org')
@@ -129,9 +151,9 @@ def test_create_user_does_not_create_if_managed_exists(boto3, cognito_user_respo
 
 @patch('cognito.utils.client.client')
 def test_create_user_does_not_create_if_unmanaged_exists(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
-        '2ihg2ox304po', '1234', managed=False, attributes_key='UserAttributes'
-    )
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=False)]
+    }
 
     client = Client()
     created = client.create_user('2ihg2ox304po', '1234', 'test@example.org')
@@ -141,9 +163,9 @@ def test_create_user_does_not_create_if_unmanaged_exists(boto3, cognito_user_res
 
 @patch('cognito.utils.client.client')
 def test_delete_user_deletes_managed(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
-        '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
-    )
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)]
+    }
 
     client = Client()
     deleted = client.delete_user('1234')
@@ -155,9 +177,9 @@ def test_delete_user_deletes_managed(boto3, cognito_user_response_factory):
 
 @patch('cognito.utils.client.client')
 def test_delete_user_does_not_delete_unmanaged(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
-        '2ihg2ox304po', '1234', managed=False, attributes_key='UserAttributes'
-    )
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=False)]
+    }
 
     client = Client()
     deleted = client.delete_user('1234')
@@ -169,6 +191,10 @@ def test_delete_user_does_not_delete_unmanaged(boto3, cognito_user_response_fact
 
 @patch('cognito.utils.client.client')
 def test_update_user_updates_managed(boto3, cognito_user_response_factory):
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)]
+    }
+
     boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
         '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
     )
@@ -196,6 +222,10 @@ def test_update_user_updates_managed(boto3, cognito_user_response_factory):
 
 @patch('cognito.utils.client.client')
 def test_update_user_updates_partial_managed(boto3, cognito_user_response_factory):
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)]
+    }
+
     boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
         '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
     )
@@ -216,6 +246,10 @@ def test_update_user_updates_partial_managed(boto3, cognito_user_response_factor
 
 @patch('cognito.utils.client.client')
 def test_update_user_does_not_update_unchanged_managed(boto3, cognito_user_response_factory):
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)]
+    }
+
     boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
         '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
     )
@@ -229,6 +263,10 @@ def test_update_user_does_not_update_unchanged_managed(boto3, cognito_user_respo
 
 @patch('cognito.utils.client.client')
 def test_update_user_does_not_update_unmanaged(boto3, cognito_user_response_factory):
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=False)]
+    }
+
     boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
         '2ihg2ox304po', '1234', managed=False, attributes_key='UserAttributes'
     )
@@ -241,9 +279,9 @@ def test_update_user_does_not_update_unmanaged(boto3, cognito_user_response_fact
 
 @patch('cognito.utils.client.client')
 def test_disable_user_disables_managed(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
-        '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
-    )
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)]
+    }
 
     client = Client()
     disabled = client.disable_user('1234')
@@ -255,9 +293,9 @@ def test_disable_user_disables_managed(boto3, cognito_user_response_factory):
 
 @patch('cognito.utils.client.client')
 def test_disable_user_does_not_disable_unmanaged(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
-        '2ihg2ox304po', '1234', managed=False, attributes_key='UserAttributes'
-    )
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=False)]
+    }
 
     client = Client()
     disabled = client.disable_user('1234')
@@ -269,9 +307,9 @@ def test_disable_user_does_not_disable_unmanaged(boto3, cognito_user_response_fa
 
 @patch('cognito.utils.client.client')
 def test_enable_user_enables_managed(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
-        '2ihg2ox304po', '1234', managed=True, attributes_key='UserAttributes'
-    )
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=True)]
+    }
 
     client = Client()
     enabled = client.enable_user('1234')
@@ -283,9 +321,9 @@ def test_enable_user_enables_managed(boto3, cognito_user_response_factory):
 
 @patch('cognito.utils.client.client')
 def test_enable_user_does_not_enable_unmanaged(boto3, cognito_user_response_factory):
-    boto3.return_value.admin_get_user.return_value = cognito_user_response_factory(
-        '2ihg2ox304po', '1234', managed=False, attributes_key='UserAttributes'
-    )
+    boto3.return_value.list_users.return_value = {
+        'Users': [cognito_user_response_factory('2ihg2ox304po', '1234', managed=False)]
+    }
 
     client = Client()
     enabled = client.enable_user('1234')
