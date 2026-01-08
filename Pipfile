@@ -19,6 +19,13 @@ ecs-logging = "~=2.2"
 beautifulsoup4 = "~=4.13"
 requests = "~=2.32"
 logging-utilities = "~=5.0"
+opentelemetry-sdk = "~=1.39"
+opentelemetry-exporter-otlp = "~=1.39"
+opentelemetry-instrumentation = "0.60b1"
+opentelemetry-instrumentation-botocore = "0.60b1"
+opentelemetry-instrumentation-django = "0.60b1"
+opentelemetry-instrumentation-logging = "0.60b1"
+opentelemetry-instrumentation-psycopg = "0.60b1"
 
 [dev-packages]
 yapf = "*"

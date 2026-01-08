@@ -1,4 +1,7 @@
 import sys
+from json import dumps
+from json import loads
+from logging import LogRecord
 from logging import getLogger
 from time import time
 from typing import Any
@@ -7,6 +10,7 @@ from typing import List
 from typing import Optional
 from typing import TypedDict
 
+from ecs_logging import StdlibFormatter
 from ninja import NinjaAPI
 
 from django.conf import settings
@@ -183,3 +187,9 @@ class RequestResponseLoggingMiddleware:
         )
 
         return response
+
+
+class PrettyStdlibFormatter(StdlibFormatter):
+
+    def format(self, record: LogRecord) -> str:
+        return dumps(loads(super().format(record)), indent=2, sort_keys=True)
