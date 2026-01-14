@@ -25,8 +25,9 @@ def strtobool(value: str) -> bool:
     raise ValueError(f"invalid truth value \'{value}\'")
 
 
-def initialize(swallow_exceptions: bool = True) -> None:
-    if not strtobool(getenv("OTEL_SDK_DISABLED", "false")):
+def initialize_tracing() -> bool:
+    tracing_enabled = not strtobool(getenv("OTEL_SDK_DISABLED", "false"))
+    if tracing_enabled:
         if strtobool(getenv("OTEL_ENABLE_DJANGO", "false")):
             DjangoInstrumentor().instrument()
         if strtobool(getenv("OTEL_ENABLE_BOTO", "false")):
@@ -35,10 +36,12 @@ def initialize(swallow_exceptions: bool = True) -> None:
             PsycopgInstrumentor().instrument()
         if strtobool(getenv("OTEL_ENABLE_LOGGING", "false")):
             LoggingInstrumentor().instrument()
+    return tracing_enabled
 
 
 def setup_trace_provider() -> None:
-    if not strtobool(getenv("OTEL_SDK_DISABLED", "false")):
+    tracing_enabled = not strtobool(getenv("OTEL_SDK_DISABLED", "false"))
+    if tracing_enabled:
         # Since we created a new tracer, the default span processor is gone. We need to
         # create a new one using the default OTEL env variables and ad it to the tracer.
         span_processor = BatchSpanProcessor(
