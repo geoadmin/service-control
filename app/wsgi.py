@@ -34,9 +34,9 @@ environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 # Initialize should be called as early as possible, but at least before the app is imported
 # The order has a impact on how the libraries are instrumented. If called after app import,
 # e.g. the django instrumentation has no effect.
-from utils.otel import initialize, setup_trace_provider
+from utils.otel import initialize_tracing, setup_trace_provider
 
-initialize()
+initialize_tracing()
 
 from gunicorn.app.base import BaseApplication
 from gunicorn.arbiter import Arbiter
