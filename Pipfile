@@ -26,6 +26,7 @@ opentelemetry-instrumentation-botocore = "0.60b1"
 opentelemetry-instrumentation-django = "0.60b1"
 opentelemetry-instrumentation-logging = "0.60b1"
 opentelemetry-instrumentation-psycopg = "0.60b1"
+opentelemetry-instrumentation-system-metrics = "0.60b1"
 
 [dev-packages]
 yapf = "*"

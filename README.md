@@ -206,6 +206,7 @@ The following env variables can be used to configure OTEL
 | OTEL_ENABLE_DJANGO                                        | false                      | If opentelemetry-instrumentation-django should be enabled or not.                                                                                    |
 | OTEL_ENABLE_PSYCOPG                                       | false                      | If opentelemetry-instrumentation-psycopg should be enabled or not.                                                                                   |
 | OTEL_ENABLE_LOGGING                                       | false                      | If opentelemetry-instrumentation-logging should be enabled or not.                                                                                   |
+| OTEL_ENABLE_METRICS                                       | false                      | If opentelemetry-instrumentation-system-metrics should be enabled or not.                                                                            |
 | OTEL_EXPERIMENTAL_RESOURCE_DETECTORS                      |                            | OTEL resource detectors, adding resource attributes to the OTEL output. e.g. `os,process`                                                            |
 | OTEL_EXPORTER_OTLP_ENDPOINT                               | http://localhost:4317      | The OTEL Exporter endpoint, e.g. `opentelemetry-kube-stack-gateway-collector.opentelemetry-operator-system:4317`                                     |
 | OTEL_EXPORTER_OTLP_HEADERS                                |                            | A list of key=value headers added in outgoing data. https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/#header-configuration    |
@@ -217,6 +218,7 @@ The following env variables can be used to configure OTEL
 | OTEL_RESOURCE_ATTRIBUTES                                  |                            | A comma separated list of custom OTEL resource attributes, Must contain at least the service-name `service.name=service-shortlink`                   |
 | OTEL_TRACES_SAMPLER                                       | parentbased_always_on      | Sampler to be used, see https://opentelemetry-python.readthedocs.io/en/latest/sdk/trace.sampling.html#module-opentelemetry.sdk.trace.sampling.       |
 | OTEL_TRACES_SAMPLER_ARG                                   |                            | Optional additional arguments for sampler.                                                                                                           |
+| OTEL_METRIC_EXPORT_INTERVAL                               | 60000                      | Interval in miliseconds in which metrics are exported.                                                                                               |
 
 ### Adding a New Instrumentation
 
@@ -259,7 +261,7 @@ make start-local-db
 make dockerrun
 ```
 
-and visiting the Zipkin dashboard at [http://localhost:9411](http://localhost:9411).
+and visiting the Zipkin dashboard at [http://localhost:9411](http://localhost:9411) for the traces and/or the Prometheus dashboard at [http://localhost:9090](http://localhost:9090) for the system metrics (query for `{__name__!=""}`).
 
 ## Importing Data from the BOD
 
