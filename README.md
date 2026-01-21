@@ -21,8 +21,8 @@
 - [Cognito](#cognito)
   - [Local Cognito](#local-cognito)
 - [OTEL](#otel)
-  - [Bootstrap](#bootstrap)
   - [Environment Variables](#environment-variables)
+  - [Adding a New Instrumentation](#adding-a-new-instrumentation)
   - [Log Correlation](#log-correlation)
   - [Sampling](#sampling)
   - [Local Telemetry](#local-telemetry)
@@ -193,20 +193,7 @@ aws --endpoint $COGNITO_ENDPOINT_URL cognito-idp list-users --user-pool-id $COGN
 ## OTEL
 
 [OpenTelemetry instrumentation](https://opentelemetry.io/docs/concepts/instrumentation/) can be done in many different ways, from fully automated zero-code instrumentation (otel-operator) to purely manual instrumentation.
-We use the so called `OTEL programmatical instrumentation` approach where we import the specific instrumentation libraries and initialize them with the instrument() method of each library.
-
-### Bootstrap
-
-As mentioned above, all available and desired instrumentation libraries need to be installed first, i.e. added to the pipfile.
-Well known libraries like django, request and botocore could be added manually. To get a better overview and add broader instrumentation
-support, a otel bootstrap tool can be used to create a list of supported libraries for a given project.
-
-Usage:
-
-1. `edot-bootstrap --action=requirements` to get the list of libraries
-2. Add all or the desired ones to the Pipfile.
-
-Note: `edot-bootstrap` should be already installed via `infra-ansible-bgdi-dev`. If not, install it with `pipx install elastic-opentelemetry`.
+We use the so called `OTEL programmatical instrumentation` approach where we import the specific instrumentation libraries and initialize them with the instrument() method of each library when serving requests with WSGI and when running management commands.
 
 ### Environment Variables
 
@@ -219,6 +206,7 @@ The following env variables can be used to configure OTEL
 | OTEL_ENABLE_DJANGO                                        | false                      | If opentelemetry-instrumentation-django should be enabled or not.                                                                                    |
 | OTEL_ENABLE_PSYCOPG                                       | false                      | If opentelemetry-instrumentation-psycopg should be enabled or not.                                                                                   |
 | OTEL_ENABLE_LOGGING                                       | false                      | If opentelemetry-instrumentation-logging should be enabled or not.                                                                                   |
+| OTEL_ENABLE_METRICS                                       | false                      | If opentelemetry-instrumentation-system-metrics should be enabled or not.                                                                            |
 | OTEL_EXPERIMENTAL_RESOURCE_DETECTORS                      |                            | OTEL resource detectors, adding resource attributes to the OTEL output. e.g. `os,process`                                                            |
 | OTEL_EXPORTER_OTLP_ENDPOINT                               | http://localhost:4317      | The OTEL Exporter endpoint, e.g. `opentelemetry-kube-stack-gateway-collector.opentelemetry-operator-system:4317`                                     |
 | OTEL_EXPORTER_OTLP_HEADERS                                |                            | A list of key=value headers added in outgoing data. https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/#header-configuration    |
@@ -230,6 +218,15 @@ The following env variables can be used to configure OTEL
 | OTEL_RESOURCE_ATTRIBUTES                                  |                            | A comma separated list of custom OTEL resource attributes, Must contain at least the service-name `service.name=service-shortlink`                   |
 | OTEL_TRACES_SAMPLER                                       | parentbased_always_on      | Sampler to be used, see https://opentelemetry-python.readthedocs.io/en/latest/sdk/trace.sampling.html#module-opentelemetry.sdk.trace.sampling.       |
 | OTEL_TRACES_SAMPLER_ARG                                   |                            | Optional additional arguments for sampler.                                                                                                           |
+| OTEL_METRIC_EXPORT_INTERVAL                               | 60000                      | Interval in miliseconds in which metrics are exported.                                                                                               |
+
+### Adding a New Instrumentation
+
+1. Use `edot-bootstrap --action=requirements` to get a list of possible instrumentation libraries
+2. Add all or the desired ones to the Pipfile.
+3. Add the initialization to [otel.py](app/helpers/otel.py) together with a feature flag
+
+Note: `edot-bootstrap` should be already installed via `infra-ansible-bgdi-dev`. If not, install it with `pipx install elastic-opentelemetry`.
 
 ### Log Correlation
 
@@ -264,7 +261,7 @@ make start-local-db
 make dockerrun
 ```
 
-and visiting the Zipkin dashboard at [http://localhost:9411](http://localhost:9411).
+and visiting the Zipkin dashboard at [http://localhost:9411](http://localhost:9411) for the traces and/or the Prometheus dashboard at [http://localhost:9090](http://localhost:9090) for the system metrics (query for `{__name__!=""}`).
 
 ## Importing Data from the BOD
 
