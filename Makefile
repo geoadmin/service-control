@@ -60,10 +60,16 @@ ci:
 	# Create virtual env with all packages for development using the Pipfile.lock
 	pipenv sync --dev
 
+env:
+ifeq ("$(wildcard ./.env)","")
+	@echo ".env file not found, copying it from .env.default..."
+else
+	@echo ".env file found, leaving untouched..."
+endif
+
 .PHONY: setup
-setup: $(SETTINGS_TIMESTAMP) ## Create virtualenv with all packages for development
+setup: $(SETTINGS_TIMESTAMP) env ## Create virtualenv with all packages for development
 	pipenv install --dev
-	cp .env.default .env
 	pipenv shell
 
 .PHONY: format

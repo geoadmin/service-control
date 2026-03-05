@@ -60,6 +60,9 @@ class Attribution(models.Model):
             update_fields=update_fields
         )
 
+    def natural_key(self) -> tuple[str]:
+        return (self.attribution_id,)
+
 
 class Dataset(models.Model):
 
@@ -112,6 +115,9 @@ class Dataset(models.Model):
             using=using,
             update_fields=update_fields
         )
+
+    def natural_key(self) -> tuple[str]:
+        return (self.dataset_id,)
 
 
 class PackageDistribution(models.Model):

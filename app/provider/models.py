@@ -61,3 +61,6 @@ class Provider(models.Model):
             using=using,
             update_fields=update_fields
         )
+
+    def natural_key(self) -> tuple[str]:
+        return (self.provider_id,)
