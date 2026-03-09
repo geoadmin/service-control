@@ -1,15 +1,18 @@
 import json
+from cmath import exp
 from typing import Any
 
 import boto3
 import environ
-from distributions.models import Dataset
-from provider.models import Provider
-from pydantic import BaseModel
-from utils.command import CustomBaseCommand
-
+from bod.models import BodLayersJS
 from django.core import serializers
 from django.core.management.base import CommandParser
+from django.core.serializers.json import DjangoJSONEncoder
+from provider.models import Provider
+from utils.command import CustomBaseCommand
+
+from distributions.export_models import ExportDataset, ExportLayersJS, ExportProvider
+from distributions.models import Dataset
 
 env = environ.Env()
 boto3.setup_default_session(profile_name="swisstopo-swissgeo-dev")
@@ -23,65 +26,12 @@ SAMPLE_IDS = [
 ]
 
 
-class BaseModelWithDynamoDBSerialization(BaseModel):
-    """BaseModel with custom serialization for DynamoDB"""
-
-    def as_dynamodb_item(self) -> dict[str, Any]:
-        """Convert the dataset to a DynamoDB item format
-
-        Returns:
-            dict[str, Any]: The dataset represented as a DynamoDB item.
-        """
-        item = self.model_dump(mode="json")
-        for key, value in item.items():
-            if value is None:
-                item[key] = {"NULL": True}
-            elif isinstance(value, int):
-                item[key] = {"N": str(value)}
-            elif isinstance(value, str):
-                item[key] = {"S": value}
-            elif isinstance(value, list) and all(isinstance(i, str) for i in value):
-                item[key] = {"L": [{"S": i} for i in value]}
-            else:
-                raise ValueError(f"Unexpected type {type(value)} for key {key} with value {value}")
-        return item
-
-
-class ExportDataset(BaseModelWithDynamoDBSerialization):
-    dataset_id: str
-    title_de: str
-    title_fr: str
-    title_en: str
-    title_it: str | None
-    title_rm: str | None
-    description_de: str
-    description_fr: str
-    description_en: str
-    description_it: str | None
-    description_rm: str | None
-    attribution: list[str]
-    provider: list[str]
-    created: str
-    updated: str
-    geocat_id: str
-    _legacy_id: int
-
-
-class ExportProvider(BaseModelWithDynamoDBSerialization):
-    provider_id: str
-    created: str
-    updated: str
-    name_de: str
-    name_fr: str
-    name_en: str
-    name_it: str | None
-    name_rm: str | None
-    acronym_de: str
-    acronym_fr: str
-    acronym_en: str
-    acronym_it: str | None
-    acronym_rm: str | None
-    _legacy_id: int
+class PureJSONEncoder(DjangoJSONEncoder):
+    def default(self, obj: Any) -> Any:
+        print(obj)
+        if isinstance(obj, list):
+            return [super().default(i) for i in obj]
+        return super().default(obj)
 
 
 class Command(CustomBaseCommand):
@@ -120,6 +70,11 @@ class Command(CustomBaseCommand):
             help="Import datasets",
         )
         parser.add_argument(
+            "--layers-js",
+            action="store_true",
+            help="Import datasets",
+        )
+        parser.add_argument(
             "--target-env",
             type=str,
             choices=["dev", "int", "prod"],
@@ -150,6 +105,8 @@ class Command(CustomBaseCommand):
             self.export_datasets(*args, **options)
         if options["providers"]:
             self.export_providers(*args, **options)
+        if options["layers_js"]:
+            self.export_layers_js(*args, **options)
 
     def export_datasets(self, *args: Any, **options: Any) -> None:
 
@@ -190,4 +147,20 @@ class Command(CustomBaseCommand):
             self.print(f"Exporting provider {exp_item.provider_id} to DynamoDB")
             dynamodb_client.put_item(
                 TableName=f"harvest-providers-{options['target_env']}", Item=item
+            )
+
+    def export_layers_js(self, *args: Any, **options: Any) -> None:
+        dynamodb_client = self.session.client("dynamodb", region_name="eu-central-1")
+
+        qs = BodLayersJS.objects.all().values()
+
+        for layer in qs:
+            exp_item = ExportLayersJS(**layer)
+            item = exp_item.as_dynamodb_item()
+            self.print(
+                f"Exporting layers_js for dataset {exp_item.layer_id} to DynamoDB"
+            )
+
+            dynamodb_client.put_item(
+                TableName=f"harvest-layers-js-{options['target_env']}", Item=item
             )
