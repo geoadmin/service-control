@@ -6,8 +6,11 @@ from typing import Any
 
 from bod.models import BodDataset
 from boto3 import Session
+from distributions.export_models import Contact
+from distributions.export_models import ContactList
 from distributions.export_models import Keyword
 from distributions.export_models import KeywordList
+from distributions.export_models import OnlineResource
 from lxml import etree
 from rdflib import Graph
 from rdflib import Literal
@@ -23,6 +26,7 @@ if TYPE_CHECKING:
 
 GEOCAT_URL = "https://www.geocat.ch/geonetwork/srv/api/records/{}/formatters/xml?approved=true"
 NS = {
+    "che": "http://www.geocat.ch/2008/che",
     "gco": "http://www.isotc211.org/2005/gco",
     "gmd": "http://www.isotc211.org/2005/gmd",
     "gmx": "http://www.isotc211.org/2005/gmx",
@@ -101,7 +105,7 @@ class Command(CustomBaseCommand):
     """Harvest data from geocat and store them in DynamoDB harvesting tables.
 
     This command retrieves data from geocat metadata entries and exports them to DynamoDB
-    harvesting tables. Currently supports only dataset keywords.
+    harvesting tables. Currently supports only dataset keywords and contact information.
 
     """
 
@@ -114,6 +118,11 @@ class Command(CustomBaseCommand):
             "--harvest-keywords",
             action="store_true",
             help="Harvest keywords of the available datasets",
+        )
+        parser.add_argument(
+            "--harvest-contacts",
+            action="store_true",
+            help="Harvest contact information of the available datasets",
         )
         parser.add_argument(
             "--target-env",
@@ -165,6 +174,11 @@ class Command(CustomBaseCommand):
 
             if options.get("harvest_keywords"):
                 self.harvest_keywords(
+                    client, options['target_env'], dataset.id_dataset, dataset.fk_geocat, root
+                )
+
+            if options.get("harvest_contacts"):
+                self.harvest_contact(
                     client, options['target_env'], dataset.id_dataset, dataset.fk_geocat, root
                 )
 
@@ -255,8 +269,103 @@ class Command(CustomBaseCommand):
 
                 keywords.append(keyword)
 
-        keywords = sorted(keywords, key=lambda k: (str(k.thesaurus), str(k.concept)))
+        keywords.sort(key=lambda k: (k.thesaurus or "", k.concept or ""))
 
         self.print(f"Exporting keywords for dataset {dataset_id} to DynamoDB")
         keyword_list = KeywordList(dataset_id=dataset_id, geocat_id=geocat_id, keywords=keywords)
         client.put_item(TableName=f"harvest-keywords-{env}", Item=keyword_list.as_dynamodb_item())
+
+    def harvest_contact(  # pylint: disable=too-many-positional-arguments
+        self,
+        client: "DynamoDBClient",
+        env: str,
+        dataset_id: str,
+        geocat_id: str,
+        root: etree._Element
+    ) -> None:
+        """Get all contact information of a dataset from geocat and store them in the DynamoDB."""
+
+        def find(element: etree._Element, path: str) -> str | None:
+            return getattr(element.find(path, NS), "text", None)
+
+        contacts: list[Contact] = []
+        for block in root.findall(".//gmd:pointOfContact", NS):
+
+            name = find(block, './/gmd:organisationName/gco:CharacterString')
+            if not name:
+                continue
+
+            role = None
+            if (element := block.find(".//gmd:CI_RoleCode", NS)) is not None:
+                role = element.attrib.get("codeListValue")
+
+            online_resources = [
+                OnlineResource(
+                    url=find(resource, ".//gmd:linkage/gmd:URL"),
+                    url_de=find(resource, './/che:LocalisedURL[@locale="#DE"]'),
+                    url_fr=find(resource, './/che:LocalisedURL[@locale="#FR"]'),
+                    url_en=find(resource, './/che:LocalisedURL[@locale="#EN"]'),
+                    url_it=find(resource, './/che:LocalisedURL[@locale="#IT"]'),
+                    url_rm=find(resource, './/che:LocalisedURL[@locale="#RM"]'),
+                    protocol=find(resource, ".//gmd:protocol/*"),
+                    name_de=find(resource, './/gmd:name//*[@locale="#DE"]'),
+                    name_fr=find(resource, './/gmd:name//*[@locale="#FR"]'),
+                    name_en=find(resource, './/gmd:name//*[@locale="#EN"]'),
+                    name_it=find(resource, './/gmd:name//*[@locale="#IT"]'),
+                    name_rm=find(resource, './/gmd:name//*[@locale="#RM"]'),
+                    description_de=find(resource, './/gmd:description//*[@locale="#DE"]'),
+                    description_fr=find(resource, './/gmd:description//*[@locale="#FR"]'),
+                    description_en=find(resource, './/gmd:description//*[@locale="#EN"]'),
+                    description_it=find(resource, './/gmd:description//*[@locale="#IT"]'),
+                    description_rm=find(resource, './/gmd:description//*[@locale="#RM"]'),
+                ) for resource in block.findall(".//gmd:CI_OnlineResource", NS)
+            ]
+
+            online_resources.sort(key=lambda r: r.url or "")
+
+            contact = Contact(
+                role=role,
+                org_name=name,
+                org_name_de=find(block, './/gmd:organisationName//*[@locale="#DE"]'),
+                org_name_fr=find(block, './/gmd:organisationName//*[@locale="#FR"]'),
+                org_name_en=find(block, './/gmd:organisationName//*[@locale="#EN"]'),
+                org_name_it=find(block, './/gmd:organisationName//*[@locale="#IT"]'),
+                org_name_rm=find(block, './/gmd:organisationName//*[@locale="#RM"]'),
+                org_acronym=find(block, './/che:organisationAcronym/gco:CharacterString'),
+                org_acronym_de=find(block, './/che:organisationAcronym//*[@locale="#DE"]'),
+                org_acronym_fr=find(block, './/che:organisationAcronym//*[@locale="#FR"]'),
+                org_acronym_en=find(block, './/che:organisationAcronym//*[@locale="#EN"]'),
+                org_acronym_it=find(block, './/che:organisationAcronym//*[@locale="#IT"]'),
+                org_acronym_rm=find(block, './/che:organisationAcronym//*[@locale="#RM"]'),
+                org_email=find(block, ".//che:organisationEMail/gco:CharacterString"),
+                position_name_de=find(block, './/gmd:positionName//*[@locale="#DE"]'),
+                position_name_fr=find(block, './/gmd:positionName//*[@locale="#FR"]'),
+                position_name_en=find(block, './/gmd:positionName//*[@locale="#EN"]'),
+                position_name_it=find(block, './/gmd:positionName//*[@locale="#IT"]'),
+                position_name_rm=find(block, './/gmd:positionName//*[@locale="#RM"]'),
+                individual_name=find(block, ".//gmd:individualName/*"),
+                individual_first_name=find(block, ".//che:individualFirstName/*"),
+                individual_last_name=find(block, ".//che:individualLastName/*"),
+                contact_direct_number=find(block, ".//che:directNumber/*"),
+                contact_voice=find(block, ".//gmd:voice/*"),
+                contact_facsimile=find(block, ".//gmd:facsimile/*"),
+                contact_city=find(block, ".//gmd:city/*"),
+                contact_administrative_area=find(block, ".//gmd:administrativeArea/*"),
+                contact_postal_code=find(block, ".//gmd:postalCode/*"),
+                contact_country=find(block, ".//gmd:country/*"),
+                contact_electronic_mail_address=find(block, ".//gmd:electronicMailAddress/*"),
+                contact_street_name=find(block, ".//che:streetName/*"),
+                contact_street_number=find(block, ".//che:streetNumber/*"),
+                contact_post_box=find(block, ".//che:postBox/*"),
+                hours_of_service=find(block, ".//gmd:hoursOfService/*"),
+                contact_instructions=find(block, ".//gmd:contactInstructions/*"),
+                online_resources=online_resources
+            )
+
+            contacts.append(contact)
+
+        contacts.sort(key=lambda c: (c.role or "", c.org_name_de or "", c.org_name_fr or ""))
+
+        self.print(f"Exporting contacts for dataset {dataset_id} to DynamoDB")
+        contact_list = ContactList(dataset_id=dataset_id, geocat_id=geocat_id, contacts=contacts)
+        client.put_item(TableName=f"harvest-contacts-{env}", Item=contact_list.as_dynamodb_item())
