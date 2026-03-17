@@ -3,9 +3,10 @@ from typing import Any
 
 import boto3
 import environ
+from distributions.export_models import ExportDataset
+from distributions.export_models import ExportProvider
 from distributions.models import Dataset
 from provider.models import Provider
-from pydantic import BaseModel
 from utils.command import CustomBaseCommand
 
 from django.core import serializers
@@ -21,67 +22,6 @@ SAMPLE_IDS = [
     "ch.agroscope.korridore-feuchtgebietsarten_qualitaet",
     "ch.meteoschweiz.messwerte-pollen-buche-1h",
 ]
-
-
-class BaseModelWithDynamoDBSerialization(BaseModel):
-    """BaseModel with custom serialization for DynamoDB"""
-
-    def as_dynamodb_item(self) -> dict[str, Any]:
-        """Convert the dataset to a DynamoDB item format
-
-        Returns:
-            dict[str, Any]: The dataset represented as a DynamoDB item.
-        """
-        item = self.model_dump(mode="json")
-        for key, value in item.items():
-            if value is None:
-                item[key] = {"NULL": True}
-            elif isinstance(value, int):
-                item[key] = {"N": str(value)}
-            elif isinstance(value, str):
-                item[key] = {"S": value}
-            elif isinstance(value, list) and all(isinstance(i, str) for i in value):
-                item[key] = {"L": [{"S": i} for i in value]}
-            else:
-                raise ValueError(f"Unexpected type {type(value)} for key {key} with value {value}")
-        return item
-
-
-class ExportDataset(BaseModelWithDynamoDBSerialization):
-    dataset_id: str
-    title_de: str
-    title_fr: str
-    title_en: str
-    title_it: str | None
-    title_rm: str | None
-    description_de: str
-    description_fr: str
-    description_en: str
-    description_it: str | None
-    description_rm: str | None
-    attribution: list[str]
-    provider: list[str]
-    created: str
-    updated: str
-    geocat_id: str
-    _legacy_id: int
-
-
-class ExportProvider(BaseModelWithDynamoDBSerialization):
-    provider_id: str
-    created: str
-    updated: str
-    name_de: str
-    name_fr: str
-    name_en: str
-    name_it: str | None
-    name_rm: str | None
-    acronym_de: str
-    acronym_fr: str
-    acronym_en: str
-    acronym_it: str | None
-    acronym_rm: str | None
-    _legacy_id: int
 
 
 class Command(CustomBaseCommand):

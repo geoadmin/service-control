@@ -28,6 +28,8 @@ opentelemetry-instrumentation-logging = "0.60b1"
 opentelemetry-instrumentation-psycopg = "0.60b1"
 opentelemetry-instrumentation-system-metrics = "0.60b1"
 dyntastic = "~=0.18.0"
+lxml = "~=6.0"
+rdflib = "~=7.6"
 
 [dev-packages]
 yapf = "*"
@@ -46,13 +48,14 @@ mypy = "*"
 debugpy = "*"
 bandit = "*"
 django-stubs = "~=5.2"
-boto3-stubs = {extras = ["cognito-idp"], version = "~=1.37"}
+boto3-stubs = {extras = ["cognito-idp","dynamodb"], version = "~=1.37"}
 pytest-xdist = "*"
 pytest-cov = "*"
 types-nanoid = "~=2.0"
 types-gevent = "~=25.4"
 types-requests = "~=2.32"
 types-gunicorn = "~=23.0"
+lxml-stubs = "~=0.5"
 
 [requires]
 python_version = "3.12"
