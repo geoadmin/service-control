@@ -82,3 +82,68 @@ class KeywordList(BaseModelWithDynamoDBSerialization):
     dataset_id: str
     geocat_id: str
     keywords: list[Keyword]
+
+
+class OnlineResource(BaseModel):
+    url: str | None
+    url_de: str | None
+    url_fr: str | None
+    url_en: str | None
+    url_it: str | None
+    url_rm: str | None
+    protocol: str | None
+    name_de: str | None
+    name_fr: str | None
+    name_en: str | None
+    name_it: str | None
+    name_rm: str | None
+    description_de: str | None
+    description_fr: str | None
+    description_en: str | None
+    description_it: str | None
+    description_rm: str | None
+
+
+class Contact(BaseModel):
+    role: str | None
+    org_name: str | None
+    org_name_de: str | None
+    org_name_fr: str | None
+    org_name_en: str | None
+    org_name_it: str | None
+    org_name_rm: str | None
+    org_acronym: str | None
+    org_acronym_de: str | None
+    org_acronym_fr: str | None
+    org_acronym_en: str | None
+    org_acronym_it: str | None
+    org_acronym_rm: str | None
+    org_email: str | None
+    position_name_de: str | None
+    position_name_fr: str | None
+    position_name_en: str | None
+    position_name_it: str | None
+    position_name_rm: str | None
+    individual_name: str | None
+    individual_first_name: str | None
+    individual_last_name: str | None
+    contact_direct_number: str | None
+    contact_voice: str | None
+    contact_facsimile: str | None
+    contact_city: str | None
+    contact_administrative_area: str | None
+    contact_postal_code: str | None
+    contact_country: str | None
+    contact_electronic_mail_address: str | None
+    contact_street_name: str | None
+    contact_street_number: str | None
+    contact_post_box: str | None
+    hours_of_service: str | None
+    contact_instructions: str | None
+    online_resources: list[OnlineResource]
+
+
+class ContactList(BaseModelWithDynamoDBSerialization):
+    dataset_id: str
+    geocat_id: str
+    contacts: list[Contact]
