@@ -45,7 +45,7 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
     #       errors ;)
 
     assert dynamo_session_mock.mock_calls == [
-        call(profile_name=None),
+        call(),
         call().client('dynamodb', region_name='eu-central-1'),
         call().client().put_item(
             TableName='harvest-keywords-dev',
