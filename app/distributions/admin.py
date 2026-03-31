@@ -24,6 +24,7 @@ class DatasetAdmin(admin.ModelAdmin):  # type:ignore[type-arg]
 
     list_display = ('dataset_id', 'title_en', 'provider')
     list_filter = (('provider', admin.RelatedOnlyFieldListFilter),)
+    search_fields = ('dataset_id',)
     readonly_fields = ('created', 'updated')
 
     def get_form(

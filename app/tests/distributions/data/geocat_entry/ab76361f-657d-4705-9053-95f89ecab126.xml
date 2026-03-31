@@ -1,0 +1,1452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<che:CHE_MD_Metadata xmlns:che="http://www.geocat.ch/2008/che" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gco:isoType="gmd:MD_Metadata" xsi:schemaLocation="http://www.geocat.ch/2008/che https://www.geocat.ch/geonetwork/xml/schemas/iso19139.che/schema/che/che.xsd">
+  <gmd:fileIdentifier>
+    <gco:CharacterString>ab76361f-657d-4705-9053-95f89ecab126</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:language xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+  </gmd:language>
+  <gmd:characterSet xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode"/>
+  </gmd:characterSet>
+  <gmd:hierarchyLevel xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset"/>
+  </gmd:hierarchyLevel>
+  <gmd:contact xmlns:geonet="http://www.fao.org/geonetwork" xlink:show="embed">
+    <che:CHE_CI_ResponsibleParty gco:isoType="gmd:CI_ResponsibleParty">
+      <gmd:organisationName xsi:type="gmd:PT_FreeText_PropertyType">
+        <gco:CharacterString>Bundesamt für Umwelt / Abteilung Biodiversität und Landschaft</gco:CharacterString>
+        <gmd:PT_FreeText>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#DE">Bundesamt für Umwelt / Abteilung Biodiversität und Landschaft</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#FR">Office fédéral de l'environnement / Division Biodiversité et paysage</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#IT">Ufficio federale dell'ambiente / Divisione Biodiversità e paesaggio</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#EN">Federal Office for the Environment / Biodiversity and Landscape Division</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#RM">Bundesamt für Umwelt</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+        </gmd:PT_FreeText>
+      </gmd:organisationName>
+      <gmd:contactInfo>
+        <gmd:CI_Contact>
+          <gmd:phone>
+            <che:CHE_CI_Telephone gco:isoType="gmd:CI_Telephone">
+              <gmd:voice>
+                <gco:CharacterString>+41 58 462 93 89</gco:CharacterString>
+              </gmd:voice>
+              <gmd:facsimile>
+                <gco:CharacterString>+41 58 463 89 74</gco:CharacterString>
+              </gmd:facsimile>
+            </che:CHE_CI_Telephone>
+          </gmd:phone>
+          <gmd:address>
+            <che:CHE_CI_Address gco:isoType="gmd:CI_Address">
+              <gmd:city>
+                <gco:CharacterString>Bern</gco:CharacterString>
+              </gmd:city>
+              <gmd:postalCode>
+                <gco:CharacterString>3003</gco:CharacterString>
+              </gmd:postalCode>
+              <gmd:country>
+                <gco:CharacterString>CH</gco:CharacterString>
+              </gmd:country>
+              <gmd:electronicMailAddress>
+                <gco:CharacterString>bnl@bafu.admin.ch</gco:CharacterString>
+              </gmd:electronicMailAddress>
+            </che:CHE_CI_Address>
+          </gmd:address>
+          <gmd:onlineResource>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#EN">https://www.bafu.admin.ch/bafu/en/home/office/divisions-sections/biodiversity-and-landscape-division.html</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">https://www.bafu.admin.ch/bafu/de/home/amt/abteilungen-sektionen/abteilung-biodiversitaet-und-landschaft.html</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#FR">https://www.bafu.admin.ch/bafu/fr/home/office/divisions-sections/division-biodiversite-et-paysage.html</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#IT">https://www.bafu.admin.ch/bafu/it/home/ufficio/divisioni-sezioni/divisione-biodiversita-e-paesaggio.html</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:LINK</gco:CharacterString>
+              </gmd:protocol>
+            </gmd:CI_OnlineResource>
+          </gmd:onlineResource>
+        </gmd:CI_Contact>
+      </gmd:contactInfo>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+      </gmd:role>
+      <che:individualLastName>
+        <gco:CharacterString>BAFU BNL</gco:CharacterString>
+      </che:individualLastName>
+      <che:organisationAcronym xsi:type="gmd:PT_FreeText_PropertyType">
+        <gco:CharacterString>BAFU</gco:CharacterString>
+        <gmd:PT_FreeText>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#DE">BAFU</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#FR">OFEV</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#IT">UFAM</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#EN">FOEN</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#RM">BAFU</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+        </gmd:PT_FreeText>
+      </che:organisationAcronym>
+    </che:CHE_CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:contact xmlns:geonet="http://www.fao.org/geonetwork" xlink:show="embed" xlink:href="local://srv/api/registries/entries/e898da60-6d82-4dcc-b4a3-5f6fe97e6394?lang=ger,fre,ita,eng,roh&amp;process=*//gmd:CI_RoleCode/@codeListValue~pointOfContact"/>
+  <gmd:dateStamp xmlns:geonet="http://www.fao.org/geonetwork">
+    <gco:DateTime>2025-01-22T10:58:08.758Z</gco:DateTime>
+  </gmd:dateStamp>
+  <gmd:metadataStandardName xmlns:geonet="http://www.fao.org/geonetwork">
+    <gco:CharacterString>GM03 2+</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion xmlns:geonet="http://www.fao.org/geonetwork">
+    <gco:CharacterString>1.0</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+  <gmd:locale xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:PT_Locale id="FR">
+      <gmd:languageCode>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="fre"/>
+      </gmd:languageCode>
+      <gmd:characterEncoding>
+        <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode"/>
+      </gmd:characterEncoding>
+    </gmd:PT_Locale>
+  </gmd:locale>
+  <gmd:locale xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:PT_Locale id="IT">
+      <gmd:languageCode>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ita"/>
+      </gmd:languageCode>
+      <gmd:characterEncoding>
+        <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode"/>
+      </gmd:characterEncoding>
+    </gmd:PT_Locale>
+  </gmd:locale>
+  <gmd:locale xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:PT_Locale id="EN">
+      <gmd:languageCode>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="eng"/>
+      </gmd:languageCode>
+      <gmd:characterEncoding>
+        <gmd:MD_CharacterSetCode codeListValue="utf8" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode"/>
+      </gmd:characterEncoding>
+    </gmd:PT_Locale>
+  </gmd:locale>
+  <gmd:locale xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:PT_Locale id="RM">
+      <gmd:languageCode>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="roh"/>
+      </gmd:languageCode>
+      <gmd:characterEncoding>
+        <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+      </gmd:characterEncoding>
+    </gmd:PT_Locale>
+  </gmd:locale>
+  <gmd:locale>
+    <gmd:PT_Locale id="DE">
+      <gmd:languageCode>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+      </gmd:languageCode>
+      <gmd:characterEncoding>
+        <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8"/>
+      </gmd:characterEncoding>
+    </gmd:PT_Locale>
+  </gmd:locale>
+  <gmd:referenceSystemInfo xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:MD_ReferenceSystem>
+      <gmd:referenceSystemIdentifier>
+        <gmd:RS_Identifier>
+          <gmd:code xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>EPSG:21781</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">EPSG:21781</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:code>
+        </gmd:RS_Identifier>
+      </gmd:referenceSystemIdentifier>
+    </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+  <gmd:identificationInfo xmlns:geonet="http://www.fao.org/geonetwork">
+    <che:CHE_MD_DataIdentification gco:isoType="gmd:MD_DataIdentification">
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Kartierung der Auengebiete von nationaler Bedeutung</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Kartierung der Auengebiete von nationaler Bedeutung</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Cartographie des zones alluviales d'importance nationale</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Cartografia delle zone golenali d'importanza nazionale</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">Mapping of Floodplains of National Importance</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM">Cartaziun da las zonas umidas d'impurtanza naziunala</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:title>
+          <gmd:alternateTitle xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Auen Vegetationskarten</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Auen Vegetationskarten</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Végétation dans zones alluviales</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Zone golenali carte di vegetazione</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">Floodplains vegetation maps</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM">Zonas umidas</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:alternateTitle>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2020-05-11</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision"/>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:DateTime>1992-01-01T00:00:00</gco:DateTime>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:identifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>ch.bafu.auen-vegetationskarten</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:identifier>
+          <gmd:identifier/>
+          <gmd:collectiveTitle xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Kartierung der Auengebiete von nationaler Bedeutung</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Kartierung der Auengebiete von nationaler Bedeutung</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Cartographie des zones alluviales d'importance nationale</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Cartografia delle zone golenali d’importanza nazionale</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">Mapping of Floodplains of National Importance</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:collectiveTitle>
+        </gmd:CI_Citation>
+      </gmd:citation>
+      <gmd:abstract xsi:type="gmd:PT_FreeText_PropertyType">
+        <gco:CharacterString>Um den Kantonen die Möglichkeit zu geben, den Schutz der Auengebiete von wahrscheinlich nationaler Bedeutung möglichst rasch an die Hand zu nehmen, liess das BAFU 1987 gemäss der im technischen Bericht SRU 199 (BUWAL, 1993) beschriebenen Methode eine detaillierte Vegetationskartierung der 165 Objekte der Inventar-Vernehmlassungsversion ausarbeiten. Sie wurde auf der Grundlage einer Luftbildauswertung mit nachfolgender Verifizierung und Kartierung im Feld im Massstab 1:10‘000 erstellt. In den Karten ist festgehalten, welche Vegetationseinheiten (Primärvegetation und z. T. Begleitvegetation) und welche anthropogenen Einflüsse (Nutzungen respektive „Eingriffe“) zur Zeit der Kartierung festgestellt wurden.  Von den nach der Vernehmlassung vergrösserten Objekten wurden in 23 Fällen in einer zweiten Kartierrunde die zusätzlichen Flächen nach den gleichen Kriterien erfasst und kartiert. Seither wurden fast alle der im Rahmen der 2. Ergänzung des Aueninventars (Etappe a von 2003, Etappe b von 2017) neu ins Inventar aufgenommenen Objekte mit Hilfe von photogrammetrierten Infrarot-Luftbildern im Massstab 1:5000 erfasst und nach der gleichen Methode im Feld kartiert. Die alpinen Auen (1. Ergänzung des Aueninventars von 2001) sind nach einer spezifischen, auf diese Höhenstufe angepassten Methode kartiert und ebenfalls auf map.geo.admin.ch publiziert worden (Datensatz „Vegetation alpine Auen“).</gco:CharacterString>
+        <gmd:PT_FreeText>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#DE">Um den Kantonen die Möglichkeit zu geben, den Schutz der Auengebiete von wahrscheinlich nationaler Bedeutung möglichst rasch an die Hand zu nehmen, liess das BAFU 1987 gemäss der im technischen Bericht SRU 199 (BUWAL, 1993) beschriebenen Methode eine detaillierte Vegetationskartierung der 165 Objekte der Inventar-Vernehmlassungsversion ausarbeiten. Sie wurde auf der Grundlage einer Luftbildauswertung mit nachfolgender Verifizierung und Kartierung im Feld im Massstab 1:10‘000 erstellt. In den Karten ist festgehalten, welche Vegetationseinheiten (Primärvegetation und z. T. Begleitvegetation) und welche anthropogenen Einflüsse (Nutzungen respektive „Eingriffe“) zur Zeit der Kartierung festgestellt wurden.  Von den nach der Vernehmlassung vergrösserten Objekten wurden in 23 Fällen in einer zweiten Kartierrunde die zusätzlichen Flächen nach den gleichen Kriterien erfasst und kartiert. Seither wurden fast alle der im Rahmen der 2. Ergänzung des Aueninventars (Etappe a von 2003, Etappe b von 2017) neu ins Inventar aufgenommenen Objekte mit Hilfe von photogrammetrierten Infrarot-Luftbildern im Massstab 1:5000 erfasst und nach der gleichen Methode im Feld kartiert. Die alpinen Auen (1. Ergänzung des Aueninventars von 2001) sind nach einer spezifischen, auf diese Höhenstufe angepassten Methode kartiert und ebenfalls auf map.geo.admin.ch publiziert worden (Datensatz „Vegetation alpine Auen“).</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#FR">En 1987, afin de donner la possibilité aux cantons de prendre aussi rapidement que possible les mesures nécessaires à la protection des zones alluviales potentiellement d’importance nationale, l’OFEV leur a fourni une cartographie détaillée de la végétation des 165 objets de l’inventaire, tel qu’il a été mis en consultation. La méthode de cartographie a été décrite dans le rapport technique CE 199 (OFEFP, 1993). Elle s’est appuyée sur l’interprétation de photographies aériennes, suivie d’une vérification et d’une cartographie dans le terrain, à l’échelle 1 : 10 000. Les cartes montrent quelles unités de végétation (végétation primaire et, en partie, végétation complémentaire) et quelles influences anthropiques (utilisations ou « atteintes ») ont été identifiées au moment de la cartographie.  Parmi les objets qui ont été agrandis après la consultation, les surfaces additionnelles ont été, dans 23 cas, recensées et cartographiées selon les mêmes critères au cours d’une seconde phase de cartographie. Depuis, presque tous les objets nouvellement admis dans l’inventaire des zones alluviales, dans le cadre du 2ème complément (étape a en 2003 et étape b en 2017), ont été recensés par photogrammétrie au moyen de photographies aériennes à infrarouge à l’échelle 1 : 5 000 et cartographiés sur le terrain selon la même méthode. Les zones alluviales alpines (1er complément à l’inventaire des zones alluviales de 2001) ont été cartographiées selon une méthode spécifique, adaptée à ce niveau d’altitude et également publiées sur map.geo.admin.ch (base de données « Végétation alluviale alpine »).</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#IT">Per offrire ai Cantoni la possibilità di prendere in mano il più rapidamente possibile la protezione delle zone golenali di probabile importanza nazionale, l'UFEFP ha fatto elaborare nel 1987 una carta di vegetazione dettagliata degli oggetti della versione posta in consultazione all'attenzione dei Cantoni. Per la maggioranza degli oggetti ingranditi in seguito alla consultazione sono state realizzate in seguito carte di vegetazione secondo lo stesso metodo. Un certo numero di questi oggetti nonché tutti gli altri oggetti accolti nell'inventario nell'ambito della seconda e della terza integrazione nonché della revisione 2007 (senza zone golenali alpine) sono stati cartografati secondo lo stesso sistema con l'aiuto di immagini aeree fotogrammetriche a infrarossi.</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#EN">In order to give cantons the option of taking the protection of floodplains of probable national importance into their own hands as quickly as possible, the Swiss Agency for the Environment, Forests and Landscape had a version of detailed vegetation mappings drawn up for the cantons showing all the objects to be reviewed. In the same way, vegetation maps were subsequently drawn up for the majority of the objects that were enlarged after the consultation process. A large number of these objects, as well as all of those newly included in the inventory as part of the second and third update and the 2007 revision (without alpine floodplains) were mapped with the help of photogrammetric infra-red aerial photographs according to the same system.</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#RM">Per dar als chantuns la pussaivladad da prender per mauns uschè svelt sco pussaivel la protecziun da las zonas umidas d'impurtanza probablamain naziunala, ha il UFAGC laschà elavurar l'onn 1987 ina cartaziun detagliada da la vegetaziun dals objects da la versiun da consultaziun per mauns dals chantuns. Per ina gronda part dals objects ch'èn vegnids engrondids suenter la consultaziun, èn vegnidas fatgas posteriuramain cartas da la vegetaziun tenor la medema metoda. In dumber pli grond da quests novs objects da l'inventari sco er da tut ils objects ch'èn vegnids integrads en l'inventari en il rom da la 2. e 3. cumplettaziun sco er da la revisiun 2007 (senza zonas umidas alpinas) èn vegnids cartads tenor il medem sistem cun agid da fotografias fotogrammetricas ord l'aria a radis infracotschens.</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+        </gmd:PT_FreeText>
+      </gmd:abstract>
+      <gmd:status>
+        <gmd:MD_ProgressCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ProgressCode" codeListValue="onGoing"/>
+      </gmd:status>
+      <gmd:pointOfContact xlink:show="embed">
+        <che:CHE_CI_ResponsibleParty gco:isoType="gmd:CI_ResponsibleParty">
+          <gmd:organisationName xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Bundesamt für Umwelt / Abteilung Biodiversität und Landschaft</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Bundesamt für Umwelt / Abteilung Biodiversität und Landschaft</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Office fédéral de l'environnement / Division Biodiversité et paysage</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Ufficio federale dell'ambiente / Divisione Biodiversità e paesaggio</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">Federal Office for the Environment / Biodiversity and Landscape Division</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM">Bundesamt für Umwelt</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone>
+                <che:CHE_CI_Telephone gco:isoType="gmd:CI_Telephone">
+                  <gmd:voice>
+                    <gco:CharacterString>+41 58 462 93 89</gco:CharacterString>
+                  </gmd:voice>
+                  <gmd:facsimile>
+                    <gco:CharacterString>+41 58 463 89 74</gco:CharacterString>
+                  </gmd:facsimile>
+                </che:CHE_CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <che:CHE_CI_Address gco:isoType="gmd:CI_Address">
+                  <gmd:city>
+                    <gco:CharacterString>Bern</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:postalCode>
+                    <gco:CharacterString>3003</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:country>
+                    <gco:CharacterString>CH</gco:CharacterString>
+                  </gmd:country>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>bnl@bafu.admin.ch</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </che:CHE_CI_Address>
+              </gmd:address>
+              <gmd:onlineResource>
+                <gmd:CI_OnlineResource>
+                  <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                    <che:PT_FreeURL>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#EN">https://www.bafu.admin.ch/bafu/en/home/office/divisions-sections/biodiversity-and-landscape-division.html</che:LocalisedURL>
+                      </che:URLGroup>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#DE">https://www.bafu.admin.ch/bafu/de/home/amt/abteilungen-sektionen/abteilung-biodiversitaet-und-landschaft.html</che:LocalisedURL>
+                      </che:URLGroup>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#FR">https://www.bafu.admin.ch/bafu/fr/home/office/divisions-sections/division-biodiversite-et-paysage.html</che:LocalisedURL>
+                      </che:URLGroup>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#IT">https://www.bafu.admin.ch/bafu/it/home/ufficio/divisioni-sezioni/divisione-biodiversita-e-paesaggio.html</che:LocalisedURL>
+                      </che:URLGroup>
+                    </che:PT_FreeURL>
+                  </gmd:linkage>
+                  <gmd:protocol>
+                    <gco:CharacterString>WWW:LINK</gco:CharacterString>
+                  </gmd:protocol>
+                </gmd:CI_OnlineResource>
+              </gmd:onlineResource>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode" codeListValue="pointOfContact"/>
+          </gmd:role>
+          <che:individualLastName>
+            <gco:CharacterString>BAFU BNL</gco:CharacterString>
+          </che:individualLastName>
+          <che:organisationAcronym xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>BAFU</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">BAFU</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">OFEV</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">UFAM</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">FOEN</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM">BAFU</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </che:organisationAcronym>
+        </che:CHE_CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:pointOfContact xlink:show="embed">
+        <che:CHE_CI_ResponsibleParty gco:isoType="gmd:CI_ResponsibleParty">
+          <gmd:organisationName xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Bundesamt für Umwelt</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Bundesamt für Umwelt</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Office fédéral de l'environnement</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Ufficio federale dell'ambiente</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">Federal Office for the Environment</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM">Bundesamt für Umwelt</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone>
+                <che:CHE_CI_Telephone gco:isoType="gmd:CI_Telephone">
+                  <gmd:voice>
+                    <gco:CharacterString>+41 58 462 93 11</gco:CharacterString>
+                  </gmd:voice>
+                  <gmd:facsimile>
+                    <gco:CharacterString/>
+                  </gmd:facsimile>
+                </che:CHE_CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <che:CHE_CI_Address gco:isoType="gmd:CI_Address">
+                  <gmd:city>
+                    <gco:CharacterString>Bern</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:postalCode>
+                    <gco:CharacterString>3003</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>info@bafu.admin.ch</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </che:CHE_CI_Address>
+              </gmd:address>
+              <gmd:onlineResource>
+                <gmd:CI_OnlineResource>
+                  <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                    <che:PT_FreeURL>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#EN">https://www.bafu.admin.ch/bafu/de/home.html</che:LocalisedURL>
+                      </che:URLGroup>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#DE">https://www.bafu.admin.ch/bafu/de/home.html</che:LocalisedURL>
+                      </che:URLGroup>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#FR">https://www.bafu.admin.ch/bafu/fr/home.html</che:LocalisedURL>
+                      </che:URLGroup>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#IT">https://www.bafu.admin.ch/bafu/it/home.html</che:LocalisedURL>
+                      </che:URLGroup>
+                      <che:URLGroup>
+                        <che:LocalisedURL locale="#RM">https://www.bafu.admin.ch/bafu/en/home.html</che:LocalisedURL>
+                      </che:URLGroup>
+                    </che:PT_FreeURL>
+                  </gmd:linkage>
+                  <gmd:protocol>
+                    <gco:CharacterString>WWW:LINK</gco:CharacterString>
+                  </gmd:protocol>
+                </gmd:CI_OnlineResource>
+              </gmd:onlineResource>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_RoleCode" codeListValue="owner"/>
+          </gmd:role>
+          <che:organisationAcronym xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>BAFU</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">BAFU</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">BAFU</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">BAFU</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">BAFU</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM">BAFU</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </che:organisationAcronym>
+        </che:CHE_CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:resourceMaintenance>
+        <che:CHE_MD_MaintenanceInformation gco:isoType="gmd:MD_MaintenanceInformation">
+          <gmd:maintenanceAndUpdateFrequency>
+            <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="asNeeded"/>
+          </gmd:maintenanceAndUpdateFrequency>
+          <che:appraisal>
+            <che:CHE_MD_Appraisal_AAP>
+              <che:durationOfConservation>
+                <gco:Integer>100</gco:Integer>
+              </che:durationOfConservation>
+              <che:appraisalOfArchivalValue>
+                <che:CHE_AppraisalOfArchivalValueCode codeList="#CHE_AppraisalOfArchivalValueCode" codeListValue="A"/>
+              </che:appraisalOfArchivalValue>
+              <che:reasonForArchivingValue>
+                <che:CHE_ReasonForArchivingValueCode codeList="#CHE_ReasonForArchivingValueCode" codeListValue="evidenceOfBusinessPractice"/>
+              </che:reasonForArchivingValue>
+            </che:CHE_MD_Appraisal_AAP>
+          </che:appraisal>
+        </che:CHE_MD_MaintenanceInformation>
+      </gmd:resourceMaintenance>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>opendata.swiss</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">opendata.swiss</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">opendata.swiss</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">opendata.swiss</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">opendata.swiss</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM">opendata.swiss</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:keyword>
+          <gmd:keyword xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Aufbewahrungs- und Archivierungsplanung AAP - Bund</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Aufbewahrungs- und Archivierungsplanung AAP - Bund</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Planification de la conservation et de l'archivage AAP - Conféderation</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Pianificazione della conservazione e dell’archiviazione AAP - Confederazione</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">Conservation and archiving planning AAP - Confederation</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM"/>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:keyword>
+          <gmd:keyword xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>e-geo.ch</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">e-geo.ch</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">e-geo.ch</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">e-geo.ch</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">e-geo.ch</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM"/>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>geocat.ch</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2024-06-13</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch">geonetwork.thesaurus.local.theme.geocat.ch</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Umwelt</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Umwelt</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">environnement</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">ambiente (in generale)</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">environment</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM"/>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>GEMET</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2018-08-16</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/external.theme.gemet">geonetwork.thesaurus.external.theme.gemet</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords xlink:href="local://srv/api/registries/vocabularies/keyword?skipdescriptivekeywords=true&amp;thesaurus=external.theme.httpinspireeceuropaeutheme-theme&amp;id=http%3A%2F%2Finspire.ec.europa.eu%2Ftheme%2Fps%2Chttp%3A%2F%2Finspire.ec.europa.eu%2Ftheme%2Fhb&amp;lang=ger,fre,ita,eng,roh"/>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>BGDI Bundesgeodaten-Infrastruktur</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">BGDI Bundesgeodaten-Infrastruktur</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">IFDG l’Infrastructure Fédérale de données géographiques</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">IFDG Infrastruttura federale dei dati geografici</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">FSDI Federal Spatial Data Infrastructure</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"/>
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title gco:nilReason="missing" xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>geocat.ch</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">geocat.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2024-06-13</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch">geonetwork.thesaurus.local.theme.geocat.ch</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:resourceConstraints>
+        <che:CHE_MD_LegalConstraints gco:isoType="gmd:MD_LegalConstraints">
+          <gmd:useConstraints>
+            <gmd:MD_RestrictionCode codeListValue="otherRestrictions" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_RestrictionCode"/>
+          </gmd:useConstraints>
+          <gmd:otherConstraints xsi:type="gmd:PT_FreeText_PropertyType">
+            <gmx:Anchor xlink:href="https://opendata.swiss/en/terms-of-use/#terms_open">Opendata OPEN: Freie Nutzung.</gmx:Anchor>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Opendata OPEN: Freie Nutzung.</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Opendata OPEN: Utilisation libre.</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Opendata OPEN: Libero utilizzo.</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">Opendata OPEN: Open use.</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:otherConstraints>
+        </che:CHE_MD_LegalConstraints>
+      </gmd:resourceConstraints>
+      <gmd:spatialResolution>
+        <gmd:MD_Resolution>
+          <gmd:equivalentScale>
+            <gmd:MD_RepresentativeFraction>
+              <gmd:denominator>
+                <gco:Integer>5000</gco:Integer>
+              </gmd:denominator>
+            </gmd:MD_RepresentativeFraction>
+          </gmd:equivalentScale>
+        </gmd:MD_Resolution>
+      </gmd:spatialResolution>
+      <gmd:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+      </gmd:language>
+      <gmd:characterSet>
+        <gmd:MD_CharacterSetCode codeListValue="8859part1" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_CharacterSetCode"/>
+      </gmd:characterSet>
+      <gmd:topicCategory>
+        <gmd:MD_TopicCategoryCode>environment</gmd:MD_TopicCategoryCode>
+      </gmd:topicCategory>
+      <gmd:topicCategory>
+        <gmd:MD_TopicCategoryCode>environment_NatureProtection</gmd:MD_TopicCategoryCode>
+      </gmd:topicCategory>
+      <gmd:topicCategory>
+        <gmd:MD_TopicCategoryCode>biota</gmd:MD_TopicCategoryCode>
+      </gmd:topicCategory>
+      <gmd:extent xlink:show="embed">
+        <gmd:EX_Extent>
+          <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Schweiz</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Schweiz</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Suisse</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Svizzera</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#EN">Switzerland</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#RM">Svizra</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:description>
+          <gmd:geographicElement>
+            <gmd:EX_GeographicBoundingBox>
+              <gmd:westBoundLongitude>
+                <gco:Decimal>5.956088</gco:Decimal>
+              </gmd:westBoundLongitude>
+              <gmd:eastBoundLongitude>
+                <gco:Decimal>10.492036</gco:Decimal>
+              </gmd:eastBoundLongitude>
+              <gmd:southBoundLatitude>
+                <gco:Decimal>45.817970</gco:Decimal>
+              </gmd:southBoundLatitude>
+              <gmd:northBoundLatitude>
+                <gco:Decimal>47.808488</gco:Decimal>
+              </gmd:northBoundLatitude>
+            </gmd:EX_GeographicBoundingBox>
+          </gmd:geographicElement>
+          <gmd:geographicElement>
+            <gmd:EX_BoundingPolygon>
+              <gmd:polygon>
+                <MultiSurface xmlns="http://www.opengis.net/gml/3.2" gml:id="d8551354e60" srsName="EPSG:4326">
+                  <gml:surfaceMember>
+                    <Polygon gml:id="d8551354e62" srsName="EPSG:4326">
+                      <gml:exterior>
+                        <gml:LinearRing>
+                          <gml:posList srsDimension="2">47.80599001802204 8.573027016568055 47.79972651801619 8.575219016576376 47.80264401801088 8.587755516598248 47.79877051800537 8.592442016609725 47.80288151800305 8.601357516623885 47.801079017994326 8.61383151664873 47.7983260179895 8.618624016659648 47.7959390179882 8.61782051665972 47.794663517984745 8.622058516668602 47.78876451798143 8.620414516669431 47.78705551798303 8.615677016661598 47.784895517981795 8.615012016661776 47.7801917179768 8.617697716670005 47.77794051797444 8.618837516673658 47.777170017971294 8.623174516682397 47.76733101796643 8.61926701668155 47.75925901795545 8.62767901670287 47.758246017952416 8.63153051671084 47.76012961795278 8.63323031671281 47.765147017951065 8.642390516726815 47.765025017949085 8.645487516732754 47.76697201794924 8.647669016735575 47.76850051795163 8.645558016730563 47.773365017950745 8.653031016741446 47.773936017954156 8.648022016731593 47.78128651795843 8.649961516730343 47.786847517965114 8.645498516718185 47.79466851797029 8.646540016714898 47.794707017968896 8.648766516719085 47.798493017971296 8.649425516717784 47.800365517968125 8.657014516730861 47.795978517963015 8.660206016739833 47.791607517961495 8.65742051673751 47.79162751795889 8.661782016745727 47.787708517952844 8.667183016758564 47.785692517945954 8.67615501677684 47.78667101794386 8.680921016785172 47.77716401793576 8.68279001679509 47.77365001792992 8.688253516807746 47.77050951793068 8.683207516800348 47.75934751791972 8.687696016816306 47.75615651791447 8.692625516827748 47.75678001791186 8.697681516836855 47.75974101791325 8.698987016837336 47.765501517908426 8.714178016862062 47.7627030178992 8.726105016886388 47.759594517894136 8.730655516897032 47.75788401789395 8.728850016894798 47.751852517882185 8.741075516921851 47.74642351787917 8.73940201692236 47.74574251788821 8.723513016892934 47.74107551788674 8.72012201688969 47.73869801788847 8.714344016880403 47.730071517883836 8.711270016880388 47.721429017873284 8.718162516899175 47.72135351786938 8.724546016911253 47.72003051786847 8.724433516911931 47.71836601786195 8.733205016929572 47.71615151785844 8.736294516936878 47.711460017857526 8.7319325169318 47.69667301784967 8.726401016931261 47.69267711784576 8.727972316936896 47.689635517826275 8.75653951699276 47.676462517798704 8.785670517056358 47.67559871779199 8.795690117075763 47.67992701779671 8.793337017068435 47.68972651780132 8.798059017070704 47.69173101780178 8.799774017072565 47.69326451779683 8.809933017090572 47.696442017801466 8.806176517081392 47.69733601780721 8.797798017065084 47.70231451781101 8.797720517061581 47.70438501781519 8.793390517052064 47.70672351783139 8.769496517005656 47.71319451783429 8.772813517007515 47.717948517839545 8.76990401699886 47.720757517837384 8.776999517010283 47.72273051783937 8.776131517007316 47.72171651783577 8.780802517016763 47.727177017837285 8.785050017021035 47.727326017834095 8.790547017031239 47.72891051783451 8.791824517032557 47.727278517828914 8.79899551704709 47.73467201783601 8.796436517037288 47.73830701783265 8.80643901705353 47.73107551782604 8.808471517062245 47.73042651782316 8.812397517070028 47.72446751782321 8.804927017060095 47.72387751781811 8.812647017074934 47.71765001780987 8.818586017090269 47.71791051780546 8.826183017104292 47.712872017806106 8.818854517094012 47.71092201780154 8.824128017105188 47.71457651779868 8.83326151711978 47.71226251779102 8.843022017139573 47.71103401778853 8.84556651714516 47.703492017781016 8.848522017155814 47.704960017768265 8.87137701719742 47.70406351776675 8.872750517200586 47.7017080177668 8.869699017196506 47.696741017759265 8.87601351721165 47.694400517758424 8.874532517210493 47.69242901776397 8.862934517190206 47.69648601776508 8.866142517193428 47.69869151776844 8.863354017186733 47.69645651776885 8.85997901718196 47.698748017771614 8.858146017176981 47.69766501777503 8.851325017164989 47.69448551777314 8.85028551716521 47.692837017767744 8.857196517179231 47.68908951776563 8.85608251717969 47.68571401776616 8.850990017172478 47.68092321776223 8.851540817176751 47.68058801775662 8.860330017193391 47.67045751774095 8.873453017224744 47.65596291772894 8.874985417237427 47.65466901772797 8.874870517238085 47.6546640177234 8.8824310172522 47.647838517709424 8.896779017283576 47.65636551768918 8.940497517359079 47.665100017681105 8.964399017397419 47.67458601767743 8.98195151742336 47.6866210176619 9.021782517488498 47.68435551763855 9.056576517554003 47.679000517624594 9.07237001758669 47.67891601761047 9.094917017628033 47.67515251760052 9.10626851765142 47.66842101758838 9.117594517676817 47.6642610175722 9.138359017717622 47.66465551756979 9.142592517725067 47.66757001756871 9.14787451773264 47.666018717561364 9.157705817751634 47.660459517553754 9.16304751776526 47.65470901754474 9.170492017782843 47.65575701754244 9.175346017790948 47.65393801754081 9.175806517793058 47.65588471753826 9.182167917803245 47.65745101753633 9.187102317811108 47.65509571751695 9.214832117863065 47.65870771749319 9.256560917935946 47.62032611737541 9.394713918211297 47.55145511725682 9.495603718440316 47.549739417248105 9.506947418461657 47.54189321720812 9.558720418558838 47.49918151717292 9.561104618593864 47.49360401716651 9.564142018603244 47.4866145171529 9.576392018629914 47.481221517143965 9.583400018646149 47.463622017122404 9.594817518678939 47.46159101711681 9.600866518691065 47.46238101711567 9.603570518695271 47.470328517119576 9.607249018696036 47.46944401711607 9.61159901870433 47.45748601709943 9.62232451873182 47.45425101707561 9.654435018790577 47.45138251707003 9.65944951880144 47.44778951706809 9.658005018801498 47.44274401706878 9.650802518792498 47.43521651706698 9.644318018786525 47.416432017047356 9.650899018811584 47.40462651703721 9.651635518821342 47.404400017035165 9.654392518826352 47.39754601702587 9.660106518841316 47.391291017011824 9.673578518869467 47.38151051700388 9.6733705188761 47.37743701700259 9.670271018873576 47.3710810170025 9.662428018864313 47.3674460170079 9.649545518844203 47.36737001701724 9.635391518819294 47.36508051702125 9.626292518804851 47.366145017023335 9.624479518800888 47.36243501702337 9.619674018795022 47.34690101702283 9.600727018772456 47.337520017017845 9.596352518771305 47.31754401700623 9.588288518771014 47.311122517005145 9.581559518763534 47.304184017009575 9.565732518740198 47.30019151701038 9.559226018731376 47.2782030170018 9.543458218718483 47.27058101700352 9.530749018701 47.269381517003104 9.529812018700152 47.26259501699744 9.529440518704167 47.244045016987286 9.520324018700588 47.231780516983 9.510388018691144 47.22279351698015 9.502722518683495 47.20670751697027 9.49612001868257 47.19824701696654 9.490223518677691 47.190294516961245 9.487608018678364 47.17795651695119 9.486198018684172 47.156944016926516 9.495433018715062 47.14722101691255 9.503737518736626 47.14005001690262 9.509223518751364 47.12194601688243 9.515220018774384 47.11512651687505 9.517156518782468 47.10015001685939 9.52034401879828 47.08535951685113 9.512247018793536 47.06589051685712 9.47491101873879 47.06129501685458 9.47223501873697 47.051797516843365 9.476047518750187 47.0549960168462 9.476301018748535 47.0564640168437 9.482308018758475 47.0529605168404 9.482490018761128 47.04968501683512 9.48602501876973 47.057274016838015 9.49237151877623 47.054545516832235 9.497507018787353 47.057644516833335 9.500325518790413 47.05721951682552 9.511909018811696 47.06069501682531 9.51727101881909 47.063036516818975 9.530543018841543 47.06514451681498 9.539751518856786 47.05884401680159 9.55161851888242 47.05050551679211 9.554383518892987 47.04932651678945 9.556851518898224 47.048570516786874 9.559783518904025 47.05252601678447 9.569209018918379 47.05401301677999 9.578260518933696 47.05280801677703 9.581135518939675 47.055177516775025 9.587708018949913 47.05909801677322 9.596016518962225 47.058982516770726 9.59976401896904 47.061894016771475 9.602818018972565 47.06077451676768 9.607078018980976 47.05362851675453 9.617226019003988 47.051330016746526 9.626350519021907 47.05170551674025 9.636565019039953 47.0539255167392 9.641348519047021 47.05977801674214 9.645080519049749 47.058185516732166 9.658238019074352 47.06210151672039 9.681863519113852 47.05895501671737 9.682047019116316 47.055230016709956 9.688214519129831 47.05239251670127 9.697583019148444 47.0538390166962 9.707326519164804 47.04805001669115 9.707033519168208 47.0433790166795 9.718234019191307 47.04260001666364 9.741354019232881 47.04110751665975 9.745223019240765 47.03692801665405 9.748100519248712 47.038458516632325 9.783335519310013 47.03169201662046 9.791911519329796 47.02909301661178 9.801422519348352 47.02173851659783 9.81234901937266 47.022549516596534 9.815469519377604 47.01962351658811 9.824152019394903 47.014332016578905 9.830726519410106 47.01253701657365 9.83614101942086 47.01512501657284 9.841030019427684 47.01641901656625 9.852750019447383 47.02331451656736 9.860681519456552 47.02133051656121 9.86720701946936 47.02123301655518 9.876267519485301 47.01802401654945 9.880351519494674 47.013064016550956 9.87117201948201 47.00964451654812 9.870725019483576 47.006528516543774 9.872956519489634 47.00073581652793 9.888764919521323 46.99036551651586 9.892325019534692 46.9832800165155 9.883027019523267 46.98085451651225 9.884570019527638 46.97365951651135 9.875722019517047 46.96750201650572 9.875604519521062 46.96310101650448 9.871269019516452 46.95707351649388 9.878741019533694 46.9503970164901 9.874899519531496 46.94071301647994 9.876592019541075 46.94011851647664 9.880727519548742 46.93463551647442 9.876148519544435 46.935024016471765 9.880746519552245 46.931652016459466 9.894506519578707 46.92530801644566 9.906342019603795 46.92606251644236 9.912331019613779 46.918831016429465 9.921551519634855 46.913249516413586 9.937602019666755 46.91235651640697 9.946142019682295 46.91603151640182 9.959091019702388 46.912404516395696 9.963132019711926 46.912230016393245 9.966587019718068 46.91589001638919 9.977887019735247 46.913378016384925 9.980803019742046 46.90620601637697 9.982454019749841 46.90241551636823 9.990130019765795 46.9022680163643 9.995835519775818 46.89880701635428 10.005929019795742 46.901622016349 10.017838519814486 46.89581301633769 10.026487519833482 46.886587516323424 10.034674019854021 46.885814016319614 10.039329019862612 46.88044701631234 10.042457519871718 46.87575401630101 10.052619519892536 46.86394951629071 10.051217519898216 46.860782016282116 10.059581019914875 46.8611900162638 10.087351519962576 46.85818051625741 10.09261601997373 46.851706516251376 10.092319019977673 46.8487905162456 10.096797019987404 46.84090921623232 10.10517102000726 46.84417701622608 10.119143020029071 46.84738451622863 10.119945020028252 46.84848351622752 10.123114520032951 46.84738501621544 10.139430020061743 46.851410516213996 10.147293020072453 46.85032751620803 10.154601520085743 46.847867016203715 10.157430520092287 46.85099651620323 10.162710520099168 46.850666516198565 10.169082020110304 46.853671016199606 10.171776020112837 46.85497701619455 10.18101052012772 46.86644951619693 10.193678520141352 46.866634016193494 10.19903252015036 46.86462101618827 10.203843520159962 46.86729101618033 10.219248020184322 46.86630551617021 10.232689020207863 46.86944351617447 10.230857520202548 46.87161351617521 10.232827520204383 46.88468901618622 10.234850520198634 46.89021301619639 10.227622520182491 46.89594651620303 10.225737520175258 46.9016475162033 10.233317520184109 46.915708016213976 10.237051020180528 46.91883501621351 10.242031020186747 46.93125751622615 10.2405795201755 46.92977851621313 10.25751052020517 46.92181201618084 10.29361202027169 46.919956516176846 10.296884520278516 46.92466051617856 10.30080602028176 46.92518401616858 10.316069020307026 46.93095801617315 10.317177520304753 46.94014801618937 10.306179520279745 46.950206016196454 10.309367020277893 46.95398051618719 10.327831520306132 46.963935516195114 10.329621020301973 46.978380016200745 10.340722020310105 46.98131101620398 10.33999702030679 46.98271501620211 10.34455202031338 46.989592016207055 10.346522520311682 46.992364016203744 10.354998520323806 46.99067351619034 10.372056520353427 46.999276016190294 10.38338452036599 47.00052451618725 10.389318020374919 46.99688251617738 10.398716020393152 46.990859016169495 10.402184020403293 46.98264901615479 10.41250602042636 46.975686516138545 10.426589020454736 46.97270201613522 10.42750452045842 46.96550551613173 10.422974520456165 46.95995251612705 10.422380520459216 46.95615351611916 10.428640520472335 46.9562765161163 10.432948020479378 46.95231951610133 10.449156020509037 46.95288451609747 10.455481520519063 46.94710051608272 10.46882402054527 46.94107851607172 10.476588520562442 46.93779051605979 10.489350520585848 46.93144951605676 10.485296020583792 46.9262855160498 10.488307520592503 46.91546151604119 10.486218520596926 46.91059651604206 10.478542520587801 46.89429301602925 10.475092020593905 46.8842815160271 10.464697020583955 46.88110601602095 10.469231520593741 46.87296351601186 10.471266020602963 46.8621140160039 10.468009020605363 46.84877351598858 10.471811020621224 46.84142751598711 10.463958520613481 46.83589501598 10.466532520621692 46.83408501598076 10.463073520617256 46.83468601598334 10.460130520611946 46.83024751598147 10.45666602060937 46.82454051597354 10.460356520619554 46.82204001597418 10.455957020614038 46.81647001596755 10.457782520621027 46.804260515960706 10.450775020618066 46.79763951596249 10.438992520603152 46.7967805159682 10.429557020588048 46.794236515967704 10.42673852058514 46.78940651596309 10.42664352058839 46.78824301596472 10.42271952058267 46.78187851595089 10.433807520605646 46.777613015945846 10.435110520610833 46.77192601593575 10.441658520625758 46.757291015920075 10.443801020639624 46.752107015916444 10.441707520639767 46.75260751592127 10.435468020629006 46.732820015926244 10.400201020583841 46.7284710159159 10.40897002060157 46.723837515909956 10.410960520608146 46.71905401589992 10.41873052062449 46.70900351589193 10.416007020626914 46.70546501589249 10.409990020619281 46.705501515897154 10.403327520608078 46.68920751588782 10.39332152060255 46.68728251589265 10.38356952058747 46.6843065158909 10.38182202058658 46.67137151587071 10.39241552061333 46.65886101585912 10.391013520619573 46.654637515852805 10.39408852062766 46.645987015839864 10.400282520644032 46.64056701583343 10.401711020650147 46.638584015832684 10.399859020648394 46.63681201582923 10.402288020653694 46.635058515822784 10.409127520666415 46.63831101581847 10.420209520682818 46.639379015803605 10.443446020721085 46.64127151580361 10.446075520724184 46.63305051578398 10.46256502075747 46.617420515753246 10.484266020804506 46.61534151574574 10.492035520818913 46.6110540157421 10.491134020820358 46.60502851574058 10.484478520813395 46.59798751573141 10.487394520823107 46.59208451572786 10.483888020821297 46.58947101572239 10.487899020829794 46.58090251571675 10.483560520828414 46.57719801571199 10.484845520833098 46.56646651570797 10.47475102082353 46.562579515704456 10.474093020825084 46.55710401569633 10.47774852083493 46.54833051569198 10.471074020829729 46.54350501568618 10.47221352083491 46.54126651568836 10.465685520825474 46.54131901569291 10.4591120208144 46.53654951568841 10.458578520816733 46.5306830156863 10.452801020810984 46.537391015704266 10.436688020779325 46.55132001573132 10.418131520738617 46.543935515737935 10.397325520708447 46.550045515753126 10.38426752068223 46.54997251575651 10.379266520673797 46.55393601576658 10.370484020656232 46.55568601578092 10.352083020623814 46.549454515775736 10.350209520624821 46.54268801577672 10.33847752060939 46.55166701579532 10.324802020580073 46.54662651579969 10.310660020559308 46.54942301580478 10.307372520551828 46.549893515813366 10.295437020531107 46.55175451581639 10.293767020527019 46.55510701581792 10.29660502052963 46.5587185158226 10.295210520524824 46.56459801583313 10.288592020509583 46.57025301584028 10.286641520502455 46.57395301585463 10.271122020473426 46.57751851585987 10.268709020466899 46.57695701586314 10.263027020457534 46.571243515863635 10.253578520445137 46.574589515872276 10.245915020429743 46.577801515877084 10.24359802042362 46.591571015892605 10.241562520410938 46.61044251590019 10.25889052042802 46.622101115921595 10.244882620396176 46.635330515938804 10.239203020377541 46.62899401594263 10.223970520355651 46.61694001593624 10.215320020348859 46.62076601594616 10.206370520330903 46.62313551595733 10.19340052030696 46.625934015960546 10.192765520303995 46.62396951596503 10.183067020288584 46.61570851597057 10.162274020258145 46.610762015982196 10.13740002021832 46.60775601597971 10.136514020218776 46.605507015982795 10.128460020206285 46.6071055159946 10.113259520178794 46.61065201600257 10.106734520165096 46.61072001600552 10.102353820157424 46.60543351600247 10.098879020154852 46.600976515996194 10.101349520162096 46.59319851599104 10.09709152015979 46.58899351598401 10.101154520169642 46.58284751597832 10.10021502017204 46.57734401597583 10.095366520167195 46.575145515984666 10.078619020139373 46.5713685159801 10.079671520143679 46.567156515972016 10.08529502015627 46.56071601597039 10.077671020147138 46.558642015972545 10.071155020137084 46.550325515966165 10.067716520136477 46.54585001596559 10.061517020128523 46.544044515973475 10.046767020103792 46.537531015968526 10.043919520103012 46.53184001595641 10.053245020123077 46.52871151595497 10.050536520120346 46.522670015946396 10.053934520130227 46.513341015938195 10.051484020131939 46.5100605159408 10.042382520118037 46.501893515930455 10.045040520127978 46.499843515925576 10.049049520136354 46.493687015921815 10.044933520133059 46.490391015918206 10.045129520135525 46.487814015913244 10.048532020143172 46.483066515911254 10.043916520138087 46.476962515904034 10.045188020144234 46.47177551589418 10.05175602015913 46.46382851588439 10.053769020167767 46.46040701588159 10.052492020167703 46.452418515879934 10.041985520154276 46.44884401587587 10.042370520157231 46.44684201587578 10.039349520153174 46.44261851586951 10.041972920160497 46.43969901585939 10.05258302018107 46.44086851585822 10.056279020186842 46.42838901584223 10.060248020201785 46.42587101583683 10.064393520210691 46.42805751583071 10.07730802023204 46.42594001582656 10.080132520238362 46.42103601582106 10.080472020242079 46.4226690158149 10.092485520262167 46.42135901580821 10.10051452027711 46.42830151581059 10.108089520285967 46.42599051580209 10.117209520303431 46.42909501580413 10.119180520304898 46.43173651580032 10.12923652032082 46.42908101579503 10.13298652032908 46.428277515787414 10.14319852034746 46.42297401577913 10.147088520357661 46.4142245157694 10.147670020364284 46.412820515766654 10.149386520368184 46.41584301576484 10.157123020379757 46.4154450157618 10.16103402038685 46.40764801574966 10.16668152040169 46.40346551574826 10.162032020396264 46.39062601573326 10.163860520407676 46.3876675157312 10.162031520406368 46.38500901573234 10.156046020397607 46.38688851574003 10.147427020381325 46.386223015742544 10.14262602037335 46.37768251574338 10.12737352035205 46.37427451573894 10.128527520356243 46.36989151573578 10.126141020354831 46.36099001572405 10.12920052036584 46.35733651572652 10.11938202035092 46.35267051572529 10.11361002034371 46.35319601572813 10.110085520337183 46.350822015727 10.108009520335031 46.34631301572108 10.109430520340368 46.34224451571881 10.10609152033706 46.33366751571066 10.104273520339245 46.32349351569394 10.11272152036051 46.31411251568126 10.11638702037286 46.30461651565638 10.13835352041745 46.301086515653004 10.137526020418216 46.295591515641675 10.145554520435761 46.292721015632736 10.154267520452864 46.28925501562734 10.156594520459128 46.284798015623615 10.154819020458797 46.2823540156159 10.162424020473681 46.27718451561097 10.161245020474848 46.2714260156032 10.163346520482142 46.26661351559221 10.171936020500224 46.25827651557985 10.176524520513476 46.2546125155769 10.174933520512969 46.239642015576074 10.15087352048002 46.230482515568994 10.145949020477039 46.22487701557166 10.132324020456492 46.22559401557491 10.12861602044951 46.22378751557637 10.123281520441198 46.225719515587805 10.109172520415084 46.2285700155947 10.103486020403265 46.22819201560204 10.091609520382484 46.22475301560561 10.080187520364351 46.21711851560332 10.070593520352011 46.22019451561167 10.063082520336776 46.22497401561994 10.058612520325909 46.22974451563499 10.0436700202964 46.23521101563512 10.052921020309508 46.24151501564185 10.053437020306559 46.24408051564241 10.056963520311239 46.247152015645646 10.05735452031006 46.24822901564477 10.060568520315092 46.267057515670224 10.053717020291328 46.27741701569776 10.029062020241113 46.280660015714254 10.009228520203795 46.284765515727386 9.996015020177694 46.29613501574279 9.991741020163065 46.301444015742945 10.00061002017562 46.30354001574504 10.000942520174911 46.30749101575234 9.996341020164264 46.31307401575604 10.000195520167686 46.314036015760486 9.994912020157674 46.32314651578014 9.980219520125834 46.33428551578882 9.98563102012859 46.342343015790924 9.996124520142281 46.34836101579823 9.994978520136499 46.350934515799906 9.996764020138071 46.35240751580341 9.993776020131842 46.35178701580827 9.985239520117023 46.36380001583483 9.964572520072682 46.37346451585097 9.956017520051411 46.378124515853926 9.959241020054256 46.379156015858975 9.953191520042818 46.37487101586656 9.934299020011709 46.371533015865865 9.92978502000571 46.36784101586125 9.930626520009499 46.365911515862926 9.924788520000238 46.37062701586952 9.922567519993335 46.3705400158732 9.91672951998293 46.380662115889976 9.90791151996084 46.37342851589743 9.884071019922493 46.36844751589419 9.880632019919384 46.36241201589557 9.868224519900746 46.3646470159 9.86518201989389 46.362790515903725 9.856281019878978 46.36461201591005 9.849516519865649 46.36184851590906 9.846180519861315 46.3609880159172 9.832073519836344 46.35812101591484 9.830934519836045 46.35068501591364 9.81999851982079 46.348549515918045 9.809404019802884 46.34420301591768 9.802398019792816 46.340994715925596 9.784503419762258 46.33546101592326 9.778579519754834 46.33591351592938 9.769648019738295 46.34441501594646 9.757628519711247 46.347892515956794 9.747367019690426 46.35182001596356 9.743532519681057 46.350313015966805 9.735838519667917 46.34426801596591 9.726695019654851 46.34074001596425 9.723150519650494 46.33269751595288 9.727061519662499 46.33126001595365 9.723337519656546 46.32398051594933 9.717325519649908 46.32166901594621 9.718268519653027 46.31969401593912 9.72601101966839 46.31327551593212 9.725822519671894 46.31001501592934 9.724475519671378 46.306281515929165 9.718219019662149 46.292918415916574 9.714451119663222 46.29173501591796 9.710146019656028 46.290810515921635 9.702705519642924 46.293959015930554 9.694099519625238 46.29383501593381 9.688660519615306 46.29709451594186 9.681814019600788 46.29998051594537 9.681247519598031 46.30304851595178 9.676512519587485 46.299899515952376 9.67000301957738 46.29631201594883 9.669252519578121 46.29605201595437 9.659976019561185 46.292547015956 9.651024019546748 46.2898135159538 9.649706519545934 46.286154015956264 9.63923801952876 46.28843051596803 9.62450101950017 46.28736451597038 9.618829019490297 46.29464801598374 9.61043951947047 46.295710015991865 9.59930951944922 46.293505515993495 9.5927260194383 46.294924515996826 9.589966519432352 46.294904016003464 9.579259019412481 46.299056016011946 9.573095519398594 46.30270751602285 9.562162019376116 46.30629301602824 9.559820019369655 46.30597001603129 9.554392519359748 46.30237911603026 9.549529419352794 46.30809951604312 9.539132519330082 46.32684251607672 9.518667519280934 46.332602516084364 9.516721019273927 46.332342016085576 9.514232519269429 46.351480516110435 9.50847251924744 46.35616651612058 9.50053051922986 46.364103016131864 9.496424019217521 46.36733501614371 9.48301901919058 46.37123751615033 9.47933101918139 46.370653016151756 9.476028519175559 46.375970516167 9.460813519143956 46.37903901616911 9.462817019145918 46.383491516174686 9.461739019141277 46.38426201617346 9.465143019147195 46.38894051617644 9.468653519151006 46.41218101620632 9.461561019124034 46.41591601621364 9.456303519111984 46.42077751622023 9.454261519105293 46.43670851623584 9.45707651910111 46.44253551623997 9.46067751910437 46.46333401626353 9.45903551908893 46.469647516266406 9.465402019097036 46.48047201628003 9.462247519084672 46.47998051628727 9.449702519061569 46.48437701629239 9.449096019057805 46.48484451628553 9.461036519079794 46.49764301629815 9.462808519075423 46.50548751630764 9.46106601906747 46.507782516308055 9.464343019072187 46.50835101631227 9.458546019061055 46.50532151631117 9.455071019056396 46.49797601631628 9.43413251902173 46.488600516311905 9.424823519009934 46.485938016308076 9.426430519014527 46.47666551629934 9.424429019016305 46.46721251629576 9.413625019001698 46.46679101629705 9.41078851899664 46.47308851631683 9.389783518953498 46.48214301632939 9.385164518939463 46.48394801633589 9.37778801892453 46.489419016345785 9.371252018909011 46.49446651635302 9.368374518900612 46.49977151635564 9.373330018906769 46.503551016359665 9.373433518904722 46.509505016372884 9.362346518880349 46.504264016371614 9.355109018869852 46.50536801637527 9.35111501886169 46.503804016380954 9.339080518839957 46.50597551638426 9.337504518835702 46.50413801639845 9.311049018786894 46.49707551640319 9.290703018752593 46.49669501640762 9.282739518737738 46.48746301639997 9.278994018736057 46.483698016398684 9.274375018729511 46.479103516391845 9.277553518738227 46.466132516380135 9.273640518738379 46.461005516371955 9.277897018749442 46.4515330163687 9.266221018732796 46.44947751637459 9.252794018708471 46.4467945163752 9.24700251869901 46.431012516356176 9.249851018713562 46.42500401634295 9.260832018737938 46.42058551633648 9.263527018745615 46.418181016330095 9.269646518758643 46.41884551632786 9.274534018767554 46.413061516318 9.280476018782188 46.4050970163082 9.282117518789908 46.40343451630849 9.278612018784212 46.40153551630457 9.281692518791164 46.39495151630108 9.27540551878301 46.3890765162927 9.278490018792255 46.38629501628656 9.283518518803422 46.38365151628368 9.28350601880491 46.37346401627745 9.275190018794952 46.37142551627396 9.27714951879986 46.36781101627065 9.276072518799877 46.366608016267605 9.278838018805828 46.35784351625562 9.282530018817875 46.35565251624472 9.296508518845727 46.35146101623927 9.297838018850664 46.349112516237625 9.29614451884879 46.34364701622925 9.299976518859207 46.335887516225235 9.292313018849063 46.33187151621997 9.293514518853648 46.32645651620988 9.300141518869346 46.32325001620886 9.295892018863084 46.31723901620281 9.294728018864294 46.314388516205305 9.285288518847933 46.3092210162017 9.281611018843849 46.29691251618573 9.285065018857427 46.289542516185286 9.271965518836595 46.28216601617946 9.267763518832727 46.2785630161805 9.259212018818403 46.26943851617145 9.257047518819396 46.26739201617204 9.252117518811108 46.26238901616575 9.253147518815886 46.25617351616108 9.249096518811603 46.251408516154285 9.251341518818577 46.24753351615168 9.248358018815022 46.23970351614187 9.249802018822171 46.232037516135065 9.246438518819998 46.23341651614318 9.23553051879829 46.22889351614672 9.220906518772702 46.223840016139675 9.222997518779533 46.214270516131144 9.218830518776823 46.21074851612971 9.214401518770233 46.20830601613414 9.202173018748038 46.193625016121516 9.194844518741986 46.18701051611194 9.198089018751878 46.184056016110375 9.194925018747394 46.17843801610442 9.194038518748776 46.16917251610131 9.181099518728844 46.17094351610828 9.172746518711714 46.17174301611057 9.170446518706834 46.171363016111165 9.168666518703594 46.169601016114605 9.159377518686561 46.16216351610755 9.156579018685193 46.15332251611023 9.134509518647176 46.13481801609625 9.121475518631826 46.135406516099465 9.117079018622965 46.13197051610269 9.104710018600722 46.12671851609936 9.09979151859395 46.12578201610445 9.08921501857382 46.12124151610521 9.07868901855569 46.11810301610513 9.072517518545316 46.090069016062294 9.089146018592755 46.08569351605685 9.089432518595645 46.078741016051694 9.084195518589096 46.07591601605137 9.079072518580578 46.06520171603899 9.078321118584784 46.06251351603837 9.073897018577544 46.06066751604398 9.06042301855211 46.062364016051916 9.050230518531224 46.05897151605102 9.044785018522315 46.058942516054096 9.039377018511722 46.05303201605316 9.028804018494043 46.05269401605628 9.022682018482186 46.04973101605589 9.017218018472978 46.04318851604819 9.01696951847591 46.03728801604539 9.009525018464327 46.029799016037465 9.007594018464426 46.01590881601204 9.022658818501348 46.0009275159929 9.024489818512736 45.99362601598177 9.028461018524348 45.99275201598389 9.022890018513827 45.989539015980256 9.02250201851473 45.98765001598046 9.018078518506986 45.987902515984665 9.011358518493589 45.98318151597906 9.011141518495599 45.9802975159777 9.00734351848959 45.98051101598491 8.995348018465782 45.97281201597519 8.995821018470677 45.9716415159766 8.991070018461896 45.97293201597955 8.988544518456226 45.966551515968625 8.99402551847035 45.96054801594986 9.013964018512835 45.94917651593408 9.017267018525212 45.94384321593038 9.012288918518111 45.94151101592681 9.013568018521832 45.93714801591631 9.022478518541675 45.92844211590751 9.019195218539645 45.928747515903936 9.02615751855325 45.926429815898956 9.029812318561643 45.927493515892856 9.042735518586609 45.922081015882334 9.049433018602592 45.92042851588053 9.049087518602759 45.92094801587495 9.059905018623814 45.91648401586997 9.05906251862445 45.91279341585993 9.068497418644926 45.9106345158577 9.067808518644677 45.91283301585765 9.072649018653085 45.91141701585361 9.076576018661536 45.903385515843816 9.076346518665208 45.89929951583847 9.07693151866845 45.90220501583633 9.086842018686466 45.90066221583315 9.089026018691554 45.89689701582869 9.088803518693052 45.8959630158296 9.085173018686385 45.891796015826536 9.081643518681577 45.892028015828885 9.077954518674193 45.888464515823635 9.079459018678977 45.8850807158204 9.077837618677526 45.8817585158199 9.071460018666649 45.875390515814935 9.066386518659895 45.87515751581994 9.057234518641959 45.873565515819344 9.054807018637975 45.86800101581311 9.053696018638611 45.86261751580899 9.049178518632422 45.85552151579892 9.051365018640343 45.85318301579778 9.048236018635349 45.85221251579511 9.050774518640846 45.849594515794955 9.045399518631555 45.84659151579206 9.043811518629925 45.8464925157938 9.040628518623684 45.842030015789405 9.038652018622026 45.839658515788244 9.035431518616846 45.83552401578171 9.03783151862369 45.8246905157721 9.030952518615509 45.823017015768016 9.034462018623307 45.820833515767006 9.031389518618315 45.821922515773494 9.022372018599894 45.8206935157726 9.021331518598453 45.81797001577189 9.016526018590282 45.82291651578843 8.998435018551904 45.821970515789836 8.993914518543388 45.82620851579502 8.994115018541672 45.834944515803976 8.997487518543991 45.83533701580882 8.989890518528703 45.838618515814765 8.986748518520814 45.835711515814126 8.981385018511611 45.83663451581827 8.976172518500785 45.833040515814865 8.974207518498673 45.83235351581646 8.96998401849061 45.836374015826266 8.961459518471626 45.83912751582946 8.961967518471267 45.84290901583772 8.955773518457052 45.842778015842626 8.946799018439227 45.838905015845654 8.932877518413388 45.83337551584091 8.929034518408463 45.834196515846735 8.920476018390962 45.83044501584673 8.912147018376176 45.84222901586039 8.914226018374487 45.86096201587342 8.93253651840171 45.863714315872976 8.93936551841395 45.86697851587368 8.945301518424154 45.87034301587967 8.942059518416004 45.867306015878796 8.937027018407495 45.87057671588452 8.934144118400114 45.885100015903795 8.931902518388366 45.8957640159229 8.921537518362353 45.90370251593086 8.924843018364953 45.90899801594 8.920243118353119 45.91442261594898 8.916187918342299 45.917772515954226 8.91431201833688 45.91774001595822 8.907148018322607 45.93301451598518 8.892732018286145 45.94778801599989 8.898775018290742 45.9590150160165 8.893755018275058 45.95685151602076 8.881602018251908 45.962835216036574 8.866531518218784 45.96540501604066 8.864875018214175 45.96623251604447 8.859929618203868 45.97038651605303 8.853715418189351 45.97617501606404 8.846821518172636 45.97734651606729 8.843551518165501 45.981471016072774 8.842698018161713 45.981659516074465 8.840102518156417 45.984132516077985 8.839301518153563 45.985194516082146 8.834186018142791 45.98796001608699 8.831639018136295 45.9876670160912 8.823592518120325 45.98729601609163 8.82186051811704 45.990378016099875 8.813912018099561 45.99205951611212 8.795799018062374 45.99188551611377 8.792432018055706 45.988609516110664 8.790857018054194 45.98907551611396 8.785907018044 46.00810851613314 8.793094518048868 46.012190516135846 8.797105018054852 46.02193351614269 8.805911018067578 46.025497016139305 8.819678018093343 46.034228016145086 8.828166518105883 46.04161101615292 8.830033518105857 46.040569516150164 8.832708518111739 46.04377501615246 8.835439018115554 46.046469016159456 8.828817018100942 46.051369516162104 8.834533518109867 46.048514016153234 8.844191518130609 46.0615915161631 8.854594518144657 46.0756415161813 8.852114018132497 46.07575301618406 8.847516518123264 46.08049851619316 8.841439518108707 46.08286101620036 8.833761018092174 46.097285016227964 8.815357518048016 46.101283516238 8.806036018027337 46.09471101623371 8.799783518018204 46.09418351624255 8.783036017984957 46.10071451625855 8.7683025179521 46.101417516263915 8.760227517935546 46.105151816270904 8.755675917924515 46.12222251629877 8.742330517888997 46.1103270162946 8.724405017859064 46.09727201628491 8.713936017844635 46.10160951629894 8.698031017810399 46.10210251630627 8.685852517785593 46.110380016319866 8.679273517768136 46.10882651632315 8.670025517750252 46.11269151633455 8.657714017723423 46.12253451635173 8.647899517698615 46.12332651635262 8.648031017698472 46.122331016362025 8.628892517660267 46.121669516370645 8.61185851762609 46.12452751637445 8.611172017623257 46.132875016385164 8.609716517616102 46.14277851640461 8.595678017582642 46.142970016406416 8.592897017576911 46.146004016409904 8.593127017575842 46.1495575164105 8.59962701758724 46.15312001641462 8.599901517585996 46.15354001641323 8.603367517592805 46.155369016415605 8.603007017591159 46.15668151642537 8.58798851756004 46.16159701643159 8.587323517556216 46.162641516438846 8.576414017533555 46.16693051644623 8.57212201752267 46.177058516459596 8.569695017512634 46.18379751647076 8.56372751749711 46.18614701647886 8.554050017476264 46.19202801648602 8.553586017472359 46.197376516498466 8.542448017447027 46.204266016509855 8.536403017431251 46.21828251652852 8.532443017416107 46.22185051653851 8.521686017392433 46.2201585165401 8.515136017379954 46.22910201656305 8.492382017329101 46.23037151657265 8.47752701729817 46.232895016580414 8.468683517278839 46.24455051659647 8.46410651726363 46.24789901660953 8.447273517227568 46.25062501661492 8.443173517217817 46.25415151661952 8.442276517214202 46.25801951662101 8.447890517223732 46.26139501662456 8.448491517223255 46.26375551662337 8.455880517237151 46.274324016638886 8.449771017219343 46.2856660166593 8.436304517186098 46.29181801666764 8.433995017178265 46.29830051667858 8.427739517162212 46.30220901668015 8.43302051717101 46.30411901667832 8.440533517185383 46.30805001668361 8.439120017180507 46.31013701668452 8.441792017184884 46.31949451669421 8.44372151718406 46.321262016690746 8.453846017203789 46.32725051669661 8.455656017204417 46.32840901669532 8.46041551721352 46.33376251669874 8.465357017220837 46.33681301670336 8.46328901721507 46.344654016711736 8.464363017213234 46.35325651672308 8.461561517203114 46.36255151672884 8.47023451721596 46.368317516737264 8.46681301720604 46.380055516750716 8.466513017199366 46.386676516761284 8.460837517184405 46.39592301676613 8.471172017200608 46.404868016780625 8.463053517179482 46.41174401678547 8.468315517186598 46.42317951680454 8.456870017157428 46.42839951680825 8.4607595171626 46.43476051681711 8.45753251715274 46.442679016821124 8.466241517166264 46.44623901682777 8.461554517154902 46.450645716832376 8.461998817153503 46.45535101684263 8.452797017132387 46.461844516851386 8.450012517123332 46.46371601685584 8.445719017113653 46.46266651685852 8.438637517099826 46.464295516860396 8.43852851709876 46.45876301686599 8.417099517058118 46.458737016870714 8.408417017040481 46.4547420168697 8.402231017029964 46.454560016872875 8.39595351701727 46.451575516871166 8.392958017012724 46.452158516876324 8.384717016995623 46.450803016877906 8.379003016984681 46.4531265168825 8.37529451697591 46.4519225168858 8.366936016959476 46.446963016886315 8.35576201693922 46.44164301688212 8.352464016935219 46.42571401687893 8.325441016888078 46.42363151688221 8.314963516867671 46.425851016888714 8.307491516851213 46.41743801688394 8.29889651683785 46.41424601688022 8.298948016839578 46.408109516878774 8.288934016822116 46.402450516864526 8.30354751685501 46.40202601686238 8.3066035168615 46.40402451686301 8.309672516866788 46.39896551685404 8.315732516881797 46.39400001684759 8.317292016887523 46.38982501684456 8.314156516883205 46.386444616838226 8.318694716894225 46.383949016837434 8.314946516887797 46.37706601683074 8.312899516887075 46.37407451683426 8.300013516862103 46.36913851683417 8.289793516843575 46.3636305168308 8.28428251683499 46.36686201684051 8.273075016810271 46.36402301684223 8.263772516792518 46.360849016840206 8.260755016787884 46.35710901683364 8.265034016798582 46.35184351682718 8.265879516802952 46.348662516826714 8.259927516792263 46.34596651682207 8.262883516799707 46.346441516827916 8.252943516778947 46.340758016822925 8.250042516775796 46.340364016830236 8.23542401674577 46.33444801682952 8.223995516725054 46.33286051682716 8.225024016727968 46.33024651682598 8.221613016722193 46.32641051681976 8.225070016731259 46.31966201681751 8.214654016713004 46.3162280168134 8.21492751671527 46.31258901681113 8.211240516709418 46.30927701680691 8.212012016712654 46.306022516806664 8.205389516700512 46.302250516805785 8.198750516688586 46.304233016811175 8.192956016675579 46.29738951681059 8.178897016649715 46.29588401681805 8.161421516614082 46.3015375168322 8.147001516581291 46.301929016835665 8.141117016568838 46.30176701683737 8.137563516561505 46.29475351683377 8.128856516546747 46.2918735168346 8.120857016531446 46.281143516825914 8.113563016521399 46.27964701682848 8.105455016505164 46.27370101682401 8.100497516497656 46.266617516823345 8.085928016470557 46.262113516817976 8.086057516472987 46.26062901681919 8.080412016461871 46.25428301680878 8.086245016477129 46.25241251679871 8.101350516509674 46.24946851679508 8.101617516511634 46.24950451679069 8.110154516529494 46.23873801677659 8.113034016540684 46.23600301677216 8.115327516546797 46.23603151676958 8.120479016557558 46.22962201675998 8.124273516568575 46.22614801674827 8.138877516600772 46.211595516728686 8.143525516617471 46.20282101671415 8.151392516638113 46.19110351669934 8.153295016647688 46.18222751668246 8.165509516677462 46.176890616676275 8.165155916679273 46.17406401667629 8.158581516666867 46.16250301666706 8.14987851665417 46.156937516660506 8.149741516656519 46.147631016646415 8.15534451667266 46.13682301663919 8.144389516654833 46.13527201664725 8.125187016615294 46.130346016646385 8.115415516597096 46.117439516631705 8.113807016599766 46.11162851662752 8.108233016590775 46.11099001663112 8.099867016573484 46.108407516629384 8.09714451656896 46.1054500166337 8.081798016538023 46.105995516640846 8.069219016511255 46.10129551664279 8.05430951648198 46.10227551664666 8.049126516470585 46.09992551664691 8.04305851645886 46.10084061665247 8.034347616440021 46.095251016645925 8.033901516441665 46.08960051664127 8.029584016435138 46.080921516630944 8.029099016438098 46.074708516626714 8.022531016427052 46.06936601662072 8.021662016427658 46.067544516616955 8.024564016434645 46.06298401661174 8.023873516435263 46.04404501658262 8.035414516468359 46.03896551658321 8.022052516442388 46.03121001657884 8.011891516424354 46.02470451656799 8.01750101643921 46.0188535165642 8.010758516427561 46.01586351655926 8.013247516434197 46.0119700165549 8.012413016434188 46.012211016560904 8.001084016410015 45.99987351654928 7.993937016400394 45.995933516546835 7.989094516391861 45.999453516557274 7.977114016364787 45.99607301656302 7.957335016324174 45.997606516568894 7.949491516306761 45.9959785165753 7.932633516271515 45.99696731658852 7.908689616219918 45.97863501657311 7.89384901619628 45.973860016575365 7.877425016163189 45.96400901656082 7.88181151617693 45.957932016556676 7.874891516164754 45.95436951655021 7.878907016174935 45.94911351654449 7.877206516173593 45.947363516545714 7.870374516159691 45.936341516532806 7.868500016160482 45.92709171651691 7.8770243161828395 45.92046601651052 7.873073516177233 45.919572516512716 7.866338516163147 45.916699516510484 7.863576316158461 45.92086951651824 7.8585005161457335 45.92172451653007 7.836720516098499 45.92496401653674 7.831447016085743 45.92696001654467 7.820390516061048 45.917390916542864 7.799501916020129 45.92000051654892 7.793984016007093 45.924949016556674 7.790813015998109 45.93106651657137 7.776560515964688 45.93711751658255 7.769268015946332 45.94100851659796 7.747751515898125 45.93487801659116 7.745829015896588 45.928299016587246 7.736871015880013 45.923990516582634 7.7350975158779995 45.92379001658948 7.720480515846396 45.927734516596495 7.716333515835714 45.9282280165989 7.712673515827565 45.93290901660552 7.7112740158225375 45.934775516609676 7.70737051581327 45.94815551662541 7.709770015812774 45.95402551663765 7.699691515788405 45.95490751664461 7.687618515761816 45.9577720166521 7.679630015743247 45.965047516662466 7.6769950157344296 45.973985516677956 7.668173515711446 45.97663201668645 7.657467015687053 45.970111516686906 7.639500515650742 45.972368516699234 7.619635015606513 45.9693909167001 7.610003315586775 45.97051651671167 7.588791015540019 45.97438901671987 7.58172751552296 45.98601251673595 7.578607515511252 45.987574016739735 7.574703015502057 45.9856875167434 7.561997015475089 45.98655651675017 7.550134015448787 45.983766516748794 7.545698515440244 45.9761770167412 7.541537015434323 45.96313951672229 7.546722015451124 45.95694251671643 7.542764015445042 45.954946016715965 7.5384340154363825 45.95686151671977 7.535464515429077 45.95649351672289 7.527978515412827 45.962324516735066 7.5176275153877 45.95796801673437 7.507531515367347 45.96241851674392 7.49918601534719 45.955688516738114 7.493439515337348 45.95581001674105 7.487446015324125 45.952407016741226 7.477937015304632 45.947190016737665 7.4714595152925245 45.93662751672263 7.474931515304512 45.93405951672096 7.471644015298332 45.93555701672886 7.458734015269279 45.93214801672591 7.455899515264438 45.931746516730634 7.444620515239741 45.920225016720735 7.434417015221924 45.91540201671805 7.427056515207638 45.908711516717055 7.410806015174441 45.90908851671998 7.405508015162578 45.91147501672476 7.401733015153256 45.9084730167227 7.397883015145956 45.90486101671841 7.397196515145895 45.897155516713575 7.386337515124951 45.89650451671458 7.382384515116466 45.904138016731835 7.3660675150772335 45.90332751673303 7.361216515066802 45.90724201674023 7.356449515054672 45.91064251674449 7.356462515053329 45.9115895167485 7.350536015039803 45.91524051675599 7.344303015024514 45.91051651675612 7.330723514996263 45.91022951675896 7.323765014980921 45.91167201676337 7.318112014967778 45.916579516770504 7.316174514961527 45.91722151677799 7.301557014928768 45.92179591678707 7.2945123149112705 45.91575051678352 7.285315014893207 45.90066801676813 7.2767715148801395 45.899851516769445 7.271476014868656 45.8882180167612 7.2568775148406806 45.888465516763176 7.253143514832255 45.89313401677078 7.249486514822258 45.89006401677085 7.240540014803479 45.89202001677888 7.228292014775349 45.88976801677713 7.225684014770402 45.88877951678005 7.216439514750118 45.883872016774134 7.215700514750375 45.88018101677365 7.206093014730312 45.876477516769974 7.203609014726182 45.875513516770276 7.200118014718748 45.87034301676472 7.197700514715333 45.86308251675399 7.200823514725136 45.860274516752234 7.196588514716741 45.858679516752844 7.190602514703939 45.863512016764304 7.178907514675846 45.8628550167651 7.175214514667816 45.87149951678219 7.161742014634256 45.87668451678787 7.164099014637548 45.879249516795824 7.153543514612863 45.87270951679549 7.135276514574332 45.86673501678949 7.131419014567955 45.85919251678569 7.1179040145404295 45.85927051679319 7.101175014502727 45.872066016813704 7.092143014477514 45.875833516817146 7.095292014483166 45.88529301683607 7.079939514444976 45.89017901684394 7.076461514435275 45.89518201685028 7.076605514433689 45.89992801686184 7.064193014403898 45.909366016873875 7.064455514400895 45.913383016880694 7.060583514390633 45.91554601688677 7.053107014372952 45.92241301689913 7.044886014351794 45.93095051691144 7.041839014341662 45.93841151692362 7.035672014324906 45.94479701693049 7.038539014328931 45.95427301694296 7.037600014323193 45.96017451695888 7.0183690142775585 45.969391016974605 7.009050014253004 45.973304516978885 7.010733014255304 45.976249516978086 7.020972014277272 45.98054101698306 7.0222415142784875 45.98670951699376 7.0155470142610294 45.987354516996085 7.012056014252908 45.99727651700926 7.010531014245656 46.00120951701636 7.005619014233058 45.999138017016364 6.999714014220539 46.00512701703037 6.984753014184489 46.02024851705106 6.980931014170056 46.02579501706234 6.9710830141456945 46.031189017071036 6.966569014133432 46.030536517071795 6.962906014125412 46.05173101710409 6.949742014087545 46.05095651710598 6.943008014072628 46.05513401711435 6.935878014054913 46.06403751712463 6.937628014055457 46.06672301712998 6.933153014044315 46.06417101712881 6.928431014034618 46.064724017131525 6.923767014023868 46.05064051712023 6.908989013995825 46.04809151712323 6.894678013964396 46.04246151711794 6.890639013957376 46.0444795171237 6.882989013939278 46.047695017130856 6.875638513921395 46.055568517141886 6.8730810139126115 46.06945401715585 6.880819013924871 46.07388321715679 6.891478713947319 46.078670517164035 6.888369013938448 46.085045017170586 6.89178101394373 46.09520701718699 6.882955513919863 46.10822301719777 6.895308013942815 46.11293801720453 6.89325801393637 46.124055117215555 6.899473913946129 46.12538151722108 6.8904190139251575 46.12292851722151 6.882292013907723 46.125782017227664 6.876219013892897 46.12655251723926 6.851372013836353 46.128963517245765 6.843122013816748 46.132029917250144 6.841557213812029 46.13106901725846 6.8193280137619965 46.12932341725805 6.815231213753371 46.13610101726948 6.807956013734276 46.13538351727163 6.800939013718627 46.136799017274626 6.797889013711165 46.15431601729939 6.790425013687555 46.163196517309416 6.792314013688462 46.17280201731553 6.8056250137149785 46.177849017320945 6.8073310137169045 46.18141951732313 6.812422013727074 46.196468517343774 6.806975013708949 46.20313651735332 6.803564013698658 46.21388651736361 6.810092013709291 46.223461017370255 6.821667013731776 46.22996901737852 6.820745013727165 46.23217751738093 6.821311013727581 46.23424551737949 6.830511013747583 46.240696017384515 6.837019013759769 46.24830651739229 6.8401190137637995 46.2546500173935 6.855108513795142 46.25889601739888 6.854517013792141 46.265873017404836 6.859961013801678 46.27380001741474 6.8590640137965275 46.28059401742043 6.864808013806795 46.29043201743465 6.858923513789652 46.29238151743901 6.854228013778295 46.28998201743919 6.8471470137632915 46.29979301745641 6.834328013730525 46.29984301745809 6.8305330137219435 46.30277651746252 6.8282080137155505 46.30605301746561 6.830028013718359 46.31533801748128 6.819344013690605 46.320652017493 6.806631013659831 46.31985101749457 6.800658513646669 46.33280201751171 6.796461013632094 46.332931517517004 6.784403013604823 46.34440601753272 6.77931951358883 46.34728771753807 6.7746885135772335 46.35520551754919 6.770442013564536 46.36118301755571 6.771636013564876 46.366470517558035 6.780803013583479 46.36714201755408 6.791786013607986 46.37670151756017 6.803819013631315 46.38311751756676 6.805886013633423 46.38694001757298 6.8017935136226795 46.3940707175798 6.805202113627509 46.427154517611406 6.821064013649941 46.45433451770209 6.681858013325295 46.45636751777203 6.519104012954993 46.415806017762876 6.425619012756614 46.40371701778469 6.335189512553279 46.36042001776587 6.252957012379046 46.343582517750406 6.241360012358185 46.32942951773731 6.2316940123407845 46.311878017720986 6.219547012318784 46.30456441770377 6.241390312372053 46.301552017697304 6.2488420123904005 46.300262517696396 6.247178012387001 46.29445651768895 6.248481012392065 46.2916795176843 6.251883012400936 46.287891517679974 6.251225012400748 46.28508351767928 6.244290012385642 46.28179551767772 6.237864012371879 46.27661901767156 6.23774701237342 46.26229501764957 6.250052012407012 46.254875017636394 6.260861012434714 46.25170501763287 6.2601720124342215 46.247699517625485 6.266508012450336 46.25452051762676 6.28462201248997 46.25623701762904 6.284044012488027 46.26459901763497 6.29487801251019 46.26368001763317 6.296544012514369 46.25595451762436 6.295236012514072 46.25486351762085 6.300889012527563 46.25618001761881 6.310281012548852 46.25502401761808 6.308533012545213 46.251243517614434 6.306055512540808 46.24996551761166 6.309328012548842 46.24404551760412 6.310211012552987 46.224930017586985 6.294464012523204 46.223465017586214 6.291727512517371 46.21524801758219 6.2763720124845985 46.213390517584045 6.265539012460084 46.20499051758029 6.248750012423959 46.206554517583626 6.245008012414714 46.204822517582166 6.24341901241162 46.206363517587576 6.234133012389474 46.20356351758567 6.230119012381095 46.20141601758544 6.223854012367249 46.19379451757978 6.2142440123474785 46.19218451758066 6.206817012330724 46.183777517573496 6.198425012314026 46.181423017574154 6.189075012293008 46.17822651757132 6.186103012287167 46.16619451755547 6.188839012297643 46.15814201755052 6.175417012269026 46.151527517551116 6.152244012217066 46.14592001754625 6.1466940122059555 46.14481751754554 6.1449000122021324 46.14700701754952 6.141611012193695 46.14115901754447 6.135542012181442 46.14046851754698 6.126619012160762 46.14267351755176 6.121164012147252 46.1439665175616 6.099131012095157 46.15166851757385 6.091844012075496 46.14930751757736 6.0745585120357095 46.15126801758817 6.051922011981886 46.14741501758453 6.048703011975594 46.14094551757691 6.047811011975622 46.14106751757882 6.042919011964075 46.13476501757362 6.035725011949225 46.13936601758068 6.031981011938905 46.140704017585136 6.024386411920592 46.14294451759129 6.0152640118983856 46.141945017594246 6.003767011871636 46.14442851760089 5.993983011847781 46.14213491760219 5.982723511821983 46.13587951759523 5.980358011818435 46.13262951759263 5.976353011810035 46.129585517592844 5.965283011784901 46.13030201759534 5.96091701177436 46.12794811759364 5.957313211766607 46.132088717599274 5.956087611762381 46.13718401760209 5.965939011783996 46.14469551761191 5.964661011778551 46.156175117623 5.973363011795355 46.16032401762715 5.9762293118007666 46.17268001764044 5.981867011810026 46.17356501764044 5.9848640118168 46.17073751763562 5.988297011825807 46.17686121764173 5.9923112118332575 46.17932901764502 5.991650011830893 46.18289551764814 5.995222011838131 46.187431517655185 5.991342011827517 46.196968217676925 5.963700011759306 46.198027717678094 5.964215511760172 46.202526017680434 5.972953011779283 46.20663851768684 5.9692780117692825 46.214752017695 5.97441401177872 46.21690751769621 5.978375011787322 46.215503517689015 5.99313601182251 46.222393017698096 5.991432511816233 46.22240051769637 5.996339011827765 46.22011591769217 6.000085111837328 46.22346901769377 6.006867011852157 46.229156517699586 6.010006011857653 46.228992517698124 6.013508011865931 46.230582517700256 6.0128640118638925 46.23183051770039 6.016678011872432 46.23323801769898 6.025192511891953 46.23842601770217 6.033722011910241 46.23310451769245 6.042397011932367 46.23143751768897 6.046336011942161 46.245178017700304 6.061139011972251 46.245616517699894 6.063457511977535 46.24107751769217 6.069625011993505 46.24704351769252 6.088136012034838 46.23753751767577 6.1018170120700495 46.24068851767793 6.1063420120795735 46.239662017675656 6.109014012086164 46.250572017683496 6.123580012116496 46.26115051769762 6.120090012104739 46.26358401770127 6.11820001209949 46.264759017702 6.120131012103606 46.265663017704604 6.11604201209375 46.270214017712235 6.11038901207899 46.27246101771379 6.113458012085382 46.27838501772465 6.103639012060431 46.28397351773106 6.104550012060649 46.284855017732944 6.102367012055252 46.29418201774007 6.113255512077483 46.29430401773812 6.1189580120907525 46.29716851774073 6.121142012094864 46.307716517754145 6.11909201208645 46.31240451775954 6.119808012086512 46.31726851776367 6.124369012095468 46.31750911776345 6.12576061209863 46.321186017767445 6.126711012099574 46.32466011776984 6.131459512109441 46.33312631777761 6.137710812121069 46.33463711777878 6.139220212124058 46.335582517780665 6.137258012119167 46.339313517784625 6.138619012121038 46.34271251778466 6.149158012144381 46.347278517789185 6.151547012148349 46.35096501779112 6.158032312162151 46.35758201779844 6.159350012162899 46.366432217804814 6.170156512184906 46.37953951782472 6.1585780121534 46.37761701782322 6.156664012149631 46.37739551782549 6.149839012133848 46.387817517843196 6.135853012097676 46.39992551786583 6.113564012041604 46.39669801786186 6.114083012043939 46.399715517868636 6.105511012022946 46.408607517881876 6.098221512002867 46.4162239179036 6.064025911920589 46.43184301791782 6.074908011940506 46.439564017923395 6.084172011959366 46.4431460179268 6.08624401196293 46.44737651793239 6.084431011957237 46.45332751794289 6.0748940119329635 46.457325017946786 6.0768420119360975 46.459934017951085 6.073467011927334 46.465751517958104 6.072827511923803 46.481587917967225 6.097140311974735 46.509903517993884 6.112961012001396 46.53057501800816 6.1374940120508255 46.5280115180027 6.144203012067271 46.53661751800899 6.153417012085486 46.53935601801391 6.1485750120733025 46.54525201801764 6.156480412089448 46.57665651807058 6.110961011972839 46.584015018074766 6.121744011995121 46.58947351807927 6.1261140120032564 46.59711851808297 6.138842012029881 46.603760018084714 6.153778012061944 46.60990151808869 6.161225012076871 46.61616151808882 6.179136012115856 46.620205018092854 6.180358012117178 46.62818151809568 6.196011012150276 46.634254518100924 6.199850012156857 46.63606651809974 6.208083012175121 46.644899718105144 6.219441912197937 46.64811701810549 6.2277110122157335 46.6549455181107 6.233578012226654 46.67647201812113 6.267544012296409 46.67923351812296 6.270553012302252 46.68272001812726 6.269439012298384 46.69045651813032 6.28310851232673 46.698581718129574 6.307406712379163 46.706039518131014 6.3241360124144945 46.710377018128646 6.342011012453589 46.71514501812963 6.352424512475474 46.72308751813507 6.3602420124901995 46.721916518132176 6.364486012500315 46.72435751813186 6.371761012515923 46.72881701813681 6.371478012513539 46.72925551813866 6.3681170125057225 46.730366018139065 6.370067012509728 46.7321090181347 6.385484512544105 46.7381510181388 6.391611012555669 46.74321001814559 6.388475012546552 46.74787151814807 6.394511012558432 46.75069451814867 6.400689012571347 46.75001551814642 6.404272012579757 46.752765518144166 6.417144012607882 46.75708801814328 6.430822012637182 46.76257301814563 6.439425012654495 46.76637251814991 6.438902012651801 46.773987018152845 6.451691512677724 46.77857251815772 6.451786012676105 46.78831101816537 6.458442512687265 46.802040018189714 6.434630012627904 46.81232851820213 6.43099701261557 46.81626501820225 6.4406810126358955 46.82412351821104 6.439606012630311 46.83187851821807 6.442506012633741 46.85155151823155 6.460011012665321 46.87554151825543 6.462804012661873 46.8904150182702 6.4644580126595335 46.90098201828389 6.4578000126402255 46.92165001831431 6.435789012582201 46.92845551832251 6.432750012572575 46.9334107183227 6.444752212597575 46.94307351832647 6.459481012626747 46.95561811833424 6.471642012648919 46.96716351833999 6.486020312676416 46.974178618342684 6.496699012697446 46.96614051833068 6.5059640127215745 46.97080601833009 6.518606012747956 46.97941601831999 6.563492012844774 46.9907875183194 6.591930512903441 46.992527018319294 6.596142012912094 46.991626518309594 6.616914012958772 46.99840951830924 6.63371051299327 47.00656151831313 6.6437470130120815 47.02634051832651 6.658475013036266 47.035229018326966 6.677939013075585 47.03880301832141 6.698958513120605 47.05232251832572 6.719744013160669 47.05345851833001 6.712492513144133 47.057998518336085 6.708872013134133 47.05888751834035 6.700969013116248 47.06641001835178 6.691792013092644 47.073868018353025 6.705781013120311 47.07915501835742 6.707525013121834 47.08150101836178 6.702786013110321 47.08847801836291 6.715808013136012 47.091793018361756 6.725931013156897 47.08961101835731 6.7313250131697675 47.09048241835477 6.739039713186406 47.092384518354706 6.743386013195144 47.09645451835753 6.746044013199193 47.108642518372044 6.739969013180368 47.10961031837107 6.744138713189128 47.120334518372275 6.765147013230588 47.121059518368504 6.775303013252607 47.12702801836675 6.79234801328738 47.13020701836421 6.80499201331371 47.135383518367576 6.808631013319346 47.1354790183648 6.815083013333459 47.14635101836926 6.828586013358112 47.150348518368126 6.839611013380437 47.15428901837098 6.8416610133831215 47.15646001836936 6.84997501340032 47.16528891837382 6.858912113415803 47.166404518380936 6.8452390133854 47.17139801838748 6.8413280133745475 47.18000051838556 6.8637810134196675 47.185287518388876 6.867592013425549 47.185333518386074 6.873894013439287 47.18956751839013 6.873714013436927 47.2000315183972 6.879939013445659 47.20507051839761 6.889444513464037 47.218193018400505 6.9103140135033465 47.22213351839807 6.923847013530932 47.22848901840234 6.927531013535947 47.230884518402114 6.933000013546697 47.23106001839936 6.939419013560557 47.23452701840104 6.942738713566121 47.23817851840422 6.943239013565482 47.24297471840306 6.955478513589764 47.25346751841694 6.946508013565338 47.2596780184205 6.951108013572357 47.26903951842876 6.951944013569733 47.286506518449926 6.940742013537147 47.292392518449645 6.953225013561372 47.29275101844293 6.968511013594269 47.29142401843952 6.973294013605247 47.296367518442494 6.976575013609964 47.29612751843309 6.996572013653269 47.301407018434816 7.003336013665329 47.3012961184328 7.007402713674151 47.31398401844021 7.016214013687011 47.319912018446786 7.013608013678523 47.320831518449474 7.0097190136697 47.3243675184526 7.009739013668032 47.328407518444806 7.034439013719252 47.32672101843805 7.045719013744325 47.33439251843991 7.056631013764035 47.33689901844386 7.0529250137548445 47.33987801844363 7.05914701376675 47.3437345184459 7.061636013770203 47.347221518454525 7.0499245137433455 47.351661518457206 7.052586013746879 47.36184301846807 7.048925013734025 47.3640290184726 7.043322013720915 47.36358951847633 7.034475013702134 47.36787751848053 7.033651513698268 47.36951851848211 7.03333601369678 47.37031151848881 7.020406013668607 47.372883018492345 7.017908013661978 47.371494518493115 7.013417013653004 47.37279501849481 7.012344013650062 47.36755801849302 7.006125013639239 47.36344901849403 6.99599701361944 47.36350651850005 6.983092013591623 47.35985951850082 6.974433013574727 47.35976801851129 6.9514080135250955 47.357555518513735 6.941756013505318 47.35840651851857 6.932978013485939 47.35531251852119 6.92110001346175 47.35940551853363 6.901847013418129 47.357704018533234 6.89922501341327 47.358612018535716 6.895747013405306 47.35639551853424 6.8944720134035995 47.352810018535465 6.884769013384295 47.35244001853739 6.879806013373715 47.35743351854225 6.878969013369518 47.36701201854815 6.8848500133776955 47.37315751855414 6.883669013372198 47.37994001855482 6.895586013394748 47.38166801855667 6.894964013392577 47.382942018553116 6.905180513414061 47.386184518552895 6.9119395134271135 47.38945751855503 6.913669013429269 47.396183018562816 6.909542013417116 47.39736201856114 6.915439013429288 47.40324001856523 6.917817013431584 47.40465951856844 6.913617013421824 47.4065020185674 6.919436013433504 47.40520501856563 6.920875013437231 47.406479018558606 6.938599513474852 47.416027018565615 6.941681013476856 47.43370451858222 6.939186013462873 47.43507751857631 6.95461901349543 47.43372751857366 6.95775301350284 47.43569951857269 6.963650013514565 47.447060018579485 6.970294013523277 47.448990018576 6.981431013546252 47.44789501857095 6.990261013565743 47.453743518570775 7.001550013587084 47.45602801857306 7.00094701358466 47.45663451857514 6.997528013577029 47.46007901857789 6.99805301357645 47.46176151857798 7.001092013582135 47.46687751858269 7.000361013578035 47.46642701858627 6.991778013559852 47.47124851858992 6.992925013559919 47.47621151859717 6.986539013543773 47.48726251860571 6.988467013542441 47.4942705186143 6.982914013527054 47.49358001861213 6.986303013534668 47.49995051861075 7.000853013562668 47.504223018603476 7.024406013610911 47.50133151859962 7.02723951361842 47.49750151859183 7.036975013641143 47.498173018588716 7.0448030136575275 47.49519351858317 7.051317013672934 47.4952120185789 7.060406013692327 47.49226751857125 7.071342013717136 47.4881670185661 7.074878013726748 47.49483501856383 7.0916720137591795 47.495105518554546 7.1118580138020215 47.5035895185541 7.128017013832077 47.50209451854801 7.138075013854198 47.49711601853788 7.150483013883092 47.49077201852828 7.1593635139051734 47.489345518522285 7.169347013927091 47.49388101851092 7.201083013992015 47.49170701850848 7.202328013995765 47.488201018510985 7.190864013973291 47.46813951850026 7.177603013955446 47.464176218496235 7.178829413960078 47.458139918491355 7.178262213961953 47.44345451848237 7.170422013952769 47.43875501846785 7.192267014001563 47.43542101846309 7.196180514011564 47.43489451845786 7.206239014033179 47.43977751845278 7.225569014071659 47.43688951844532 7.2359080140950445 47.4338380184414 7.238603014102312 47.428795018437 7.2385745141048385 47.42684551843216 7.2450170141194805 47.42029951842621 7.245589014124048 47.42399201842527 7.254164014140307 47.42704401842 7.270469014173227 47.43462751842077 7.28256401419487 47.433120518414775 7.292203014215999 47.43873201841438 7.302975014235812 47.43896101840403 7.324572014281216 47.439853518403886 7.32646601428474 47.44143301840356 7.3298250142909955 47.44091051839887 7.338706014309954 47.43535601838978 7.347222014330771 47.43189251837022 7.3808940144033475 47.43539801836371 7.400356014442345 47.43551251836251 7.402983014447791 47.43786251836458 7.402847014446264 47.440201018364775 7.406581014452859 47.44203951836271 7.413942014467305 47.446388018362875 7.421139514480079 47.45082851836561 7.42334401448233 47.45352151836534 7.4284780144916525 47.459282018369485 7.4300720144919215 47.461723518364145 7.445019014521861 47.47036001836636 7.455247514538605 47.472790018368144 7.455797014538451 47.475308018372985 7.450483014526015 47.47422051837341 7.447819014521027 47.478473518379005 7.443783014510328 47.48246001838959 7.429369014478102 47.4801825183917 7.421236014462326 47.488388018396485 7.4255440144669524 47.497970518399974 7.4347750144811 47.489437018382894 7.454636014527115 47.48909401837883 7.462125014542908 47.4804495183671 7.470897014565824 47.48230751836033 7.4876280145996805 47.48925401836124 7.497506014616478 47.490440518360046 7.502000014625188 47.4935190183626 7.5019190146233505 47.49682601836082 7.510972014640375 47.5019455183663 7.5087250146329305 47.50258251836574 7.510905514637115 47.509582518372426 7.509197014629767 47.515987518382914 7.499164014605455 47.52123301838792 7.4978170145998115 47.51462151837954 7.503519014615239 47.51704401837492 7.516753014641397 47.515068018372205 7.518808014646731 47.51523201836976 7.523900014657217 47.51867301837266 7.523786014655098 47.527717518376356 7.531475014666101 47.532306518382015 7.527814014655998 47.53195201838343 7.524439014649212 47.53453451838825 7.51920801463695 47.532608018388125 7.516196514631758 47.52852651838797 7.50981701462075 47.52848451839165 7.502433014605457 47.53524051839898 7.499042014594742 47.53983301840272 7.499239014592645 47.542972518402664 7.504519014601894 47.544761518402446 7.507889014607898 47.546131018397816 7.519233014630671 47.55164351839934 7.52523301464008 47.56339251839553 7.5517860146885445 47.56456401839486 7.555159514694867 47.569393018396916 7.558861014699845 47.571205018399624 7.556386014693736 47.57261651840023 7.557483014695215 47.57740851839966 7.566267014710697 47.57614501839429 7.574819014729032 47.57565701838876 7.584828014749932 47.58987801839824 7.589039014750704 47.584826518385924 7.604938514786235 47.577792018380386 7.604510514789276 47.57683001837219 7.619065014819757 47.57944601837151 7.624523014829513 47.59131551837151 7.643203014861215 47.59422251837453 7.641932514856982 47.59696851837476 7.645816014863399 47.59621801837248 7.6490400148704305 47.59204451835967 7.667261014910119 47.592040518355645 7.675051014926079 47.598492018356815 7.682847014938385 47.60064501835307 7.693370014958682 47.58736001835352 7.671754514921977 47.585092518351544 7.672043014923839 47.582692518345134 7.680725014942971 47.58092051834348 7.681114014944765 47.573985518336436 7.6837435149540605 47.57150051833142 7.68953051496731 47.56561751832845 7.685970514963332 47.57118101833429 7.683437514955015 47.56544701833387 7.675219514941403 47.56384801833143 7.677369014946715 47.56377101833401 7.672338514936445 47.56588101833679 7.670159514930789 47.562429018342044 7.654706014901027 47.559883518343334 7.648156014889005 47.56401151835284 7.636228514862197 47.561113518351576 7.634097014859434 47.55261501833885 7.645305514887213 47.546996518331014 7.65152451490312 47.544845018324104 7.661395514924595 47.53661501831448 7.6668040149403005 47.53355451830761 7.675290014959435 47.53249801830105 7.6862235149824585 47.532903518295775 7.696981515004288 47.53940501829241 7.713784515035047 47.542229018289405 7.72405001505446 47.5450270182768 7.752676515111354 47.54837651827679 7.757852015120014 47.55329701826745 7.783334015169142 47.55744551826434 7.795672515191886 47.562637518266605 7.799482015196663 47.57075251826666 7.811995515217434 47.58710601827627 7.818820015221863 47.58656101826849 7.8327440152504035 47.58263651826272 7.837581015262471 47.58238101825742 7.847207515282127 47.587352518254335 7.860485015306108 47.58851601825088 7.868770015322178 47.58887251824247 7.885045015354853 47.58637151823564 7.894096615374591 47.58405391823167 7.897958315383724 47.57692361822131 7.906522715405164 47.569016518212244 7.911530015419885 47.560817018207786 7.907387515416296 47.55542251820277 7.908518015421715 47.547726518191865 7.917205515443732 47.546916518183025 7.932319015474682 47.54448101817665 7.9404995154925935 47.54396501817354 7.9455505155030774 47.545548018173086 7.9486430155083845 47.557116018179 7.955421015515262 47.558276018177395 7.960036515523859 47.557180518174 7.964701015533877 47.55521501816524 7.977976015561715 47.556397518154704 7.999166015603559 47.55497351814919 8.007232515620586 47.55454951814831 8.008201515622774 47.550454518138814 8.019543515647928 47.555300018128335 8.04603551569808 47.563420018127694 8.0592765157197 47.564490518124195 8.067313015735115 47.56411301812163 8.071343015743375 47.55743651810954 8.08356901577175 47.557902018106184 8.090359015785005 47.56102901810495 8.09718051579672 47.56636351810695 8.101439015802008 47.57609901811396 8.102989015799249 47.58072301811534 8.107204015804852 47.583541018114616 8.112715515814116 47.583286518106924 8.126100515840854 47.58405001810193 8.13640951586086 47.59078151810621 8.138362515860662 47.59498451810467 8.147293515875813 47.59415401809741 8.159201015899907 47.594308518094 8.16554651591238 47.60195201809514 8.174452015925338 47.604809518091834 8.18446101594337 47.6162745180957 8.193912015955023 47.620358518094555 8.201661015967803 47.6199805180874 8.214005015992354 47.61551191807979 8.221249116009371 47.606849818071346 8.224047316020208 47.605135518068955 8.225893016024894 47.60539651806719 8.229350516031547 47.61272851806807 8.238228516044499 47.61522351805869 8.258417016082632 47.61346431805578 8.261148316089086 47.60941901805034 8.265113516099376 47.61161751804381 8.279824016126874 47.61031951803784 8.288483516144657 47.60548001802885 8.297631016165585 47.594603518021636 8.29502951616723 47.58874501801513 8.298266016177193 47.58364851800432 8.310290016203915 47.578941017997074 8.3163515162187 47.572606517987396 8.3244580162385 47.57039801797838 8.337175016264759 47.56948851796349 8.362104516314039 47.56549501794808 8.383539516358352 47.575016017950844 8.392099016369079 47.577068017948186 8.399506516382226 47.57074251793353 8.416288016418834 47.56754901792515 8.426434516440555 47.56710201791864 8.43716901646169 47.572355017912045 8.4558925164947 47.57221251790719 8.464120516510736 47.57786151790435 8.476828016531764 47.57724261789984 8.483748216545534 47.57771771789839 8.486921116551366 47.58120141789673 8.49454051656388 47.587851017905514 8.48861901654822 47.58735401790602 8.48701251654543 47.58395001791382 8.468808016512384 47.58803701791938 8.464814516502072 47.58830551792219 8.460419016493388 47.59257201792511 8.461227016492249 47.5972850179312 8.457047016481171 47.60235551793549 8.456599516477086 47.60365851792994 8.468109016498536 47.60689301793053 8.4713795165028 47.60847251793244 8.470278516499661 47.607697517929054 8.474989016509257 47.61073101792985 8.477812516512778 47.61516351793254 8.479138516512513 47.61363951792897 8.483242016521418 47.61447501792349 8.49389601654144 47.61750751791751 8.508251516567169 47.623845517923044 8.50730601656129 47.623365017918196 8.514944016576305 47.62558751792134 8.512608016570379 47.63195001792404 8.516449516573687 47.63392001792611 8.515533016570659 47.63447451792348 8.520817016580462 47.63176851791848 8.525725516591653 47.63113851791078 8.538118016615867 47.62609451790658 8.53855651661996 47.62695751790463 8.543043516628027 47.6252245179026 8.544135516631233 47.62456201789439 8.557338016657004 47.61676751788511 8.562801016672509 47.61726951788169 8.569295516684644 47.61249151787693 8.571036516691073 47.61193101787444 8.5744080166979 47.60987401787759 8.566406016683874 47.60537401787419 8.566062516686113 47.601382017873796 8.561473016679873 47.599432517871406 8.562841016683759 47.597103017867454 8.566490516692257 47.598161017865415 8.57141951670104 47.59552151786139 8.574658016708954 47.59682301786104 8.57707901671276 47.59613451785741 8.58235501672332 47.60177651785863 8.587799016730107 47.60222601785689 8.591396516736712 47.60615901785919 8.592694016736656 47.605538917857054 8.595596016742611 47.61126181785694 8.603448816753934 47.6159825178597 8.604959516753762 47.62896501787435 8.597390516730856 47.642627517886176 8.595324016718038 47.65242601788645 8.607706516735291 47.64934851788113 8.612692516746817 47.644137017876446 8.613848016752423 47.64209501787642 8.611146016748593 47.64154701787992 8.604463516736194 47.63946801787931 8.602787016734348 47.63706151787531 8.606523016743049 47.63801201786996 8.61675401676196 47.641021517868346 8.623423016772719 47.64872361787148 8.628297416776977 47.65330701787519 8.627987516773382 47.6615284178895 8.614485516742272 47.66075751788988 8.6128180167396 47.66342351789422 8.608964016730514 47.66900381789998 8.606355716721888 47.67212951790224 8.606649516720394 47.67280701790782 8.598066016703585 47.66706051790588 8.593828016699252 47.666408017909205 8.587372516687346 47.661608517911205 8.577711016672014 47.66470701791759 8.570951016657066 47.6653320179217 8.564632516644572 47.669944017925864 8.563654016639695 47.667060017933395 8.547158516609986 47.66507201793595 8.540051016597646 47.657060017928984 8.541431516605485 47.659924017935666 8.533774016588945 47.66320751793843 8.533378016586061 47.660395017939976 8.52700951657566 47.65061401792863 8.533424016594289 47.645788517925986 8.531527016593767 47.64498151793058 8.522713016577354 47.64749851793798 8.513327516557686 47.647055517949354 8.493112516519066 47.64210451794488 8.494203516524342 47.64207001794596 8.492342516520784 47.64509701795126 8.487338516509196 47.6442020179532 8.482706016500844 47.64923151795838 8.480519516493398 47.649825017962755 8.473763516479993 47.64794901796182 8.472935516479602 47.64467501795648 8.47768501649086 47.642341517958464 8.471116016479671 47.63970801795252 8.477887016494432 47.63830701795393 8.473507016486874 47.64129351795974 8.467474516473322 47.648560017967604 8.463771516461524 47.65607551797139 8.467175516463284 47.657044517973056 8.465632516459687 47.65269201797451 8.457388516446558 47.654843017978344 8.453655016437974 47.654739517980865 8.449051016429143 47.65378201798245 8.445090516422106 47.65739051799 8.43677151640372 47.66681501800488 8.423684016372393 47.66627451801099 8.412355016350809 47.67451351802124 8.405566016332408 47.67872351802275 8.408517016335445 47.67963201801916 8.416039516349421 47.68386501801972 8.420668016355672 47.6942560180326 8.412136516332522 47.69546701803684 8.406399516320656 47.69806351803995 8.404426016315178 47.709968318041874 8.416794416331463 47.71113201803755 8.425878516348268 47.71823301803665 8.436732016364628 47.71766851803344 8.441551516374293 47.71975601803579 8.440226016370392 47.72296101803528 8.44523551637798 47.722635018029294 8.455201916397385 47.727220018033066 8.454665516393385 47.72915811803315 8.456966816396555 47.73043151803646 8.452854516387822 47.73816601804412 8.449683516376716 47.74277701804403 8.45585051638559 47.74944001804838 8.456882016383245 47.75378451804601 8.466608016399112 47.76458801804996 8.473712016405718 47.77326851804739 8.489027516429408 47.770691518041374 8.4960265164445 47.77360851803996 8.50213701645428 47.7743150180363 8.509297016467512 47.776186218037275 8.510107616467836 47.770490518027174 8.520118016490711 47.77813351802905 8.526482516497843 47.77798451802532 8.532663016509735 47.78463651801845 8.552674516543501 47.780495018009354 8.56297501656586 47.77785401800766 8.562544516566781 47.77797681800565 8.566197516573656 47.78154031800183 8.577082116592006 47.789526518008955 8.574921516582599 47.79277151801914 8.561694516555292 47.805318518027214 8.563538516550462 47.808488018026914 8.567858516556573 47.80599001802204 8.573027016568055</gml:posList>
+                        </gml:LinearRing>
+                      </gml:exterior>
+                    </Polygon>
+                  </gml:surfaceMember>
+                </MultiSurface>
+              </gmd:polygon>
+            </gmd:EX_BoundingPolygon>
+          </gmd:geographicElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+      <che:basicGeodataID gco:nilReason="missing">
+        <gco:CharacterString/>
+      </che:basicGeodataID>
+      <che:basicGeodataIDType gco:nilReason="missing">
+        <che:basicGeodataIDTypeCode codeList="#basicGeodataIDTypeCode" codeListValue=""/>
+      </che:basicGeodataIDType>
+    </che:CHE_MD_DataIdentification>
+  </gmd:identificationInfo>
+  <gmd:distributionInfo xmlns:geonet="http://www.fao.org/geonetwork">
+    <gmd:MD_Distribution>
+      <gmd:distributionFormat xlink:show="embed">
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>ESRI Shapefile (SHP)</gco:CharacterString>
+          </gmd:name>
+          <gmd:version gco:nilReason="unknown"/>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
+      <gmd:distributionFormat xlink:show="embed">
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>ESRI Personal Geodatabase (MDB)</gco:CharacterString>
+          </gmd:name>
+          <gmd:version gco:nilReason="unknown"/>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <gmd:URL>https://map.geo.admin.ch/?layers=ch.bafu.auen-vegetationskarten</gmd:URL>
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">https://map.geo.admin.ch/?layers=ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#FR">https://map.geo.admin.ch/?layers=ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#IT">https://map.geo.admin.ch/?layers=ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#EN">https://map.geo.admin.ch/?layers=ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#RM">https://map.geo.admin.ch/?layers=ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>MAP:Preview</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>Vorschau map.geo.admin.ch</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">Vorschau map.geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Aperçu map.geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Previsione map.geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">Preview map.geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:name>
+              <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>Vorschau map.geo.admin.ch</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">Vorschau map.geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Aperçu map.geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Previsione map.geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">Preview map.geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <gmd:URL>https://wms.geo.admin.ch/?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities&amp;lang=de</gmd:URL>
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">https://wms.geo.admin.ch/?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities&amp;lang=de</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#FR">https://wms.geo.admin.ch/?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities&amp;lang=fr</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#IT">https://wms.geo.admin.ch/?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities&amp;lang=it</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#EN">https://wms.geo.admin.ch/?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities&amp;lang=en</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#RM">https://wms.geo.admin.ch/?SERVICE=WMS&amp;VERSION=1.3.0&amp;REQUEST=GetCapabilities&amp;lang=de</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>ch.bafu.auen-vegetationskarten</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#RM">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:name>
+              <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>WMS-BGDI Dienst, Layer "Auen Vegetationskarten"</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">WMS-BGDI Dienst, Layer "Auen Vegetationskarten"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Service WMS-IFDG, couche "Végétation dans zones alluviales"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Servizio WMS-IFDG, strato "Zone golenali carte di vegetazione"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">WMS-FSDI service, layer "Floodplains vegetation maps"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#RM">WMS-BGDI Dienst, Layer "Auen Vegetationskarten"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <gmd:URL>https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml?lang=de</gmd:URL>
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml?lang=de</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#FR">https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml?lang=fr</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#IT">https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml?lang=it</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#EN">https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml?lang=en</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#RM">https://wmts.geo.admin.ch/EPSG/3857/1.0.0/WMTSCapabilities.xml?lang=de</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMTS</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>ch.bafu.auen-vegetationskarten</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#RM">ch.bafu.auen-vegetationskarten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:name>
+              <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>WMTS-BGDI Dienst, Layer "Auen Vegetationskarten"</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">WMTS-BGDI Dienst, Layer "Auen Vegetationskarten"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Service WMTS-IFDG, couche , Layer "Végétation dans zones alluviales"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Servizio WMTS-IFDG, strato "Zone golenali carte di vegetazione"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">WMTS-FSDI service, layer "Floodplains vegetation maps"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#RM">WMTS-BGDI Dienst, Layer "Auen Vegetationskarten"</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <gmd:URL>https://www.bafu.admin.ch/oekol-infrastruktur</gmd:URL>
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">https://www.bafu.admin.ch/oekol-infrastruktur</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#FR">https://www.bafu.admin.ch/oekol-infrastruktur</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#IT">https://www.bafu.admin.ch/infrastruttura-ecol</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:LINK</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>Ökologische Infrastruktur</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">Ökologische Infrastruktur</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Infrastructure écologique</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Infrastruttura ecologica</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">Ökologische Infrastruktur</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:name>
+              <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>Link zur Detailbeschreibung der Daten</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">Link zur Detailbeschreibung der Daten</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Lien vers la description détaillée des données</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Link per la descrizione dei dettagli</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">Link to description</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:description>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+              </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <gmd:URL>https://data.geo.admin.ch/browser/index.html#/collections/ch.bafu.auen-vegetationskarten/items/auen-vegetationskarten</gmd:URL>
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">https://data.geo.admin.ch/browser/index.html#/collections/ch.bafu.auen-vegetationskarten/items/auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-URL</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>STAC Browser</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">STAC Browser</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:name>
+              <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>Download Server von geo.admin.ch</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">Download Server von geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Serveur de téléchargement de geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Server di download di geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">Download server from geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:description>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download"/>
+              </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <gmd:URL>http://www.bafu.admin.ch/geodaten</gmd:URL>
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">http://www.bafu.admin.ch/geodaten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#FR">http://www.bafu.admin.ch/geodonnees</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#IT">http://www.bafu.admin.ch/geodati</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#EN">http://www.bafu.admin.ch/geodata</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-URL</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>BAFU Website</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">BAFU Website</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:name>
+              <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>Link zum Datenbezug</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">Link zum Datenbezug</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Lien vers la distribution des données</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Link per le fonti dei dati</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">Link for download</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:description>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download"/>
+              </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <gmd:URL>http://map.bafu.admin.ch</gmd:URL>
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">http://map.bafu.admin.ch</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#FR">http://map.bafu.admin.ch</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#IT">http://map.bafu.admin.ch</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#EN">http://map.bafu.admin.ch</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>CHTOPO:specialised-geoportal</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>Link zum Fachportal</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">Link zum Fachportal</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">Lien vers le portail</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">Link per il portale</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">Link to portal</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:description>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information"/>
+              </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage xsi:type="che:PT_FreeURL_PropertyType">
+                <gmd:URL>https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bafu.auen-vegetationskarten</gmd:URL>
+                <che:PT_FreeURL>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#DE">https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#FR">https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#IT">https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#EN">https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                  <che:URLGroup>
+                    <che:LocalisedURL locale="#RM">https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bafu.auen-vegetationskarten</che:LocalisedURL>
+                  </che:URLGroup>
+                </che:PT_FreeURL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>ESRI:REST</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>RESTful API von geo.admin.ch</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">RESTful API von geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">RESTful API de geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">RESTful API da geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">RESTful API from geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#RM">RESTful API dad geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:name>
+              <gmd:description xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>RESTful API von geo.admin.ch</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">RESTful API von geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">RESTful API de geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">RESTful API da geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#EN">RESTful API from geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#RM">RESTful API dad geo.admin.ch</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+    </gmd:MD_Distribution>
+  </gmd:distributionInfo>
+  <che:legislationInformation xmlns:geonet="http://www.fao.org/geonetwork">
+    <che:CHE_MD_Legislation gco:isoType="gmd:MD_Legislation">
+      <che:country>
+        <gmd:Country codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#Country" codeListValue="CH"/>
+      </che:country>
+      <che:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ger"/>
+      </che:language>
+      <che:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="fre"/>
+      </che:language>
+      <che:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="ita"/>
+      </che:language>
+      <che:legislationType>
+        <che:CHE_CI_LegislationCode codeList="#CHE_CI_LegislationCode" codeListValue="nationalDecree"/>
+      </che:legislationType>
+      <che:internalReference xsi:type="gmd:PT_FreeText_PropertyType">
+        <gco:CharacterString>Anhang 1</gco:CharacterString>
+        <gmd:PT_FreeText>
+          <gmd:textGroup>
+            <gmd:LocalisedCharacterString locale="#DE">Anhang 1</gmd:LocalisedCharacterString>
+          </gmd:textGroup>
+        </gmd:PT_FreeText>
+      </che:internalReference>
+      <che:title>
+        <gmd:CI_Citation>
+          <gmd:title xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Verordnung über Geoinformation</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Verordnung über Geoinformation</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Ordonnance sur la géoinformation : Annexe 1, Catalogue des géodonnées de base relevant du droit fédéral</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Ordinanza sulla geoinformazione : Allegato 1, Catalogo dei geodati di base del diritto federale</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:title>
+          <gmd:alternateTitle xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Geoinformationsverordnung GeoIV</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Geoinformationsverordnung GeoIV</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">OGéo</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">OGI</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:alternateTitle>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2008-05-21</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation"/>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2008-07-01</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:series>
+            <gmd:CI_Series>
+              <gmd:name xsi:type="gmd:PT_FreeText_PropertyType">
+                <gco:CharacterString>SR 510.620</gco:CharacterString>
+                <gmd:PT_FreeText>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#DE">SR 510.620</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#FR">RS 510.620</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                  <gmd:textGroup>
+                    <gmd:LocalisedCharacterString locale="#IT">RS 510.620</gmd:LocalisedCharacterString>
+                  </gmd:textGroup>
+                </gmd:PT_FreeText>
+              </gmd:name>
+            </gmd:CI_Series>
+          </gmd:series>
+          <gmd:otherCitationDetails xsi:type="gmd:PT_FreeText_PropertyType">
+            <gco:CharacterString>Liste aller Geodaten, welche über eine gesetzliche Grundlage auf Bundesebene verfügen.</gco:CharacterString>
+            <gmd:PT_FreeText>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#DE">Liste aller Geodaten, welche über eine gesetzliche Grundlage auf Bundesebene verfügen.</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#FR">Liste de toutes les géodonnées de base de droit fédéral.</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+              <gmd:textGroup>
+                <gmd:LocalisedCharacterString locale="#IT">Questo elenco contiene tutti i geodati di base del diritto federale.</gmd:LocalisedCharacterString>
+              </gmd:textGroup>
+            </gmd:PT_FreeText>
+          </gmd:otherCitationDetails>
+        </gmd:CI_Citation>
+      </che:title>
+    </che:CHE_MD_Legislation>
+  </che:legislationInformation>
+</che:CHE_MD_Metadata>
