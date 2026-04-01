@@ -4,6 +4,7 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 from typing import Any
 
+import boto3
 from bod.models import BodDataset
 from boto3 import Session
 from distributions.export_models import Contact
@@ -138,6 +139,13 @@ class Command(CustomBaseCommand):
             default=None,
             help="Specify the profile name (only needed locally)",
         )
+        parser.add_argument(
+            "--table-role-arn",
+            type=str,
+            nargs="?",
+            default=None,
+            help="Specify the role ARN to access the harvesting tables in swissgeo accounts",
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         """Main entry point of command."""
@@ -147,7 +155,23 @@ class Command(CustomBaseCommand):
             self.print(f"Debug: parsed args = {json.dumps(options)}")
 
         # Create DynamoDB client
-        session = Session(profile_name=options["profile_name"])
+        if options.get("table_role_arn"):
+            sts_client = boto3.client("sts")
+            assumed_role = sts_client.assume_role(
+                RoleArn=options["table_role_arn"],
+                RoleSessionName="geocat_harvest",
+                DurationSeconds=3600  # 1 hour
+            )
+            session = Session(
+                aws_access_key_id=assumed_role["Credentials"]["AccessKeyId"],
+                aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
+                aws_session_token=assumed_role["Credentials"]["SessionToken"]
+            )
+        elif options.get("profile_name"):
+            session = Session(profile_name=options["profile_name"])
+        else:
+            session = Session()
+
         client = session.client("dynamodb", region_name="eu-central-1")
 
         # Check if any source is selected
