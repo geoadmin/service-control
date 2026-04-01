@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long
 from pathlib import Path
 from unittest.mock import MagicMock
 from unittest.mock import call
@@ -63,10 +64,17 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'type': {
                                     'S': 'theme'
                                 },
-                                'thesaurus': {
+                                'thesaurus_id': {
+                                    'S': 'geonetwork.thesaurus.local.theme.geocat.ch'
+                                },
+                                'thesaurus_url': {
                                     'S':
                                         'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
                                 },
+                                'thesaurus_date':
+                                    {
+                                        'S': '2024-06-13'
+                                    },
                                 'concept':
                                     {
                                         'S':
@@ -99,9 +107,15 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'type': {
                                     'S': 'theme'
                                 },
-                                'thesaurus': {
+                                'thesaurus_id': {
+                                    'S': 'geonetwork.thesaurus.local.theme.geocat.ch'
+                                },
+                                'thesaurus_url': {
                                     'S':
                                         'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                },
+                                'thesaurus_date': {
+                                    'S': '2024-06-13'
                                 },
                                 'concept': {
                                     'S':
@@ -129,9 +143,15 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'type': {
                                     'S': 'theme'
                                 },
-                                'thesaurus': {
+                                'thesaurus_id': {
+                                    'S': 'geonetwork.thesaurus.local.theme.geocat.ch'
+                                },
+                                'thesaurus_url': {
                                     'S':
                                         'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                },
+                                'thesaurus_date': {
+                                    'S': '2024-06-13'
                                 },
                                 'concept': {
                                     'S':
@@ -142,16 +162,14 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 },
                                 'translation_fr': {
                                     'S':
-                                        "Planification de la conservation et de l'archivage AAP - "
-                                        "Conféderation"
+                                        "Planification de la conservation et de l'archivage AAP - Conféderation"
                                 },
                                 'translation_en': {
                                     'S': 'Conservation and archiving planning AAP - Confederation'
                                 },
                                 'translation_it': {
                                     'S':
-                                        'Pianificazione della conservazione e dell’archiviazione '
-                                        'AAP - Confederazione'
+                                        'Pianificazione della conservazione e dell’archiviazione AAP - Confederazione'
                                 },
                                 'translation_rm': {
                                     'NULL': True
@@ -163,9 +181,15 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'type': {
                                     'S': 'theme'
                                 },
-                                'thesaurus': {
+                                'thesaurus_id': {
+                                    'S': 'geonetwork.thesaurus.local.theme.geocat.ch'
+                                },
+                                'thesaurus_url': {
                                     'S':
                                         'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                },
+                                'thesaurus_date': {
+                                    'S': '2024-06-13'
                                 },
                                 'concept': {
                                     'S':
