@@ -69,7 +69,9 @@ class ExportProvider(BaseModelWithDynamoDBSerialization):
 
 class Keyword(BaseModel):
     type: str | None
-    thesaurus: str | None
+    thesaurus_id: str | None
+    thesaurus_url: str | None
+    thesaurus_date: str | None
     concept: str | None
     translation_de: str | None
     translation_fr: str | None

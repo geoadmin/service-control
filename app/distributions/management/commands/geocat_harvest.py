@@ -220,7 +220,7 @@ class Command(CustomBaseCommand):
         if not term:
             return False
 
-        thesaurus = Thesaurus.get(keyword.thesaurus)
+        thesaurus = Thesaurus.get(keyword.thesaurus_url)
         if not thesaurus:
             return False
 
@@ -237,7 +237,7 @@ class Command(CustomBaseCommand):
 
         return True
 
-    def harvest_keywords(  # pylint: disable=too-many-positional-arguments
+    def harvest_keywords(  # pylint: disable=too-many-positional-arguments,too-many-locals
         self,
         client: "DynamoDBClient",
         env: str,
@@ -258,12 +258,18 @@ class Command(CustomBaseCommand):
             if (element := block.find(".//gmd:MD_KeywordTypeCode", NS)) is not None:
                 keyword_type = element.get("codeListValue")
 
-            thesaurus = None
+            thesaurus_id = None
+            thesaurus_url = None
             if (element := block.find(".//gmd:thesaurusName//gmx:Anchor", NS)) is not None:
-                thesaurus = next(
+                thesaurus_id = element.text
+                thesaurus_url = next(
                     (element.get(key) for key in element.keys() if "href" in str(key)),
                     None,
                 )
+
+            thesaurus_date = None
+            if (element := block.find(".//gmd:thesaurusName//gco:Date", NS)) is not None:
+                thesaurus_date = element.text
 
             for element in block.findall("gmd:keyword", NS):
                 if (text := element.find("gco:CharacterString", NS)) is None or not text.text:
@@ -277,7 +283,9 @@ class Command(CustomBaseCommand):
 
                 keyword = Keyword(
                     type=keyword_type,
-                    thesaurus=thesaurus,
+                    thesaurus_id=thesaurus_id,
+                    thesaurus_url=thesaurus_url,
+                    thesaurus_date=thesaurus_date,
                     concept=None,
                     translation_de=translations.get("de"),
                     translation_fr=translations.get("fr"),
@@ -293,7 +301,7 @@ class Command(CustomBaseCommand):
 
                 keywords.append(keyword)
 
-        keywords.sort(key=lambda k: (k.thesaurus or "", k.concept or ""))
+        keywords.sort(key=lambda k: (k.thesaurus_id or "", k.concept or ""))
 
         self.print(f"Exporting keywords for dataset {dataset_id} to DynamoDB")
         keyword_list = KeywordList(dataset_id=dataset_id, geocat_id=geocat_id, keywords=keywords)
