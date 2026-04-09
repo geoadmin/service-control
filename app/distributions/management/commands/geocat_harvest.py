@@ -307,7 +307,7 @@ class Command(CustomBaseCommand):
         keyword_list = KeywordList(dataset_id=dataset_id, geocat_id=geocat_id, keywords=keywords)
         client.put_item(TableName=f"harvest-keywords-{env}", Item=keyword_list.as_dynamodb_item())
 
-    def harvest_contact(  # pylint: disable=too-many-positional-arguments
+    def harvest_contact(  # pylint: disable=too-many-positional-arguments,too-many-locals
         self,
         client: "DynamoDBClient",
         env: str,
@@ -320,6 +320,11 @@ class Command(CustomBaseCommand):
         def find(element: etree._Element, path: str) -> str | None:
             return getattr(element.find(path, NS), "text", None)
 
+        def find_code(element: etree._Element, path: str) -> str | None:
+            if (result := element.find(path, NS)) is not None:
+                return result.attrib.get("codeListValue")
+            return None
+
         contacts: list[Contact] = []
         for block in root.findall(".//gmd:pointOfContact", NS):
 
@@ -327,9 +332,7 @@ class Command(CustomBaseCommand):
             if not name:
                 continue
 
-            role = None
-            if (element := block.find(".//gmd:CI_RoleCode", NS)) is not None:
-                role = element.attrib.get("codeListValue")
+            role = find_code(block, ".//gmd:CI_RoleCode")
 
             online_resources = [
                 OnlineResource(
@@ -350,10 +353,22 @@ class Command(CustomBaseCommand):
                     description_en=find(resource, './/gmd:description//*[@locale="#EN"]'),
                     description_it=find(resource, './/gmd:description//*[@locale="#IT"]'),
                     description_rm=find(resource, './/gmd:description//*[@locale="#RM"]'),
+                    function=find_code(resource, ".//gmd:function/*"),
                 ) for resource in block.findall(".//gmd:CI_OnlineResource", NS)
             ]
-
             online_resources.sort(key=lambda r: r.url or "")
+
+            parts = (
+                find(block, ".//che:streetName/*"),
+                find(block, ".//che:streetNumber/*"),
+                find(block, ".//che:postBox/*")
+            )
+            delivery_point = " ".join(part for part in parts if part) or None
+
+            emails = [
+                email for element in block.findall(".//gmd:electronicMailAddress//*", NS)
+                if (email := getattr(element, "text", None))
+            ]
 
             contact = Contact(
                 role=role,
@@ -369,28 +384,20 @@ class Command(CustomBaseCommand):
                 org_acronym_en=find(block, './/che:organisationAcronym//*[@locale="#EN"]'),
                 org_acronym_it=find(block, './/che:organisationAcronym//*[@locale="#IT"]'),
                 org_acronym_rm=find(block, './/che:organisationAcronym//*[@locale="#RM"]'),
-                org_email=find(block, ".//che:organisationEMail/gco:CharacterString"),
                 position_name_de=find(block, './/gmd:positionName//*[@locale="#DE"]'),
                 position_name_fr=find(block, './/gmd:positionName//*[@locale="#FR"]'),
                 position_name_en=find(block, './/gmd:positionName//*[@locale="#EN"]'),
                 position_name_it=find(block, './/gmd:positionName//*[@locale="#IT"]'),
                 position_name_rm=find(block, './/gmd:positionName//*[@locale="#RM"]'),
-                individual_name=find(block, ".//gmd:individualName/*"),
-                individual_first_name=find(block, ".//che:individualFirstName/*"),
-                individual_last_name=find(block, ".//che:individualLastName/*"),
-                contact_direct_number=find(block, ".//che:directNumber/*"),
                 contact_voice=find(block, ".//gmd:voice/*"),
                 contact_facsimile=find(block, ".//gmd:facsimile/*"),
+                contact_sms=None,
                 contact_city=find(block, ".//gmd:city/*"),
                 contact_administrative_area=find(block, ".//gmd:administrativeArea/*"),
                 contact_postal_code=find(block, ".//gmd:postalCode/*"),
                 contact_country=find(block, ".//gmd:country/*"),
-                contact_electronic_mail_address=find(block, ".//gmd:electronicMailAddress/*"),
-                contact_street_name=find(block, ".//che:streetName/*"),
-                contact_street_number=find(block, ".//che:streetNumber/*"),
-                contact_post_box=find(block, ".//che:postBox/*"),
-                hours_of_service=find(block, ".//gmd:hoursOfService/*"),
-                contact_instructions=find(block, ".//gmd:contactInstructions/*"),
+                contact_electronic_mail_addresses=emails,
+                contact_delivery_point=delivery_point,
                 online_resources=online_resources
             )
 
