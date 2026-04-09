@@ -1,3 +1,4 @@
+# pylint: disable=line-too-long
 from pathlib import Path
 from unittest.mock import MagicMock
 from unittest.mock import call
@@ -45,7 +46,7 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
     #       errors ;)
 
     assert dynamo_session_mock.mock_calls == [
-        call(profile_name=None),
+        call(),
         call().client('dynamodb', region_name='eu-central-1'),
         call().client().put_item(
             TableName='harvest-keywords-dev',
@@ -63,10 +64,17 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'type': {
                                     'S': 'theme'
                                 },
-                                'thesaurus': {
+                                'thesaurus_id': {
+                                    'S': 'geonetwork.thesaurus.local.theme.geocat.ch'
+                                },
+                                'thesaurus_url': {
                                     'S':
                                         'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
                                 },
+                                'thesaurus_date':
+                                    {
+                                        'S': '2024-06-13'
+                                    },
                                 'concept':
                                     {
                                         'S':
@@ -99,9 +107,15 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'type': {
                                     'S': 'theme'
                                 },
-                                'thesaurus': {
+                                'thesaurus_id': {
+                                    'S': 'geonetwork.thesaurus.local.theme.geocat.ch'
+                                },
+                                'thesaurus_url': {
                                     'S':
                                         'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                },
+                                'thesaurus_date': {
+                                    'S': '2024-06-13'
                                 },
                                 'concept': {
                                     'S':
@@ -129,9 +143,15 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'type': {
                                     'S': 'theme'
                                 },
-                                'thesaurus': {
+                                'thesaurus_id': {
+                                    'S': 'geonetwork.thesaurus.local.theme.geocat.ch'
+                                },
+                                'thesaurus_url': {
                                     'S':
                                         'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                },
+                                'thesaurus_date': {
+                                    'S': '2024-06-13'
                                 },
                                 'concept': {
                                     'S':
@@ -142,16 +162,14 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 },
                                 'translation_fr': {
                                     'S':
-                                        "Planification de la conservation et de l'archivage AAP - "
-                                        "Conféderation"
+                                        "Planification de la conservation et de l'archivage AAP - Conféderation"
                                 },
                                 'translation_en': {
                                     'S': 'Conservation and archiving planning AAP - Confederation'
                                 },
                                 'translation_it': {
                                     'S':
-                                        'Pianificazione della conservazione e dell’archiviazione '
-                                        'AAP - Confederazione'
+                                        'Pianificazione della conservazione e dell’archiviazione AAP - Confederazione'
                                 },
                                 'translation_rm': {
                                     'NULL': True
@@ -163,9 +181,15 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'type': {
                                     'S': 'theme'
                                 },
-                                'thesaurus': {
+                                'thesaurus_id': {
+                                    'S': 'geonetwork.thesaurus.local.theme.geocat.ch'
+                                },
+                                'thesaurus_url': {
                                     'S':
                                         'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                },
+                                'thesaurus_date': {
+                                    'S': '2024-06-13'
                                 },
                                 'concept': {
                                     'S':
@@ -243,9 +267,6 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                             'org_acronym_rm': {
                                 'S': 'BAFU'
                             },
-                            'org_email': {
-                                'NULL': True
-                            },
                             'position_name_de': {
                                 'NULL': True
                             },
@@ -261,22 +282,13 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                             'position_name_rm': {
                                 'NULL': True
                             },
-                            'individual_name': {
-                                'NULL': True
-                            },
-                            'individual_first_name': {
-                                'NULL': True
-                            },
-                            'individual_last_name': {
-                                'NULL': True
-                            },
-                            'contact_direct_number': {
-                                'NULL': True
-                            },
                             'contact_voice': {
                                 'S': '+41 58 462 93 11'
                             },
                             'contact_facsimile': {
+                                'NULL': True
+                            },
+                            'contact_sms': {
                                 'NULL': True
                             },
                             'contact_city': {
@@ -291,22 +303,12 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                             'contact_country': {
                                 'NULL': True
                             },
-                            'contact_electronic_mail_address': {
-                                'S': 'info@bafu.admin.ch'
+                            'contact_electronic_mail_addresses': {
+                                'L': [{
+                                    'S': 'info@bafu.admin.ch'
+                                }]
                             },
-                            'contact_street_name': {
-                                'NULL': True
-                            },
-                            'contact_street_number': {
-                                'NULL': True
-                            },
-                            'contact_post_box': {
-                                'NULL': True
-                            },
-                            'hours_of_service': {
-                                'NULL': True
-                            },
-                            'contact_instructions': {
+                            'contact_delivery_point': {
                                 'NULL': True
                             },
                             'online_resources': {
@@ -362,6 +364,9 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                         },
                                         'description_rm': {
                                             'NULL': True
+                                        },
+                                        'function': {
+                                            'NULL': True
                                         }
                                     }
                                 }]
@@ -375,28 +380,23 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                   },
                                   'org_name': {
                                       'S':
-                                          'Bundesamt für Umwelt / Abteilung Biodiversität und '
-                                          'Landschaft'
+                                          'Bundesamt für Umwelt / Abteilung Biodiversität und Landschaft'
                                   },
                                   'org_name_de': {
                                       'S':
-                                          'Bundesamt für Umwelt / Abteilung Biodiversität und '
-                                          'Landschaft'
+                                          'Bundesamt für Umwelt / Abteilung Biodiversität und Landschaft'
                                   },
                                   'org_name_fr': {
                                       'S':
-                                          "Office fédéral de l'environnement / Division "
-                                          "Biodiversité et paysage"
+                                          "Office fédéral de l'environnement / Division Biodiversité et paysage"
                                   },
                                   'org_name_en': {
                                       'S':
-                                          'Federal Office for the Environment / Biodiversity '
-                                          'and Landscape Division'
+                                          'Federal Office for the Environment / Biodiversity and Landscape Division'
                                   },
                                   'org_name_it': {
                                       'S':
-                                          "Ufficio federale dell'ambiente / Divisione "
-                                          "Biodiversità e paesaggio"
+                                          "Ufficio federale dell'ambiente / Divisione Biodiversità e paesaggio"
                                   },
                                   'org_name_rm': {
                                       'S': 'Bundesamt für Umwelt'
@@ -419,9 +419,6 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                   'org_acronym_rm': {
                                       'S': 'BAFU'
                                   },
-                                  'org_email': {
-                                      'NULL': True
-                                  },
                                   'position_name_de': {
                                       'NULL': True
                                   },
@@ -437,23 +434,14 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                   'position_name_rm': {
                                       'NULL': True
                                   },
-                                  'individual_name': {
-                                      'NULL': True
-                                  },
-                                  'individual_first_name': {
-                                      'NULL': True
-                                  },
-                                  'individual_last_name': {
-                                      'S': 'BAFU BNL'
-                                  },
-                                  'contact_direct_number': {
-                                      'NULL': True
-                                  },
                                   'contact_voice': {
                                       'S': '+41 58 462 93 89'
                                   },
                                   'contact_facsimile': {
                                       'S': '+41 58 463 89 74'
+                                  },
+                                  'contact_sms': {
+                                      'NULL': True
                                   },
                                   'contact_city': {
                                       'S': 'Bern'
@@ -467,22 +455,12 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                   'contact_country': {
                                       'S': 'CH'
                                   },
-                                  'contact_electronic_mail_address': {
-                                      'S': 'bnl@bafu.admin.ch'
+                                  'contact_electronic_mail_addresses': {
+                                      'L': [{
+                                          'S': 'bnl@bafu.admin.ch'
+                                      }]
                                   },
-                                  'contact_street_name': {
-                                      'NULL': True
-                                  },
-                                  'contact_street_number': {
-                                      'NULL': True
-                                  },
-                                  'contact_post_box': {
-                                      'NULL': True
-                                  },
-                                  'hours_of_service': {
-                                      'NULL': True
-                                  },
-                                  'contact_instructions': {
+                                  'contact_delivery_point': {
                                       'NULL': True
                                   },
                                   'online_resources': {
@@ -541,6 +519,9 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                                   'NULL': True
                                               },
                                               'description_rm': {
+                                                  'NULL': True
+                                              },
+                                              'function': {
                                                   'NULL': True
                                               }
                                           }

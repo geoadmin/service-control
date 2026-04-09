@@ -4,6 +4,7 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 from typing import Any
 
+import boto3
 from bod.models import BodDataset
 from boto3 import Session
 from distributions.export_models import Contact
@@ -138,6 +139,13 @@ class Command(CustomBaseCommand):
             default=None,
             help="Specify the profile name (only needed locally)",
         )
+        parser.add_argument(
+            "--table-role-arn",
+            type=str,
+            nargs="?",
+            default=None,
+            help="Specify the role ARN to access the harvesting tables in swissgeo accounts",
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         """Main entry point of command."""
@@ -147,7 +155,23 @@ class Command(CustomBaseCommand):
             self.print(f"Debug: parsed args = {json.dumps(options)}")
 
         # Create DynamoDB client
-        session = Session(profile_name=options["profile_name"])
+        if options.get("table_role_arn"):
+            sts_client = boto3.client("sts")
+            assumed_role = sts_client.assume_role(
+                RoleArn=options["table_role_arn"],
+                RoleSessionName="geocat_harvest",
+                DurationSeconds=3600  # 1 hour
+            )
+            session = Session(
+                aws_access_key_id=assumed_role["Credentials"]["AccessKeyId"],
+                aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
+                aws_session_token=assumed_role["Credentials"]["SessionToken"]
+            )
+        elif options.get("profile_name"):
+            session = Session(profile_name=options["profile_name"])
+        else:
+            session = Session()
+
         client = session.client("dynamodb", region_name="eu-central-1")
 
         # Check if any source is selected
@@ -196,7 +220,7 @@ class Command(CustomBaseCommand):
         if not term:
             return False
 
-        thesaurus = Thesaurus.get(keyword.thesaurus)
+        thesaurus = Thesaurus.get(keyword.thesaurus_url)
         if not thesaurus:
             return False
 
@@ -213,7 +237,7 @@ class Command(CustomBaseCommand):
 
         return True
 
-    def harvest_keywords(  # pylint: disable=too-many-positional-arguments
+    def harvest_keywords(  # pylint: disable=too-many-positional-arguments,too-many-locals
         self,
         client: "DynamoDBClient",
         env: str,
@@ -234,12 +258,18 @@ class Command(CustomBaseCommand):
             if (element := block.find(".//gmd:MD_KeywordTypeCode", NS)) is not None:
                 keyword_type = element.get("codeListValue")
 
-            thesaurus = None
+            thesaurus_id = None
+            thesaurus_url = None
             if (element := block.find(".//gmd:thesaurusName//gmx:Anchor", NS)) is not None:
-                thesaurus = next(
+                thesaurus_id = element.text
+                thesaurus_url = next(
                     (element.get(key) for key in element.keys() if "href" in str(key)),
                     None,
                 )
+
+            thesaurus_date = None
+            if (element := block.find(".//gmd:thesaurusName//gco:Date", NS)) is not None:
+                thesaurus_date = element.text
 
             for element in block.findall("gmd:keyword", NS):
                 if (text := element.find("gco:CharacterString", NS)) is None or not text.text:
@@ -253,7 +283,9 @@ class Command(CustomBaseCommand):
 
                 keyword = Keyword(
                     type=keyword_type,
-                    thesaurus=thesaurus,
+                    thesaurus_id=thesaurus_id,
+                    thesaurus_url=thesaurus_url,
+                    thesaurus_date=thesaurus_date,
                     concept=None,
                     translation_de=translations.get("de"),
                     translation_fr=translations.get("fr"),
@@ -269,13 +301,13 @@ class Command(CustomBaseCommand):
 
                 keywords.append(keyword)
 
-        keywords.sort(key=lambda k: (k.thesaurus or "", k.concept or ""))
+        keywords.sort(key=lambda k: (k.thesaurus_id or "", k.concept or ""))
 
         self.print(f"Exporting keywords for dataset {dataset_id} to DynamoDB")
         keyword_list = KeywordList(dataset_id=dataset_id, geocat_id=geocat_id, keywords=keywords)
         client.put_item(TableName=f"harvest-keywords-{env}", Item=keyword_list.as_dynamodb_item())
 
-    def harvest_contact(  # pylint: disable=too-many-positional-arguments
+    def harvest_contact(  # pylint: disable=too-many-positional-arguments,too-many-locals
         self,
         client: "DynamoDBClient",
         env: str,
@@ -288,6 +320,11 @@ class Command(CustomBaseCommand):
         def find(element: etree._Element, path: str) -> str | None:
             return getattr(element.find(path, NS), "text", None)
 
+        def find_code(element: etree._Element, path: str) -> str | None:
+            if (result := element.find(path, NS)) is not None:
+                return result.attrib.get("codeListValue")
+            return None
+
         contacts: list[Contact] = []
         for block in root.findall(".//gmd:pointOfContact", NS):
 
@@ -295,9 +332,7 @@ class Command(CustomBaseCommand):
             if not name:
                 continue
 
-            role = None
-            if (element := block.find(".//gmd:CI_RoleCode", NS)) is not None:
-                role = element.attrib.get("codeListValue")
+            role = find_code(block, ".//gmd:CI_RoleCode")
 
             online_resources = [
                 OnlineResource(
@@ -318,10 +353,22 @@ class Command(CustomBaseCommand):
                     description_en=find(resource, './/gmd:description//*[@locale="#EN"]'),
                     description_it=find(resource, './/gmd:description//*[@locale="#IT"]'),
                     description_rm=find(resource, './/gmd:description//*[@locale="#RM"]'),
+                    function=find_code(resource, ".//gmd:function/*"),
                 ) for resource in block.findall(".//gmd:CI_OnlineResource", NS)
             ]
-
             online_resources.sort(key=lambda r: r.url or "")
+
+            parts = (
+                find(block, ".//che:streetName/*"),
+                find(block, ".//che:streetNumber/*"),
+                find(block, ".//che:postBox/*")
+            )
+            delivery_point = " ".join(part for part in parts if part) or None
+
+            emails = [
+                email for element in block.findall(".//gmd:electronicMailAddress//*", NS)
+                if (email := getattr(element, "text", None))
+            ]
 
             contact = Contact(
                 role=role,
@@ -337,28 +384,20 @@ class Command(CustomBaseCommand):
                 org_acronym_en=find(block, './/che:organisationAcronym//*[@locale="#EN"]'),
                 org_acronym_it=find(block, './/che:organisationAcronym//*[@locale="#IT"]'),
                 org_acronym_rm=find(block, './/che:organisationAcronym//*[@locale="#RM"]'),
-                org_email=find(block, ".//che:organisationEMail/gco:CharacterString"),
                 position_name_de=find(block, './/gmd:positionName//*[@locale="#DE"]'),
                 position_name_fr=find(block, './/gmd:positionName//*[@locale="#FR"]'),
                 position_name_en=find(block, './/gmd:positionName//*[@locale="#EN"]'),
                 position_name_it=find(block, './/gmd:positionName//*[@locale="#IT"]'),
                 position_name_rm=find(block, './/gmd:positionName//*[@locale="#RM"]'),
-                individual_name=find(block, ".//gmd:individualName/*"),
-                individual_first_name=find(block, ".//che:individualFirstName/*"),
-                individual_last_name=find(block, ".//che:individualLastName/*"),
-                contact_direct_number=find(block, ".//che:directNumber/*"),
                 contact_voice=find(block, ".//gmd:voice/*"),
                 contact_facsimile=find(block, ".//gmd:facsimile/*"),
+                contact_sms=None,
                 contact_city=find(block, ".//gmd:city/*"),
                 contact_administrative_area=find(block, ".//gmd:administrativeArea/*"),
                 contact_postal_code=find(block, ".//gmd:postalCode/*"),
                 contact_country=find(block, ".//gmd:country/*"),
-                contact_electronic_mail_address=find(block, ".//gmd:electronicMailAddress/*"),
-                contact_street_name=find(block, ".//che:streetName/*"),
-                contact_street_number=find(block, ".//che:streetNumber/*"),
-                contact_post_box=find(block, ".//che:postBox/*"),
-                hours_of_service=find(block, ".//gmd:hoursOfService/*"),
-                contact_instructions=find(block, ".//gmd:contactInstructions/*"),
+                contact_electronic_mail_addresses=emails,
+                contact_delivery_point=delivery_point,
                 online_resources=online_resources
             )
 

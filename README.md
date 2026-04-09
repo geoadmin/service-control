@@ -85,7 +85,8 @@ hand, are not pinned unless they need to be used with a specific version of a pr
 To update the packages to the latest minor/compatible versions, run:
 
 ```bash
-pipenv update --dev
+pipenv lock --clear
+pipenv sync --dev
 ```
 
 To see what major/incompatible releases would be available, run:

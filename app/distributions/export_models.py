@@ -69,7 +69,9 @@ class ExportProvider(BaseModelWithDynamoDBSerialization):
 
 class Keyword(BaseModel):
     type: str | None
-    thesaurus: str | None
+    thesaurus_id: str | None
+    thesaurus_url: str | None
+    thesaurus_date: str | None
     concept: str | None
     translation_de: str | None
     translation_fr: str | None
@@ -102,6 +104,7 @@ class OnlineResource(BaseModel):
     description_en: str | None
     description_it: str | None
     description_rm: str | None
+    function: str | None
 
 
 class Contact(BaseModel):
@@ -118,28 +121,20 @@ class Contact(BaseModel):
     org_acronym_en: str | None
     org_acronym_it: str | None
     org_acronym_rm: str | None
-    org_email: str | None
     position_name_de: str | None
     position_name_fr: str | None
     position_name_en: str | None
     position_name_it: str | None
     position_name_rm: str | None
-    individual_name: str | None
-    individual_first_name: str | None
-    individual_last_name: str | None
-    contact_direct_number: str | None
     contact_voice: str | None
     contact_facsimile: str | None
+    contact_sms: str | None
     contact_city: str | None
     contact_administrative_area: str | None
     contact_postal_code: str | None
     contact_country: str | None
-    contact_electronic_mail_address: str | None
-    contact_street_name: str | None
-    contact_street_number: str | None
-    contact_post_box: str | None
-    hours_of_service: str | None
-    contact_instructions: str | None
+    contact_electronic_mail_addresses: list[str]
+    contact_delivery_point: str | None
     online_resources: list[OnlineResource]
 
 
