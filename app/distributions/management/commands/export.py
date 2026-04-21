@@ -1,8 +1,8 @@
 import json
+from typing import TYPE_CHECKING
 from typing import Any
 
 import boto3
-import environ
 from distributions.export_models import ExportDataset
 from distributions.export_models import ExportProvider
 from distributions.models import Dataset
@@ -12,8 +12,8 @@ from utils.command import CustomBaseCommand
 from django.core import serializers
 from django.core.management.base import CommandParser
 
-env = environ.Env()
-boto3.setup_default_session(profile_name="swisstopo-swissgeo-dev")
+if TYPE_CHECKING:
+    from mypy_boto3_dynamodb import DynamoDBClient
 
 SAMPLE_IDS = [
     "ch.bafu.schutzgebiete-luftfahrt",
@@ -30,16 +30,6 @@ class Command(CustomBaseCommand):
     def add_arguments(self, parser: CommandParser) -> None:
         super().add_arguments(parser)
         parser.add_argument(
-            "--clear",
-            action="store_true",
-            help="Delete existing objects before importing",
-        )
-        parser.add_argument(
-            "--dry-run",
-            action="store_true",
-            help="Dry run, abort transaction in the end",
-        )
-        parser.add_argument(
             "--sample",
             action="store_true",
             help="Export a sample of datasets (10) instead of all datasets",
@@ -47,17 +37,12 @@ class Command(CustomBaseCommand):
         parser.add_argument(
             "--providers",
             action="store_true",
-            help="Import providers",
-        )
-        parser.add_argument(
-            "--attributions",
-            action="store_true",
-            help="Import attributions",
+            help="Export providers",
         )
         parser.add_argument(
             "--datasets",
             action="store_true",
-            help="Import datasets",
+            help="Export datasets",
         )
         parser.add_argument(
             "--target-env",
@@ -74,28 +59,47 @@ class Command(CustomBaseCommand):
             help="Specify the profile name (only needed locally)",
         )
         parser.add_argument(
-            "--debug",
-            action="store_true",
-            help="Enable debug logging",
+            "--table-role-arn",
+            type=str,
+            nargs="?",
+            default=None,
+            help="Specify the role ARN to access the harvesting tables in swissgeo accounts",
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
         """Main entry point of command."""
-        if options["profile_name"]:
-            self.session = boto3.Session(profile_name=options["profile_name"])  # pylint: disable=attribute-defined-outside-init
+
+        # Show parsed arguments (useful for debugging)
+        if options.get("verbosity", 0) >= 2:
+            self.print(f"Debug: parsed args = {json.dumps(options)}")
+
+        # Create DynamoDB client
+        if options.get("table_role_arn"):
+            sts_client = boto3.client("sts")
+            assumed_role = sts_client.assume_role(
+                RoleArn=options["table_role_arn"],
+                RoleSessionName="geocat_harvest",
+                DurationSeconds=3600  # 1 hour
+            )
+            session = boto3.Session(
+                aws_access_key_id=assumed_role["Credentials"]["AccessKeyId"],
+                aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
+                aws_session_token=assumed_role["Credentials"]["SessionToken"]
+            )
+        elif options.get("profile_name"):
+            session = boto3.Session(profile_name=options["profile_name"])
         else:
-            self.session = boto3.Session()  # pylint: disable=attribute-defined-outside-init
+            session = boto3.Session()
+
+        client = session.client("dynamodb", region_name="eu-central-1")
 
         if options["datasets"]:
-            self.export_datasets(*args, **options)
+            self.export_datasets(client, options['target_env'], options["sample"])
         if options["providers"]:
-            self.export_providers(*args, **options)
+            self.export_providers(client, options['target_env'])
 
-    def export_datasets(self, *args: Any, **options: Any) -> None:
-
-        dynamodb_client = self.session.client("dynamodb", region_name="eu-central-1")
-
-        if options["sample"]:
+    def export_datasets(self, client: "DynamoDBClient", target_env: str, sample: bool) -> None:
+        if sample:
             self.print("Exporting only a sample of datasets (10)...")
             qs = Dataset.objects.filter(dataset_id__in=SAMPLE_IDS)
         else:
@@ -110,13 +114,9 @@ class Command(CustomBaseCommand):
             exp_item = ExportDataset(**dataset["fields"])
             item = exp_item.as_dynamodb_item()
             self.print(f"Exporting dataset {exp_item.dataset_id} to DynamoDB")
-            dynamodb_client.put_item(
-                TableName=f"harvest-datasets-{options['target_env']}", Item=item
-            )
+            client.put_item(TableName=f"harvest-datasets-{target_env}", Item=item)
 
-    def export_providers(self, *args: Any, **options: Any) -> None:
-        dynamodb_client = self.session.client("dynamodb", region_name="eu-central-1")
-
+    def export_providers(self, client: "DynamoDBClient", target_env: str) -> None:
         qs = Provider.objects.all()
         providers = json.loads(
             serializers.serialize(
@@ -128,6 +128,4 @@ class Command(CustomBaseCommand):
             exp_item = ExportProvider(**provider["fields"])
             item = exp_item.as_dynamodb_item()
             self.print(f"Exporting provider {exp_item.provider_id} to DynamoDB")
-            dynamodb_client.put_item(
-                TableName=f"harvest-providers-{options['target_env']}", Item=item
-            )
+            client.put_item(TableName=f"harvest-providers-{target_env}", Item=item)
