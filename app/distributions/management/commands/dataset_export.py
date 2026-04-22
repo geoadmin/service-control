@@ -99,6 +99,15 @@ class Command(CustomBaseCommand):
             self.export_providers(client, options['target_env'])
 
     def export_datasets(self, client: "DynamoDBClient", target_env: str, sample: bool) -> None:
+        self.print("Fetching existing datasets from DynamoDB")
+        obsolete = set()
+        paginator = client.get_paginator("scan")
+        for page in paginator.paginate(
+            TableName=f"harvest-datasets-{target_env}", ProjectionExpression="dataset_id"
+        ):
+            obsolete.update({item["dataset_id"]["S"] for item in page["Items"]})
+
+        self.print("Exporting datasets to DynamoDB")
         if sample:
             self.print("Exporting only a sample of datasets (10)...")
             qs = Dataset.objects.filter(dataset_id__in=SAMPLE_IDS)
@@ -109,23 +118,51 @@ class Command(CustomBaseCommand):
                 "json", qs, use_natural_foreign_keys=True, use_natural_primary_keys=True
             )
         )
-
         for dataset in datasets:
             exp_item = ExportDataset(**dataset["fields"])
             item = exp_item.as_dynamodb_item()
             self.print(f"Exporting dataset {exp_item.dataset_id} to DynamoDB")
             client.put_item(TableName=f"harvest-datasets-{target_env}", Item=item)
+            obsolete.discard(exp_item.dataset_id)
+
+        self.print("Deleting obsolete datasets")
+        for dataset_id in obsolete:
+            self.print(f"Deleting dataset {dataset_id} from DynamoDB")
+            client.delete_item(
+                TableName=f"harvest-datasets-{target_env}", Key={"dataset_id": {
+                    "S": dataset_id
+                }}
+            )
 
     def export_providers(self, client: "DynamoDBClient", target_env: str) -> None:
+        self.print("Fetching existing providers from DynamoDB")
+        obsolete = set()
+        paginator = client.get_paginator("scan")
+        for page in paginator.paginate(
+            TableName=f"harvest-providers-{target_env}", ProjectionExpression="provider_id"
+        ):
+            obsolete.update({item["provider_id"]["S"] for item in page["Items"]})
+
+        self.print("Exporting providers to DynamoDB")
         qs = Provider.objects.all()
         providers = json.loads(
             serializers.serialize(
                 "json", qs, use_natural_foreign_keys=True, use_natural_primary_keys=True
             )
         )
-
         for provider in providers:
             exp_item = ExportProvider(**provider["fields"])
             item = exp_item.as_dynamodb_item()
             self.print(f"Exporting provider {exp_item.provider_id} to DynamoDB")
             client.put_item(TableName=f"harvest-providers-{target_env}", Item=item)
+            obsolete.discard(exp_item.provider_id)
+
+        self.print("Deleting obsolete providers")
+        for provider_id in obsolete:
+            self.print(f"Deleting provider {provider_id} from DynamoDB")
+            client.delete_item(
+                TableName=f"harvest-providers-{target_env}",
+                Key={"provider_id": {
+                    "S": provider_id
+                }}
+            )
