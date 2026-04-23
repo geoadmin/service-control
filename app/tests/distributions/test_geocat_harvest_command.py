@@ -32,7 +32,10 @@ def not_found_response():
 @patch('distributions.management.commands.geocat_harvest.Session')
 def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
     requests_get_mock.side_effect = [
-        xml_response("geocat_entry"), xml_response("geocat_thesaurus"), not_found_response()
+        xml_response("geocat_entry"),
+        xml_response("geocat_thesaurus"),
+        not_found_response(),
+        not_found_response()
     ]
 
     BodDataset.objects.create(
@@ -44,7 +47,6 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
 
     # Note: These are the actual data in geocat at the time of writing this test, not parsing
     #       errors ;)
-
     assert dynamo_session_mock.mock_calls == [
         call(),
         call().client('dynamodb', region_name='eu-central-1'),
@@ -69,11 +71,11 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 },
                                 'thesaurus_url': {
                                     'S':
-                                        'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                        'https://geocat-dev.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
                                 },
                                 'thesaurus_date':
                                     {
-                                        'S': '2024-06-13'
+                                        'S': '2026-03-13'
                                     },
                                 'concept':
                                     {
@@ -112,7 +114,7 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 },
                                 'thesaurus_url': {
                                     'S':
-                                        'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                        'https://geocat-dev.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
                                 },
                                 'thesaurus_date': {
                                     'S': '2024-06-13'
@@ -148,10 +150,10 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 },
                                 'thesaurus_url': {
                                     'S':
-                                        'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                        'https://geocat-dev.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
                                 },
                                 'thesaurus_date': {
-                                    'S': '2024-06-13'
+                                    'S': '2026-03-13'
                                 },
                                 'concept': {
                                     'S':
@@ -186,10 +188,10 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 },
                                 'thesaurus_url': {
                                     'S':
-                                        'https://geocat-int.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
+                                        'https://geocat-dev.dev.bgdi.ch/geonetwork/srv/api/registries/vocabularies/local.theme.geocat.ch'
                                 },
                                 'thesaurus_date': {
-                                    'S': '2024-06-13'
+                                    'S': '2026-03-13'
                                 },
                                 'concept': {
                                     'S':
@@ -315,7 +317,7 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                 'L': [{
                                     'M': {
                                         'url': {
-                                            'NULL': True
+                                            'S': 'https://www.bafu.admin.ch/bafu/de/home.html'
                                         },
                                         'url_de': {
                                             'S': 'https://www.bafu.admin.ch/bafu/de/home.html'
@@ -438,7 +440,7 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                       'S': '+41 58 462 93 89'
                                   },
                                   'contact_facsimile': {
-                                      'S': '+41 58 463 89 74'
+                                      'NULL': True
                                   },
                                   'contact_sms': {
                                       'NULL': True
@@ -467,23 +469,24 @@ def test_command_harvests(dynamo_session_mock, requests_get_mock, db):
                                       'L': [{
                                           'M': {
                                               'url': {
-                                                  'NULL': True
+                                                  'S':
+                                                      'https://www.bafu.admin.ch/bafu/de/home/amt/geschaeftsleitung-des-bafu/direktionsbereich-biologische-vielfalt/abteilung-biodiversitaet-und-landschaft.html'
                                               },
                                               'url_de': {
                                                   'S':
-                                                      'https://www.bafu.admin.ch/bafu/de/home/amt/abteilungen-sektionen/abteilung-biodiversitaet-und-landschaft.html'
+                                                      'https://www.bafu.admin.ch/bafu/de/home/amt/geschaeftsleitung-des-bafu/direktionsbereich-biologische-vielfalt/abteilung-biodiversitaet-und-landschaft.html'
                                               },
                                               'url_fr': {
                                                   'S':
-                                                      'https://www.bafu.admin.ch/bafu/fr/home/office/divisions-sections/division-biodiversite-et-paysage.html'
+                                                      'https://www.bafu.admin.ch/bafu/fr/home/office/direction/domaine-de-direction-biodiversite/division-biodiversite-et-paysage.html'
                                               },
                                               'url_en': {
                                                   'S':
-                                                      'https://www.bafu.admin.ch/bafu/en/home/office/divisions-sections/biodiversity-and-landscape-division.html'
+                                                      'https://www.bafu.admin.ch/bafu/en/home/office/management-board/sector-biological-diversity/biodiversity-and-landscape-division.html'
                                               },
                                               'url_it': {
                                                   'S':
-                                                      'https://www.bafu.admin.ch/bafu/it/home/ufficio/divisioni-sezioni/divisione-biodiversita-e-paesaggio.html'
+                                                      'https://www.bafu.admin.ch/bafu/it/home/ufficio/direzione/unita-direzione-biodiversita/divisione-biodiversita-e-paesaggio.html'
                                               },
                                               'url_rm': {
                                                   'NULL': True

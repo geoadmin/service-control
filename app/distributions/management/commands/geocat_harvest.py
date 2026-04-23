@@ -27,11 +27,39 @@ if TYPE_CHECKING:
 
 GEOCAT_URL = "https://www.geocat.ch/geonetwork/srv/api/records/{}/formatters/xml?approved=true"
 NS = {
-    "che": "http://www.geocat.ch/2008/che",
-    "gco": "http://www.isotc211.org/2005/gco",
-    "gmd": "http://www.isotc211.org/2005/gmd",
-    "gmx": "http://www.isotc211.org/2005/gmx",
+    "cat": "http://standards.iso.org/iso/19115/-3/cat/1.0",
+    "che": "http://geocat.ch/che",
+    "cit": "http://standards.iso.org/iso/19115/-3/cit/2.0",
+    "dqm": "http://standards.iso.org/iso/19157/-2/dqm/1.0",
+    "gco": "http://standards.iso.org/iso/19115/-3/gco/1.0",
+    "gcx": "http://standards.iso.org/iso/19115/-3/gcx/1.0",
+    "gex": "http://standards.iso.org/iso/19115/-3/gex/1.0",
+    "gfc": "http://standards.iso.org/iso/19110/gfc/1.1",
+    "gml": "http://www.opengis.net/gml/3.2",
+    "lan": "http://standards.iso.org/iso/19115/-3/lan/1.0",
+    "mac": "http://standards.iso.org/iso/19115/-3/mac/2.0",
+    "mas": "http://standards.iso.org/iso/19115/-3/mas/1.0",
+    "mcc": "http://standards.iso.org/iso/19115/-3/mcc/1.0",
+    "mco": "http://standards.iso.org/iso/19115/-3/mco/1.0",
+    "md1": "http://standards.iso.org/iso/19115/-3/md1/2.0",
+    "md2": "http://standards.iso.org/iso/19115/-3/md2/2.0",
+    "mda": "http://standards.iso.org/iso/19115/-3/mda/2.0",
+    "mdb": "http://standards.iso.org/iso/19115/-3/mdb/2.0",
+    "mdq": "http://standards.iso.org/iso/19157/-2/mdq/1.0",
+    "mds": "http://standards.iso.org/iso/19115/-3/mds/2.0",
+    "mdt": "http://standards.iso.org/iso/19115/-3/mdt/2.0",
+    "mex": "http://standards.iso.org/iso/19115/-3/mex/1.0",
+    "mmi": "http://standards.iso.org/iso/19115/-3/mmi/1.0",
+    "mpc": "http://standards.iso.org/iso/19115/-3/mpc/1.0",
+    "mrc": "http://standards.iso.org/iso/19115/-3/mrc/2.0",
+    "mrd": "http://standards.iso.org/iso/19115/-3/mrd/1.0",
+    "mri": "http://standards.iso.org/iso/19115/-3/mri/1.0",
+    "mrl": "http://standards.iso.org/iso/19115/-3/mrl/2.0",
+    "mrs": "http://standards.iso.org/iso/19115/-3/mrs/1.0",
+    "msr": "http://standards.iso.org/iso/19115/-3/msr/2.0",
+    "srv": "http://standards.iso.org/iso/19115/-3/srv/2.0",
     "xlink": "http://www.w3.org/1999/xlink",
+    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
 }
 TIMEOUT = 30
 
@@ -253,31 +281,54 @@ class Command(CustomBaseCommand):
         self.print(f"Getting keywords for dataset {dataset_id} from geocat")
 
         keywords = []
-        for block in root.findall(".//gmd:MD_Keywords", NS):
+        for block in root.findall(".//mri:MD_Keywords", NS):
             keyword_type = None
-            if (element := block.find(".//gmd:MD_KeywordTypeCode", NS)) is not None:
+            if (element := block.find(".//mri:MD_KeywordTypeCode", NS)) is not None:
                 keyword_type = element.get("codeListValue")
 
+            # Note: eCH defines the thesaurus id as mcc:code only very vaguely as "Zeichenfolge".
+            #       In reality this is typically encapsulated in an gcx:Anchor. But other examples
+            #       (outside of thesauri) of mcc:code encapsulate this in a gco:CharacterString.
             thesaurus_id = None
             thesaurus_url = None
-            if (element := block.find(".//gmd:thesaurusName//gmx:Anchor", NS)) is not None:
+            if (
+                element :=
+                block.find(".//mri:thesaurusName//cit:identifier//mcc:code//gcx:Anchor", NS)
+            ) is not None:
                 thesaurus_id = element.text
                 thesaurus_url = next(
                     (element.get(key) for key in element.keys() if "href" in str(key)),
                     None,
                 )
+            elif (
+                element := block.find(
+                    ".//mri:thesaurusName//cit:identifier//mcc:code//gco:CharacterString", NS
+                )
+            ) is not None:
+                thesaurus_id = element.text
+            elif (
+                element := block.find(".//mri:thesaurusName//cit:identifier//mcc:code", NS)
+            ) is not None:
+                thesaurus_id = element.text
 
-            thesaurus_date = None
-            if (element := block.find(".//gmd:thesaurusName//gco:Date", NS)) is not None:
-                thesaurus_date = element.text
+            if thesaurus_id:
+                thesaurus_id = thesaurus_id.strip()
 
-            for element in block.findall("gmd:keyword", NS):
+            # Note: eCH defines different types of dates (publication, update etc.), we only care
+            #       about the last of these
+            thesaurus_dates = sorted({
+                str(element.text)
+                for element in block.findall(".//mri:thesaurusName//gco:Date", NS)
+            })
+            thesaurus_date = thesaurus_dates[-1] if thesaurus_dates else None
+
+            for element in block.findall("mri:keyword", NS):
                 if (text := element.find("gco:CharacterString", NS)) is None or not text.text:
                     continue
 
                 translations = {
                     translation.get("locale", "").lstrip("#").lower(): translation.text
-                    for translation in element.findall(".//gmd:LocalisedCharacterString", NS)
+                    for translation in element.findall(".//lan:LocalisedCharacterString", NS)
                     if translation.text
                 }
 
@@ -326,78 +377,77 @@ class Command(CustomBaseCommand):
             return None
 
         contacts: list[Contact] = []
-        for block in root.findall(".//gmd:pointOfContact", NS):
+        for block in root.findall(".//mri:pointOfContact", NS):
 
-            name = find(block, './/gmd:organisationName/gco:CharacterString')
+            name = find(block, './/che:CHE_CI_Organisation/cit:name/gco:CharacterString')
             if not name:
                 continue
 
-            role = find_code(block, ".//gmd:CI_RoleCode")
+            role = find_code(block, ".//cit:CI_RoleCode")
 
             online_resources = [
                 OnlineResource(
-                    url=find(resource, ".//gmd:linkage/gmd:URL"),
-                    url_de=find(resource, './/che:LocalisedURL[@locale="#DE"]'),
-                    url_fr=find(resource, './/che:LocalisedURL[@locale="#FR"]'),
-                    url_en=find(resource, './/che:LocalisedURL[@locale="#EN"]'),
-                    url_it=find(resource, './/che:LocalisedURL[@locale="#IT"]'),
-                    url_rm=find(resource, './/che:LocalisedURL[@locale="#RM"]'),
-                    protocol=find(resource, ".//gmd:protocol/*"),
-                    name_de=find(resource, './/gmd:name//*[@locale="#DE"]'),
-                    name_fr=find(resource, './/gmd:name//*[@locale="#FR"]'),
-                    name_en=find(resource, './/gmd:name//*[@locale="#EN"]'),
-                    name_it=find(resource, './/gmd:name//*[@locale="#IT"]'),
-                    name_rm=find(resource, './/gmd:name//*[@locale="#RM"]'),
-                    description_de=find(resource, './/gmd:description//*[@locale="#DE"]'),
-                    description_fr=find(resource, './/gmd:description//*[@locale="#FR"]'),
-                    description_en=find(resource, './/gmd:description//*[@locale="#EN"]'),
-                    description_it=find(resource, './/gmd:description//*[@locale="#IT"]'),
-                    description_rm=find(resource, './/gmd:description//*[@locale="#RM"]'),
-                    function=find_code(resource, ".//gmd:function/*"),
-                ) for resource in block.findall(".//gmd:CI_OnlineResource", NS)
+                    url=find(resource, ".//cit:linkage/gco:CharacterString"),
+                    url_de=find(resource, './/cit:linkage//*[@locale="#DE"]'),
+                    url_fr=find(resource, './/cit:linkage//*[@locale="#FR"]'),
+                    url_en=find(resource, './/cit:linkage//*[@locale="#EN"]'),
+                    url_it=find(resource, './/cit:linkage//*[@locale="#IT"]'),
+                    url_rm=find(resource, './/cit:linkage//*[@locale="#RM"]'),
+                    protocol=find(resource, ".//cit:protocol/*"),
+                    name_de=find(resource, './/cit:name//*[@locale="#DE"]'),
+                    name_fr=find(resource, './/cit:name//*[@locale="#FR"]'),
+                    name_en=find(resource, './/cit:name//*[@locale="#EN"]'),
+                    name_it=find(resource, './/cit:name//*[@locale="#IT"]'),
+                    name_rm=find(resource, './/cit:name//*[@locale="#RM"]'),
+                    description_de=find(resource, './/cit:description//*[@locale="#DE"]'),
+                    description_fr=find(resource, './/cit:description//*[@locale="#FR"]'),
+                    description_en=find(resource, './/cit:description//*[@locale="#EN"]'),
+                    description_it=find(resource, './/cit:description//*[@locale="#IT"]'),
+                    description_rm=find(resource, './/cit:description//*[@locale="#RM"]'),
+                    function=find_code(resource, ".//cit:function/*"),
+                ) for resource in block.findall(".//cit:CI_OnlineResource", NS)
             ]
             online_resources.sort(key=lambda r: r.url or "")
 
-            parts = (
-                find(block, ".//che:streetName/*"),
-                find(block, ".//che:streetNumber/*"),
-                find(block, ".//che:postBox/*")
-            )
-            delivery_point = " ".join(part for part in parts if part) or None
+            phone_numbers = {
+                find(resource, ".//cit:CI_TelephoneTypeCode"):
+                    find(resource, ".//cit:number/gco:CharacterString")
+                for resource in block.findall(".//cit:CI_Telephone", NS)
+            }
 
             emails = [
-                email for element in block.findall(".//gmd:electronicMailAddress//*", NS)
+                email for element in block.findall(".//cit:electronicMailAddress//*", NS)
                 if (email := getattr(element, "text", None))
             ]
 
             contact = Contact(
                 role=role,
                 org_name=name,
-                org_name_de=find(block, './/gmd:organisationName//*[@locale="#DE"]'),
-                org_name_fr=find(block, './/gmd:organisationName//*[@locale="#FR"]'),
-                org_name_en=find(block, './/gmd:organisationName//*[@locale="#EN"]'),
-                org_name_it=find(block, './/gmd:organisationName//*[@locale="#IT"]'),
-                org_name_rm=find(block, './/gmd:organisationName//*[@locale="#RM"]'),
+                org_name_de=find(block, './/che:CHE_CI_Organisation/cit:name//*[@locale="#DE"]'),
+                org_name_fr=find(block, './/che:CHE_CI_Organisation/cit:name//*[@locale="#FR"]'),
+                org_name_en=find(block, './/che:CHE_CI_Organisation/cit:name//*[@locale="#EN"]'),
+                org_name_it=find(block, './/che:CHE_CI_Organisation/cit:name//*[@locale="#IT"]'),
+                org_name_rm=find(block, './/che:CHE_CI_Organisation/cit:name//*[@locale="#RM"]'),
                 org_acronym=find(block, './/che:organisationAcronym/gco:CharacterString'),
                 org_acronym_de=find(block, './/che:organisationAcronym//*[@locale="#DE"]'),
                 org_acronym_fr=find(block, './/che:organisationAcronym//*[@locale="#FR"]'),
                 org_acronym_en=find(block, './/che:organisationAcronym//*[@locale="#EN"]'),
                 org_acronym_it=find(block, './/che:organisationAcronym//*[@locale="#IT"]'),
                 org_acronym_rm=find(block, './/che:organisationAcronym//*[@locale="#RM"]'),
-                position_name_de=find(block, './/gmd:positionName//*[@locale="#DE"]'),
-                position_name_fr=find(block, './/gmd:positionName//*[@locale="#FR"]'),
-                position_name_en=find(block, './/gmd:positionName//*[@locale="#EN"]'),
-                position_name_it=find(block, './/gmd:positionName//*[@locale="#IT"]'),
-                position_name_rm=find(block, './/gmd:positionName//*[@locale="#RM"]'),
-                contact_voice=find(block, ".//gmd:voice/*"),
-                contact_facsimile=find(block, ".//gmd:facsimile/*"),
-                contact_sms=None,
-                contact_city=find(block, ".//gmd:city/*"),
-                contact_administrative_area=find(block, ".//gmd:administrativeArea/*"),
-                contact_postal_code=find(block, ".//gmd:postalCode/*"),
-                contact_country=find(block, ".//gmd:country/*"),
+                position_name_de=find(block, './/cit:CI_Individual//*[@locale="#DE"]'),
+                position_name_fr=find(block, './/cit:CI_Individual//*[@locale="#FR"]'),
+                position_name_en=find(block, './/cit:CI_Individual//*[@locale="#EN"]'),
+                position_name_it=find(block, './/cit:CI_Individual//*[@locale="#IT"]'),
+                position_name_rm=find(block, './/cit:CI_Individual//*[@locale="#RM"]'),
+                contact_voice=phone_numbers.get('voice'),
+                contact_facsimile=phone_numbers.get('facsimile'),
+                contact_sms=phone_numbers.get('sms'),
+                contact_city=find(block, ".//cit:city/*"),
+                contact_administrative_area=find(block, ".//cit:administrativeArea/*"),
+                contact_postal_code=find(block, ".//cit:postalCode/*"),
+                contact_country=find(block, ".//cit:country/*"),
                 contact_electronic_mail_addresses=emails,
-                contact_delivery_point=delivery_point,
+                contact_delivery_point=find(block, ".//cit:deliveryPoint/*"),
                 online_resources=online_resources
             )
 
