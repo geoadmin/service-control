@@ -1,5 +1,6 @@
 from typing import Any
 
+from boto3.dynamodb.types import TypeSerializer
 from pydantic import BaseModel
 
 
@@ -12,22 +13,9 @@ class BaseModelWithDynamoDBSerialization(BaseModel):
         Returns:
             dict[str, Any]: The dataset represented as a DynamoDB item.
         """
-
-        def serialize(value: Any) -> dict[str, Any]:
-            if value is None:
-                return {"NULL": True}
-            if isinstance(value, int):
-                return {"N": str(value)}
-            if isinstance(value, str):
-                return {"S": value}
-            if isinstance(value, list):
-                return {"L": [serialize(i) for i in value]}
-            if isinstance(value, dict):
-                return {"M": {k: serialize(v) for k, v in value.items()}}
-            raise ValueError(f"Unexpected type {type(value)}")
-
-        item = self.model_dump(mode="json")
-        return {key: serialize(value) for key, value in item.items()}
+        serializer = TypeSerializer()
+        item = self.model_dump()
+        return {key: serializer.serialize(value) for key, value in item.items()}
 
 
 class ExportDataset(BaseModelWithDynamoDBSerialization):
