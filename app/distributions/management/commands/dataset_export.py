@@ -1,9 +1,12 @@
 import json
+from decimal import Decimal
 from typing import TYPE_CHECKING
 from typing import Any
 
 import boto3
+from bod.models import BodLayersJS
 from distributions.export_models import ExportDataset
+from distributions.export_models import ExportLayersJS
 from distributions.export_models import ExportProvider
 from distributions.models import Dataset
 from provider.models import Provider
@@ -45,6 +48,11 @@ class Command(CustomBaseCommand):
             help="Export datasets",
         )
         parser.add_argument(
+            "--layers-js",
+            action="store_true",
+            help="Import datasets",
+        )
+        parser.add_argument(
             "--target-env",
             type=str,
             choices=["dev", "int", "prod"],
@@ -79,12 +87,12 @@ class Command(CustomBaseCommand):
             assumed_role = sts_client.assume_role(
                 RoleArn=options["table_role_arn"],
                 RoleSessionName="geocat_harvest",
-                DurationSeconds=3600  # 1 hour
+                DurationSeconds=3600,  # 1 hour
             )
             session = boto3.Session(
                 aws_access_key_id=assumed_role["Credentials"]["AccessKeyId"],
                 aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
-                aws_session_token=assumed_role["Credentials"]["SessionToken"]
+                aws_session_token=assumed_role["Credentials"]["SessionToken"],
             )
         elif options.get("profile_name"):
             session = boto3.Session(profile_name=options["profile_name"])
@@ -94,16 +102,19 @@ class Command(CustomBaseCommand):
         client = session.client("dynamodb", region_name="eu-central-1")
 
         if options["datasets"]:
-            self.export_datasets(client, options['target_env'], options["sample"])
+            self.export_datasets(client, options["target_env"], options["sample"])
         if options["providers"]:
-            self.export_providers(client, options['target_env'])
+            self.export_providers(client, options["target_env"])
+        if options["layers_js"]:
+            self.export_layers_js(client, options["target_env"])
 
     def export_datasets(self, client: "DynamoDBClient", target_env: str, sample: bool) -> None:
         self.print("Fetching existing datasets from DynamoDB")
         obsolete = set()
         paginator = client.get_paginator("scan")
         for page in paginator.paginate(
-            TableName=f"harvest-datasets-{target_env}", ProjectionExpression="dataset_id"
+            TableName=f"harvest-datasets-{target_env}",
+            ProjectionExpression="dataset_id",
         ):
             obsolete.update({item["dataset_id"]["S"] for item in page["Items"]})
 
@@ -129,9 +140,10 @@ class Command(CustomBaseCommand):
         for dataset_id in obsolete:
             self.print(f"Deleting dataset {dataset_id} from DynamoDB")
             client.delete_item(
-                TableName=f"harvest-datasets-{target_env}", Key={"dataset_id": {
+                TableName=f"harvest-datasets-{target_env}",
+                Key={"dataset_id": {
                     "S": dataset_id
-                }}
+                }},
             )
 
     def export_providers(self, client: "DynamoDBClient", target_env: str) -> None:
@@ -139,7 +151,8 @@ class Command(CustomBaseCommand):
         obsolete = set()
         paginator = client.get_paginator("scan")
         for page in paginator.paginate(
-            TableName=f"harvest-providers-{target_env}", ProjectionExpression="provider_id"
+            TableName=f"harvest-providers-{target_env}",
+            ProjectionExpression="provider_id",
         ):
             obsolete.update({item["provider_id"]["S"] for item in page["Items"]})
 
@@ -164,5 +177,82 @@ class Command(CustomBaseCommand):
                 TableName=f"harvest-providers-{target_env}",
                 Key={"provider_id": {
                     "S": provider_id
-                }}
+                }},
+            )
+
+    def export_layers_js(self, client: "DynamoDBClient", target_env: str) -> None:
+        self.print("Fetching existing layers from DynamoDB")
+        obsolete = set()
+        paginator = client.get_paginator("scan")
+        for page in paginator.paginate(
+            TableName=f"harvest-layers-js-{target_env}",
+            ProjectionExpression="layer_id",
+        ):
+            obsolete.update({item["layer_id"]["S"] for item in page["Items"]})
+
+        self.print("Exporting layers_js to DynamoDB")
+        qs = BodLayersJS.objects.all().values()
+
+        for layer in qs:
+            exp_item = exp_item = ExportLayersJS(
+                layer_id=layer["layer_id"] or "?",
+                bod_layer_id=layer["bod_layer_id"],
+                topics=layer["topics"],
+                chargeable=layer["chargeable"],
+                staging=layer["staging"],
+                server_layername=layer["server_layername"],
+                attribution=layer["attribution"],
+                layertype=layer["layertype"],
+                opacity=Decimal(str(layer["opacity"])) if layer["opacity"] is not None else None,
+                minresolution=Decimal(str(layer["minresolution"]))
+                if layer["minresolution"] is not None else None,
+                maxresolution=Decimal(str(layer["maxresolution"]))
+                if layer["maxresolution"] is not None else None,
+                backgroundlayer=layer["backgroundlayer"],
+                tooltip=layer["tooltip"],
+                searchable=layer["searchable"],
+                timeenabled=layer["timeenabled"],
+                haslegend=layer["haslegend"],
+                singletile=layer["singletile"],
+                highlightable=layer["highlightable"],
+                wms_layers=layer["wms_layers"],
+                time_behaviour=layer["time_behaviour"],
+                image_format=layer["image_format"],
+                tilematrix_resolution_max=Decimal(str(layer["tilematrix_resolution_max"]))
+                if layer["tilematrix_resolution_max"] is not None else None,
+                timestamps=layer["timestamps"],
+                parentlayerid=layer["parentlayerid"],
+                sublayersids=layer["sublayersids"],
+                time_get_parameter=layer["time_get_parameter"],
+                time_format=layer["time_format"],
+                wms_gutter=layer["wms_gutter"],
+                sphinx_index=layer["sphinx_index"],
+                geojson_url_de=layer["geojson_url_de"],
+                geojson_url_fr=layer["geojson_url_fr"],
+                geojson_url_it=layer["geojson_url_it"],
+                geojson_url_en=layer["geojson_url_en"],
+                geojson_url_rm=layer["geojson_url_rm"],
+                geojson_update_delay=layer["geojson_update_delay"],
+                srid=layer["srid"],
+            )
+            try:
+                item = exp_item.as_dynamodb_item()
+            except Exception as e:
+                self.print(f"Error converting layer {exp_item.layer_id} to DynamoDB item: {e}")
+                print(exp_item)
+                continue
+
+            self.print(f"Exporting layers_js for dataset {exp_item.layer_id} to DynamoDB")
+
+            client.put_item(TableName=f"harvest-layers-js-{target_env}", Item=item)
+            obsolete.discard(exp_item.layer_id)
+
+        self.print("Deleting obsolete layers-js")
+        for layer_id in obsolete:
+            self.print(f"Deleting provider {layer_id} from DynamoDB")
+            client.delete_item(
+                TableName=f"harvest-layers-js-{target_env}",
+                Key={"layer_id": {
+                    "S": layer_id
+                }},
             )

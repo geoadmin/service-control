@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Any
 
 from boto3.dynamodb.types import TypeSerializer
@@ -130,3 +131,43 @@ class ContactList(BaseModelWithDynamoDBSerialization):
     dataset_id: str
     geocat_id: str
     contacts: list[Contact]
+
+
+class ExportLayersJS(BaseModelWithDynamoDBSerialization):
+    layer_id: str
+    bod_layer_id: str | None = None
+    topics: str | None = None
+    chargeable: bool | None = None
+    staging: str | None = None
+    server_layername: str | None = None
+    attribution: str | None = None
+    layertype: str | None = None
+    opacity: Decimal | None = None
+    minresolution: Decimal | None = None
+    maxresolution: Decimal | None = None
+    extent: list[Decimal] | None = None
+    backgroundlayer: bool | None = None
+    tooltip: bool | None = None
+    searchable: bool | None = None
+    timeenabled: bool | None = None
+    haslegend: bool | None = None
+    singletile: bool | None = None
+    highlightable: bool | None = None
+    wms_layers: str | None = None
+    time_behaviour: str | None = None
+    image_format: str | None = None
+    tilematrix_resolution_max: Decimal | None = None
+    timestamps: list[str | None] | None = None
+    parentlayerid: str | None = None
+    sublayersids: list[str | None] | None = None
+    time_get_parameter: str | None = None
+    time_format: str | None = None
+    wms_gutter: int | None = None
+    sphinx_index: str | None = None
+    geojson_url_de: str | None = None
+    geojson_url_fr: str | None = None
+    geojson_url_it: str | None = None
+    geojson_url_en: str | None = None
+    geojson_url_rm: str | None = None
+    geojson_update_delay: int | None = None
+    srid: str | None = None
