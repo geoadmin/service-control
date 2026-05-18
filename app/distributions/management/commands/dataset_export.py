@@ -237,7 +237,7 @@ class Command(CustomBaseCommand):
             )
             try:
                 item = exp_item.as_dynamodb_item()
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 self.print(f"Error converting layer {exp_item.layer_id} to DynamoDB item: {e}")
                 print(exp_item)
                 continue
