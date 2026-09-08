@@ -15,6 +15,7 @@ boto3 = "~=1.37"
 nanoid = "~=2.0"
 whitenoise = "~=6.9"
 pystac-client = "~=0.8"
+pystac = "<1.15"  # 1.15 breaks pystac-client
 ecs-logging = "~=2.2"
 beautifulsoup4 = "~=4.13"
 requests = "~=2.32"
