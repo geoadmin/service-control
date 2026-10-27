@@ -39,6 +39,28 @@ class ExportDataset(BaseModelWithDynamoDBSerialization):
     _legacy_id: int
 
 
+class ExportAttribution(BaseModelWithDynamoDBSerialization):
+    attribution_id: str
+    name_de: str
+    name_fr: str
+    name_en: str
+    name_it: str
+    name_rm: str
+    description_de: str
+    description_fr: str
+    description_en: str
+    description_it: str
+    description_rm: str
+    url_de: str | None
+    url_fr: str | None
+    url_en: str | None
+    url_it: str | None
+    url_rm: str | None
+    created: str
+    updated: str
+    _legacy_id: int
+
+
 class ExportProvider(BaseModelWithDynamoDBSerialization):
     provider_id: str
     created: str
@@ -53,6 +75,7 @@ class ExportProvider(BaseModelWithDynamoDBSerialization):
     acronym_en: str
     acronym_it: str | None
     acronym_rm: str | None
+    attributions: list[ExportAttribution]
     _legacy_id: int
 
 

@@ -33,6 +33,12 @@ class Attribution(models.Model):
     description_it = models.CharField(_(_context, "Description (Italian)"), null=True, blank=True)
     description_rm = models.CharField(_(_context, "Description (Romansh)"), null=True, blank=True)
 
+    url_de = models.URLField(_(_context, "URL (German)"), null=True, blank=True)
+    url_fr = models.URLField(_(_context, "URL (French)"), null=True, blank=True)
+    url_en = models.URLField(_(_context, "URL (English)"), null=True, blank=True)
+    url_it = models.URLField(_(_context, "URL (Italian)"), null=True, blank=True)
+    url_rm = models.URLField(_(_context, "URL (Romansh)"), null=True, blank=True)
+
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
 
     _legacy_id = models.IntegerField(
