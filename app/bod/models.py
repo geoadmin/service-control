@@ -61,6 +61,12 @@ class BodGeocatPublish(models.Model):
     bezeichnung_rm = models.CharField(max_length=5000, blank=True, null=True)
     bezeichnung_en = models.CharField(max_length=5000, blank=True, null=True)
 
+    alternativtitel_de = models.CharField(max_length=5000, blank=True, null=True)
+    alternativtitel_fr = models.CharField(max_length=5000, blank=True, null=True)
+    alternativtitel_it = models.CharField(max_length=5000, blank=True, null=True)
+    alternativtitel_rm = models.CharField(max_length=5000, blank=True, null=True)
+    alternativtitel_en = models.CharField(max_length=5000, blank=True, null=True)
+
     abstract_de = models.CharField(max_length=5000, blank=True, null=True)
     abstract_fr = models.CharField(max_length=5000, blank=True, null=True)
     abstract_it = models.CharField(max_length=5000, blank=True, null=True)
