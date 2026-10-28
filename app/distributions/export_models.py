@@ -49,13 +49,13 @@ class ExportAttribution(BaseModelWithDynamoDBSerialization):
     name_de: str
     name_fr: str
     name_en: str
-    name_it: str
-    name_rm: str
+    name_it: str | None
+    name_rm: str | None
     description_de: str
     description_fr: str
     description_en: str
-    description_it: str
-    description_rm: str
+    description_it: str | None
+    description_rm: str | None
     url_de: str | None
     url_fr: str | None
     url_en: str | None
