@@ -71,7 +71,7 @@ class Command(CustomBaseCommand):
         self,
         model: Provider | Attribution | Dataset,
         attribute: str,
-        new_value: str,
+        new_value: str | None,
         is_new_model: bool,
     ) -> bool:
         """Update the attributes of the given model and print the changed ones."""
@@ -254,7 +254,8 @@ class Command(CustomBaseCommand):
     ) -> None:
         """Update the attributes of an attribution."""
 
-        any_changed = False
+        if not organization.attribution:
+            return
 
         # Determine the translations of the attribution label.
         label_translation = BodTranslations.objects.filter(msg_id=organization.attribution).first()
@@ -264,7 +265,7 @@ class Command(CustomBaseCommand):
                 "as no matching translation was found"
             )
             return
-        values = [
+        values: list[tuple[str, str | None]] = [
             ("name_de", label_translation.de or "undefined"),
             ("name_fr", label_translation.fr or "undefined"),
             ("name_en", label_translation.en or "undefined"),
@@ -292,6 +293,8 @@ class Command(CustomBaseCommand):
             ("description_it", organization.name_it or "undefined"),
             ("description_rm", organization.name_rm or "undefined"),
         ])
+
+        any_changed = False
         for attribution_attribute, translation in values:
             changed = self.update_model(
                 attribution,

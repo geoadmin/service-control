@@ -1,21 +1,21 @@
 import json
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+from typing import Any
 
 import boto3
 from bod.models import BodLayersJS
-from django.core import serializers
-from django.core.management.base import CommandParser
+from distributions.export_models import ExportAttribution
+from distributions.export_models import ExportDataset
+from distributions.export_models import ExportLayersJS
+from distributions.export_models import ExportProvider
+from distributions.models import Attribution
+from distributions.models import Dataset
 from provider.models import Provider
 from utils.command import CustomBaseCommand
 
-from distributions.export_models import (
-    ExportAttribution,
-    ExportDataset,
-    ExportLayersJS,
-    ExportProvider,
-)
-from distributions.models import Attribution, Dataset
+from django.core import serializers
+from django.core.management.base import CommandParser
 
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb import DynamoDBClient
