@@ -5,9 +5,11 @@ from typing import Any
 
 import boto3
 from bod.models import BodLayersJS
+from distributions.export_models import ExportAttribution
 from distributions.export_models import ExportDataset
 from distributions.export_models import ExportLayersJS
 from distributions.export_models import ExportProvider
+from distributions.models import Attribution
 from distributions.models import Dataset
 from provider.models import Provider
 from utils.command import CustomBaseCommand
@@ -146,7 +148,7 @@ class Command(CustomBaseCommand):
                 }},
             )
 
-    def export_providers(self, client: "DynamoDBClient", target_env: str) -> None:
+    def export_providers(self, client: "DynamoDBClient", target_env: str) -> None:  # pylint: disable=too-many-locals
         self.print("Fetching existing providers from DynamoDB")
         obsolete = set()
         paginator = client.get_paginator("scan")
@@ -164,7 +166,23 @@ class Command(CustomBaseCommand):
             )
         )
         for provider in providers:
-            exp_item = ExportProvider(**provider["fields"])
+            # Fetch Attributions for this provider
+            attribution_qs = Attribution.objects.filter(
+                provider__provider_id=provider["fields"]["provider_id"]
+            )
+            _attributions = json.loads(
+                serializers.serialize(
+                    "json",
+                    attribution_qs,
+                    use_natural_foreign_keys=True,
+                    use_natural_primary_keys=True,
+                )
+            )
+            attributions = []
+            for attr in _attributions:
+                attributions.append(ExportAttribution(**attr["fields"]))
+
+            exp_item = ExportProvider(**provider["fields"], attributions=attributions)
             item = exp_item.as_dynamodb_item()
             self.print(f"Exporting provider {exp_item.provider_id} to DynamoDB")
             client.put_item(TableName=f"harvest-providers-{target_env}", Item=item)

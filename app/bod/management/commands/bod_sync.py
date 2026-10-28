@@ -71,7 +71,7 @@ class Command(CustomBaseCommand):
         self,
         model: Provider | Attribution | Dataset,
         attribute: str,
-        new_value: str,
+        new_value: str | None,
         is_new_model: bool,
     ) -> bool:
         """Update the attributes of the given model and print the changed ones."""
@@ -202,6 +202,8 @@ class Command(CustomBaseCommand):
             processed.add(legacy_id)
 
             # Get related provider
+            # Assume that the provider is the first two parts of the attribution (e.g. "ch.bafu" for
+            # "ch.bafu.kt"). If no provider is found, skip the attribution.
             provider = None
             if organization.attribution:
                 provider_of_attribution = ".".join(organization.attribution.split(".", 2)[:2])
@@ -252,26 +254,52 @@ class Command(CustomBaseCommand):
     ) -> None:
         """Update the attributes of an attribution."""
 
+        if not organization.attribution:
+            return
+
+        # Determine the translations of the attribution label.
+        label_translation = BodTranslations.objects.filter(msg_id=organization.attribution).first()
+        if not label_translation:
+            self.print_warning(
+                f"skipping attribution '{organization.attribution}' " +
+                "as no matching translation was found"
+            )
+            return
+        values: list[tuple[str, str | None]] = [
+            ("name_de", label_translation.de or "undefined"),
+            ("name_fr", label_translation.fr or "undefined"),
+            ("name_en", label_translation.en or "undefined"),
+            ("name_it", label_translation.it or "undefined"),
+            ("name_rm", label_translation.rm or "undefined"),
+        ]
+
+        # Determine the translations of the attribution url.
+        url_translation = BodTranslations.objects.filter(msg_id=organization.attribution + ".url"
+                                                        ).first()
+        if url_translation:
+            values.extend([
+                ("url_de", url_translation.de),
+                ("url_fr", url_translation.fr),
+                ("url_en", url_translation.en),
+                ("url_it", url_translation.it),
+                ("url_rm", url_translation.rm),
+            ])
+
+        # Determine the translations of the attribution description.
+        values.extend([
+            ("description_de", organization.name_de or "undefined"),
+            ("description_fr", organization.name_fr or "undefined"),
+            ("description_en", organization.name_en or "undefined"),
+            ("description_it", organization.name_it or "undefined"),
+            ("description_rm", organization.name_rm or "undefined"),
+        ])
+
         any_changed = False
-        translation = BodTranslations.objects.filter(msg_id=organization.attribution).first()
-        for attribution_attribute, translation_attribute in (
-            ("name_de", "de"),
-            ("name_fr", "fr"),
-            ("name_en", "en"),
-            ("name_it", "it"),
-            ("name_rm", "rm"),
-            ("description_de", "de"),
-            ("description_fr", "fr"),
-            ("description_en", "en"),
-            ("description_it", "it"),
-            ("description_rm", "rm"),
-            ("attribution_id", ""),  # will be updated to organization.attribution
-        ):
+        for attribution_attribute, translation in values:
             changed = self.update_model(
                 attribution,
                 attribution_attribute,
-                getattr(translation, translation_attribute, "") or organization.attribution or
-                "undefined",
+                translation,
                 is_new_model,
             )
             any_changed = any_changed or changed
