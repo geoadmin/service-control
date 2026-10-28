@@ -26,6 +26,11 @@ class ExportDataset(BaseModelWithDynamoDBSerialization):
     title_en: str
     title_it: str | None
     title_rm: str | None
+    title_short_de: str | None
+    title_short_fr: str | None
+    title_short_en: str | None
+    title_short_it: str | None
+    title_short_rm: str | None
     description_de: str
     description_fr: str
     description_en: str
