@@ -19,8 +19,20 @@ def fixture_bod_translation(db):
     )
 
 
+@fixture(name='bod_translation_url')
+def fixture_bod_translation_url(db):
+    yield BodTranslations.objects.create(
+        msg_id="ch.bafu.url",
+        de="https://www.bafu.admin.ch/bafu/de/home.html",
+        fr="https://www.bafu.admin.ch/bafu/fr/home.html",
+        en="https://www.bafu.admin.ch/bafu/en/home.html",
+        it="https://www.bafu.admin.ch/bafu/it/home.html",
+        rm="https://www.bafu.admin.ch/bafu/de/home.html"
+    )
+
+
 @fixture(name='bod_contact_organisation')
-def fixture_bod_contact_organisation(bod_translation):
+def fixture_bod_contact_organisation(bod_translation, bod_translation_url):
     yield BodContactOrganisation.objects.create(
         pk_contactorganisation_id=17,
         name_de="Bundesamt für Umwelt",
@@ -78,6 +90,7 @@ def fixture_bod_geocat_publish_missing_english(bod_dataset):
     )
 
 
+#pylint: disable=too-many-statements
 def test_command_imports(bod_geocat_publish):
     out = StringIO()
     call_command(
@@ -111,11 +124,16 @@ def test_command_imports(bod_geocat_publish):
     assert attribution.name_en == "FOEN"
     assert attribution.name_it == "UFAM"
     assert attribution.name_rm == "UFAM"
-    assert attribution.description_de == "BAFU"
-    assert attribution.description_fr == "OFEV"
-    assert attribution.description_en == "FOEN"
-    assert attribution.description_it == "UFAM"
-    assert attribution.description_rm == "UFAM"
+    assert attribution.description_de == "Bundesamt für Umwelt"
+    assert attribution.description_en == "Federal Office for the Environment"
+    assert attribution.description_fr == "Office fédéral de l'environnement"
+    assert attribution.description_it == "Ufficio federale dell'ambiente"
+    assert attribution.description_rm == "Uffizi federal per l'ambient"
+    assert attribution.url_de == "https://www.bafu.admin.ch/bafu/de/home.html"
+    assert attribution.url_en == "https://www.bafu.admin.ch/bafu/en/home.html"
+    assert attribution.url_fr == "https://www.bafu.admin.ch/bafu/fr/home.html"
+    assert attribution.url_it == "https://www.bafu.admin.ch/bafu/it/home.html"
+    assert attribution.url_rm == "https://www.bafu.admin.ch/bafu/de/home.html"
 
     dataset = provider.dataset_set.first()
     assert dataset.attribution == attribution
@@ -219,11 +237,18 @@ def test_command_imports_attributions(bod_contact_organisation, bod_geocat_publi
     assert attribution.name_en == "FOEN"
     assert attribution.name_it == "UFAM"
     assert attribution.name_rm == "UFAM"
-    assert attribution.description_de == "BAFU"
-    assert attribution.description_fr == "OFEV"
-    assert attribution.description_en == "FOEN"
-    assert attribution.description_it == "UFAM"
-    assert attribution.description_rm == "UFAM"
+
+    assert attribution.description_de == "Bundesamt für Umwelt"
+    assert attribution.description_en == "Federal Office for the Environment"
+    assert attribution.description_fr == "Office fédéral de l'environnement"
+    assert attribution.description_it == "Ufficio federale dell'ambiente"
+    assert attribution.description_rm == "Uffizi federal per l'ambient"
+
+    assert attribution.url_de == "https://www.bafu.admin.ch/bafu/de/home.html"
+    assert attribution.url_en == "https://www.bafu.admin.ch/bafu/en/home.html"
+    assert attribution.url_fr == "https://www.bafu.admin.ch/bafu/fr/home.html"
+    assert attribution.url_it == "https://www.bafu.admin.ch/bafu/it/home.html"
+    assert attribution.url_rm == "https://www.bafu.admin.ch/bafu/de/home.html"
 
 
 def test_command_skips_invalid_attributions(bod_contact_organisation, bod_geocat_publish):
@@ -438,9 +463,10 @@ def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publi
         name_de="XXX",
         name_fr="XXX",
         name_en="XXX",
-        description_de="BAFU",
+        description_de="Bundesamt für Umwelt",
         description_fr="XXX",
         description_en="XXX",
+        url_de="https://www.bafu.admin.ch/bafu/de/home.html",
         provider=provider,
         _legacy_id=bod_contact_organisation.pk_contactorganisation_id
     )
@@ -467,6 +493,7 @@ def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publi
     assert "1 provider(s) updated" in out.getvalue()
     assert f"Changed Attribution {attribution.id} name_de" in out.getvalue()
     assert f"Changed Attribution {attribution.id} description_de" not in out.getvalue()
+    assert f"Changed Attribution {attribution.id} url_de" not in out.getvalue()
     assert "1 attribution(s) updated" in out.getvalue()
     assert f"Changed Dataset {dataset.id} dataset_id" in out.getvalue()
     assert "1 dataset(s) updated" in out.getvalue()
@@ -494,11 +521,16 @@ def test_command_updates(bod_contact_organisation, bod_dataset, bod_geocat_publi
     assert attribution.name_en == "FOEN"
     assert attribution.name_it == "UFAM"
     assert attribution.name_rm == "UFAM"
-    assert attribution.description_de == "BAFU"
-    assert attribution.description_fr == "OFEV"
-    assert attribution.description_en == "FOEN"
-    assert attribution.description_it == "UFAM"
-    assert attribution.description_rm == "UFAM"
+    assert attribution.description_de == "Bundesamt für Umwelt"
+    assert attribution.description_en == "Federal Office for the Environment"
+    assert attribution.description_fr == "Office fédéral de l'environnement"
+    assert attribution.description_it == "Ufficio federale dell'ambiente"
+    assert attribution.description_rm == "Uffizi federal per l'ambient"
+    assert attribution.url_de == "https://www.bafu.admin.ch/bafu/de/home.html"
+    assert attribution.url_en == "https://www.bafu.admin.ch/bafu/en/home.html"
+    assert attribution.url_fr == "https://www.bafu.admin.ch/bafu/fr/home.html"
+    assert attribution.url_it == "https://www.bafu.admin.ch/bafu/it/home.html"
+    assert attribution.url_rm == "https://www.bafu.admin.ch/bafu/de/home.html"
 
     dataset = provider.dataset_set.first()
     assert dataset.dataset_id == "ch.bafu.auen-vegetationskarten"

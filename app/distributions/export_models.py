@@ -26,6 +26,11 @@ class ExportDataset(BaseModelWithDynamoDBSerialization):
     title_en: str
     title_it: str | None
     title_rm: str | None
+    title_short_de: str | None
+    title_short_fr: str | None
+    title_short_en: str | None
+    title_short_it: str | None
+    title_short_rm: str | None
     description_de: str
     description_fr: str
     description_en: str
@@ -36,6 +41,28 @@ class ExportDataset(BaseModelWithDynamoDBSerialization):
     created: str
     updated: str
     geocat_id: str
+    _legacy_id: int
+
+
+class ExportAttribution(BaseModelWithDynamoDBSerialization):
+    attribution_id: str
+    name_de: str
+    name_fr: str
+    name_en: str
+    name_it: str | None
+    name_rm: str | None
+    description_de: str
+    description_fr: str
+    description_en: str
+    description_it: str | None
+    description_rm: str | None
+    url_de: str | None
+    url_fr: str | None
+    url_en: str | None
+    url_it: str | None
+    url_rm: str | None
+    created: str
+    updated: str
     _legacy_id: int
 
 
@@ -53,6 +80,7 @@ class ExportProvider(BaseModelWithDynamoDBSerialization):
     acronym_en: str
     acronym_it: str | None
     acronym_rm: str | None
+    attributions: list[ExportAttribution]
     _legacy_id: int
 
 

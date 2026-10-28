@@ -33,6 +33,12 @@ class Attribution(models.Model):
     description_it = models.CharField(_(_context, "Description (Italian)"), null=True, blank=True)
     description_rm = models.CharField(_(_context, "Description (Romansh)"), null=True, blank=True)
 
+    url_de = models.URLField(_(_context, "URL (German)"), null=True, blank=True)
+    url_fr = models.URLField(_(_context, "URL (French)"), null=True, blank=True)
+    url_en = models.URLField(_(_context, "URL (English)"), null=True, blank=True)
+    url_it = models.URLField(_(_context, "URL (Italian)"), null=True, blank=True)
+    url_rm = models.URLField(_(_context, "URL (Romansh)"), null=True, blank=True)
+
     provider = models.ForeignKey("provider.Provider", on_delete=models.CASCADE)
 
     _legacy_id = models.IntegerField(
@@ -81,6 +87,11 @@ class Dataset(models.Model):
     title_en = models.CharField(_(_context, "Title (English)"))
     title_it = models.CharField(_(_context, "Title (Italian)"), null=True, blank=True)
     title_rm = models.CharField(_(_context, "Title (Romansh)"), null=True, blank=True)
+    title_short_de = models.CharField(_(_context, "Short title (German)"), null=True, blank=True)
+    title_short_fr = models.CharField(_(_context, "Short title (French)"), null=True, blank=True)
+    title_short_en = models.CharField(_(_context, "Short title (English)"), null=True, blank=True)
+    title_short_it = models.CharField(_(_context, "Short title (Italian)"), null=True, blank=True)
+    title_short_rm = models.CharField(_(_context, "Short title (Romansh)"), null=True, blank=True)
     description_de = models.CharField(_(_context, "Description (German)"))
     description_fr = models.CharField(_(_context, "Description (French)"))
     description_en = models.CharField(_(_context, "Description (English)"))
